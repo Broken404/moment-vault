@@ -43,6 +43,8 @@
 
 录制质量、格式、AI 模型等设置留到相应功能讨论时再定，不在当前设置界面一次加入大量未明确项目。
 
+用户已明确 AI 接入后置，当前不增加模型、密钥或 AI 分类设置，也不要求配置 AI 才能完成收集与人工审核。
+
 ## 技术依据与待验证问题
 
 `showDirectoryPicker()` 可由用户操作触发目录选择器，返回目录句柄，并可请求读写模式；调用受来源与用户激活等条件约束。见 [MDN showDirectoryPicker](https://developer.mozilla.org/en-US/docs/Web/API/Window/showDirectoryPicker)。Chrome 的官方文档示例展示了将目录句柄保存到 IndexedDB 及检查/请求访问权限的方式。见 [File System Access](https://developer.chrome.com/docs/capabilities/web-apis/file-system-access)。
