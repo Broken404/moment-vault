@@ -8,6 +8,8 @@
 
 最新产品原则：网页内悬浮球与快捷键作为入口；用户手动开始和结束录制，结束后直接把实际视频文件保存到草稿箱，审核后进入资产库。不规划持续后台缓冲录制。本文保留技术能力信息，不能据此重新加入自动开始或自动结束录制。
 
+本地保存更新：用户已确定在设置中分别选择草稿箱和资产库的本地目录。下文的 IndexedDB 内容作为浏览器内部存储能力说明保留，不再代表媒体最终只存内部数据库。指定目录的授权、文件写入及重启后的访问另行验证，见 [设置草案](settings.md)。
+
 ## 结论
 
 按当前建议，第一轮技术试验闭环三种输入：外部图片导入、普通 HTML 视频的时间戳、用户手动开始与结束的基础短录屏。统一保存到本地草稿箱，并保留个人注释与可靠来源；视频草稿必须包含实际视频文件，外部图片来源可留空或由用户确认。先验证保存与查看链路，再增加 AI 整理，不规划持续后台缓冲。
@@ -46,7 +48,7 @@ Microsoft 说明 DRM 内容使用安全播放管线防止不当复制。[Edge DR
 
 ## 本地媒体、容量与备份
 
-IndexedDB 支持结构化数据和文件/Blob，适合原图、短片及元数据。[MDN IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) 建议由扩展自己的 origin 持有数据库，不把媒体写入宿主网页的存储。Chrome 文档确认扩展页、worker 和 offscreen 共享扩展 origin；默认仍受配额约束，可用 `navigator.storage.estimate()` 检查估值；`unlimitedStorage` 和 `persist()` 有不同的配额/驱逐作用。[扩展存储说明](https://developer.chrome.com/docs/extensions/develop/concepts/storage-and-cookies)
+IndexedDB 支持结构化数据和文件/Blob，可用于索引、句柄、设置与必要临时数据。[MDN IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) 浏览器内部数据库建议由扩展自己的 origin 持有，不把素材数据库写入宿主网页的存储；最终素材文件按用户选择的本地目录保存。Chrome 文档确认扩展页、worker 和 offscreen 共享扩展 origin；内部存储默认仍受配额约束，可用 `navigator.storage.estimate()` 检查估值；`unlimitedStorage` 和 `persist()` 有不同的配额/驱逐作用。[扩展存储说明](https://developer.chrome.com/docs/extensions/develop/concepts/storage-and-cookies)
 
 实际可用空间不能按理论配额承诺。配额满时 IndexedDB 写入可抛出 `QuotaExceededError`；Edge/Chrome 的持久化申请也可能自动被拒绝。[MDN 配额与驱逐](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) v0.1 应有单片时长上限、总容量展示、保存失败后的下载保底；禁止静默删除已入库内容。`storage.local` 只放设置，不能把它的默认 10 MB 当作整个 IndexedDB 的配额。[Storage API](https://developer.chrome.com/docs/extensions/reference/api/storage)
 

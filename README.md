@@ -26,6 +26,7 @@
 - [悬浮球入口与首次使用](docs/entry-and-first-use.md)：已确认的展示形式与采集原则，逐点细化安装后的第一个触点。
 - [视频选段与预录制交互](docs/video-range-selection.md)：网页内可调整大小的悬浮窗、模式开关、观看恢复、起终点和预览规则。
 - [图片收集入口](docs/image-intake.md)：已确认的收集方向，以及入口形式、粘贴导入、来源确认和保存流程草案。
+- [设置界面](docs/settings.md)：分别选择本地目录、语言和可调整的视频时间步长，以及候选附加设置。
 - [浏览器采集可行性](docs/capture-feasibility.md)：官方依据、录屏限制和待验证事项。
 - [Codex 接入方向](docs/codex-integration.md)：采集入口与 AI 整理入口的分工。
 

@@ -6,7 +6,7 @@
 
 OpenAI 的官方文档将插件描述为可组合 skills、MCP servers 等能力的可复用包；MCP 负责连接工具与数据，skill 负责指导工作流程。见 [插件概览](https://learn.chatgpt.com/docs/plugins) 与 [Skills](https://developers.openai.com/plugins/concepts/skills)。
 
-Codex 的 MCP 文档支持本地进程形式的 STDIO server，以及 Streamable HTTP server。这个能力为未来访问本地资产提供了可研究的入口，但不等于浏览器扩展中的 IndexedDB 会自动对本地进程开放。见 [MCP 官方文档](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)。
+Codex 的 MCP 文档支持本地进程形式的 STDIO server，以及 Streamable HTTP server。这个能力为未来访问本地资产提供了可研究的入口，但不等于浏览器扩展中的 IndexedDB 会自动对本地进程开放。见 [MCP 官方文档](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)。用户后来已确定素材保存到分别选择的本地目录，后续接入需以实际文件与必要元数据为依据，而非默认读取扩展内部数据库。
 
 ## 本项目的建议分工
 
