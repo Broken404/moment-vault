@@ -20,7 +20,7 @@
 
 - [产品落地草案](docs/product-brief.md)：已确认需求、第一版范围、交互和验收目标。
 - [视频选段与预录制交互](docs/video-range-selection.md)：网页内可调整大小的悬浮窗、模式开关、观看恢复、起终点和预览规则。
-- [图片与截图导入](docs/image-intake.md)：优先粘贴、拖入与选择文件的建议，以及来源确认与保存规则。
+- [图片收集入口](docs/image-intake.md)：已确认的收集方向，以及入口形式、粘贴导入、来源确认和保存流程草案。
 - [浏览器采集可行性](docs/capture-feasibility.md)：官方依据、录屏限制和待验证事项。
 - [Codex 接入方向](docs/codex-integration.md)：采集入口与 AI 整理入口的分工。
 
