@@ -1,0 +1,424 @@
+{
+  "testDate": "2026-10-19",
+  "timezone": "Asia/Shanghai",
+  "browser": "Edge 155.0.4283.62",
+  "extensionVersion": "0.0.4",
+  "saveRoute": "temporary loopback helper restricted to scratch roots",
+  "verdict": "Core route feasible with an unresolved short-capture quality issue; not a release or universal compatibility claim.",
+  "recordingCount": 8,
+  "results": [
+    {
+      "item": "spike-native-374e9722fafd4dc386142824194f4d8d",
+      "source": "https://x.com/SpaceX/status/2110886603371536546",
+      "bytes": 1493073,
+      "decodes": true,
+      "durationSeconds": 4.114,
+      "durationBasis": "packet-timestamps",
+      "sourceActualRange": [
+        2,
+        6.023014
+      ],
+      "selectedRange": [
+        2,
+        6
+      ],
+      "sourceStartBasis": "requested-seek",
+      "stopReason": "selected-end",
+      "durationDifferenceSeconds": 0.09098600000000001,
+      "video": {
+        "codec": "vp9",
+        "width": 942,
+        "height": 530,
+        "frames": 121
+      },
+      "audio": {
+        "codec": "opus",
+        "meanVolumeDb": -91.0
+      },
+      "sampledUniqueFrames": 8,
+      "averageLuma": 86.53000826446281,
+      "sourceMuted": null,
+      "sourceVolume": null,
+      "captureFrame": {
+        "width": 2560,
+        "height": 1440
+      },
+      "cropGeometry": {
+        "x": 702.130966828479,
+        "y": 418.88723705501616,
+        "width": 941.8397046925567,
+        "height": 529.1560983009709,
+        "outputWidth": 942,
+        "outputHeight": 530,
+        "scale": 1.656957928802589,
+        "paddingX": 0,
+        "paddingY": 96.15533980582518
+      }
+    },
+    {
+      "item": "spike-native-457005425ae64634936f7bc5b0a766e2",
+      "source": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+      "bytes": 1891152,
+      "decodes": true,
+      "durationSeconds": 4.1129999999999995,
+      "durationBasis": "packet-timestamps",
+      "sourceActualRange": [
+        2,
+        6.019597
+      ],
+      "selectedRange": [
+        2,
+        6
+      ],
+      "sourceStartBasis": "requested-seek",
+      "stopReason": "selected-end",
+      "durationDifferenceSeconds": 0.09340299999999946,
+      "video": {
+        "codec": "vp9",
+        "width": 1336,
+        "height": 1002,
+        "frames": 122
+      },
+      "audio": {
+        "codec": "opus",
+        "meanVolumeDb": -36.6
+      },
+      "sampledUniqueFrames": 8,
+      "averageLuma": 110.70323770491804,
+      "sourceMuted": null,
+      "sourceVolume": null,
+      "captureFrame": {
+        "width": 2560,
+        "height": 1440
+      },
+      "cropGeometry": {
+        "x": 85.35217177383754,
+        "y": 234.06709829311367,
+        "width": 1336.5038257798703,
+        "height": 1002.001177163037,
+        "outputWidth": 1336,
+        "outputHeight": 1002,
+        "scale": 1.5067686874632136,
+        "paddingX": 0,
+        "paddingY": 131.60682754561515
+      }
+    },
+    {
+      "item": "spike-native-635f1653b34e4192b088328ac15b073b",
+      "source": "http://127.0.0.1:43817/fixture.html",
+      "bytes": 1475807,
+      "decodes": true,
+      "durationSeconds": 4.837999999999999,
+      "durationBasis": "packet-timestamps",
+      "sourceActualRange": [
+        2,
+        6.75798
+      ],
+      "selectedRange": [
+        2,
+        12
+      ],
+      "sourceStartBasis": "requested-seek",
+      "stopReason": "manual-button",
+      "durationDifferenceSeconds": 0.08001999999999931,
+      "video": {
+        "codec": "vp9",
+        "width": 964,
+        "height": 542,
+        "frames": 144
+      },
+      "audio": {
+        "codec": "opus",
+        "meanVolumeDb": -21.2
+      },
+      "sampledUniqueFrames": 10,
+      "averageLuma": 138.09515972222223,
+      "sourceMuted": null,
+      "sourceVolume": null,
+      "captureFrame": {
+        "width": 2560,
+        "height": 1440
+      },
+      "cropGeometry": {
+        "x": 36.162448499117126,
+        "y": 309.75084148763983,
+        "width": 964.3319599764567,
+        "height": 542.4367274867569,
+        "outputWidth": 964,
+        "outputHeight": 542,
+        "scale": 1.5067686874632136,
+        "paddingX": 0,
+        "paddingY": 131.60682754561515
+      }
+    },
+    {
+      "item": "spike-native-8208b9defbe844dc8274e216fb0c82a6",
+      "source": "http://127.0.0.1:43817/fixture.html",
+      "bytes": 177496,
+      "decodes": true,
+      "durationSeconds": 1.949,
+      "durationBasis": "packet-timestamps",
+      "sourceActualRange": [
+        2,
+        3.918114
+      ],
+      "selectedRange": [
+        2,
+        12
+      ],
+      "sourceStartBasis": "requested-seek",
+      "stopReason": "manual-shortcut",
+      "durationDifferenceSeconds": 0.03088599999999997,
+      "video": {
+        "codec": "vp9",
+        "width": 964,
+        "height": 542,
+        "frames": 16
+      },
+      "audio": {
+        "codec": "opus",
+        "meanVolumeDb": -21.3
+      },
+      "sampledUniqueFrames": 1,
+      "averageLuma": 123.57475,
+      "sourceMuted": null,
+      "sourceVolume": null,
+      "captureFrame": {
+        "width": 2560,
+        "height": 1440
+      },
+      "cropGeometry": {
+        "x": 36.162448499117126,
+        "y": 309.75084148763983,
+        "width": 964.3319599764567,
+        "height": 542.4367274867569,
+        "outputWidth": 964,
+        "outputHeight": 542,
+        "scale": 1.5067686874632136,
+        "paddingX": 0,
+        "paddingY": 131.60682754561515
+      }
+    },
+    {
+      "item": "spike-native-824184348f9d4948926353254df98f02",
+      "source": "https://www.bilibili.com/video/BV1Sqpy6NEJC/",
+      "bytes": 1720086,
+      "decodes": true,
+      "durationSeconds": 4.111999999999999,
+      "durationBasis": "packet-timestamps",
+      "sourceActualRange": [
+        2,
+        6.02063
+      ],
+      "selectedRange": [
+        2,
+        6
+      ],
+      "sourceStartBasis": "requested-seek",
+      "stopReason": "selected-end",
+      "durationDifferenceSeconds": 0.09136999999999951,
+      "video": {
+        "codec": "vp9",
+        "width": 1450,
+        "height": 816,
+        "frames": 120
+      },
+      "audio": {
+        "codec": "opus",
+        "meanVolumeDb": -32.7
+      },
+      "sampledUniqueFrames": 8,
+      "averageLuma": 73.82120416666666,
+      "sourceMuted": null,
+      "sourceVolume": null,
+      "captureFrame": {
+        "width": 2560,
+        "height": 1440
+      },
+      "cropGeometry": {
+        "x": 244.16197695974574,
+        "y": 329.4789873543432,
+        "width": 1450.8318988347457,
+        "height": 816.2743313029661,
+        "outputWidth": 1450,
+        "outputHeight": 816,
+        "scale": 1.3559322033898304,
+        "paddingX": 0,
+        "paddingY": 96.27118644067798
+      }
+    },
+    {
+      "item": "spike-native-b34b1c1cfbd54788aa2dd334ca5afa78",
+      "source": "http://127.0.0.1:43817/fixture.html",
+      "bytes": 591519,
+      "decodes": true,
+      "durationSeconds": 2.078,
+      "durationBasis": "packet-timestamps",
+      "sourceActualRange": [
+        2,
+        4.016071
+      ],
+      "selectedRange": [
+        2,
+        4
+      ],
+      "sourceStartBasis": "requested-seek",
+      "stopReason": "selected-end",
+      "durationDifferenceSeconds": 0.06192899999999968,
+      "video": {
+        "codec": "vp9",
+        "width": 964,
+        "height": 542,
+        "frames": 59
+      },
+      "audio": {
+        "codec": "opus",
+        "meanVolumeDb": -21.3
+      },
+      "sampledUniqueFrames": 4,
+      "averageLuma": 133.91803389830508,
+      "sourceMuted": null,
+      "sourceVolume": null,
+      "captureFrame": {
+        "width": 2560,
+        "height": 1440
+      },
+      "cropGeometry": {
+        "x": 36.162448499117126,
+        "y": 309.75084148763983,
+        "width": 964.3319599764567,
+        "height": 542.4367274867569,
+        "outputWidth": 964,
+        "outputHeight": 542,
+        "scale": 1.5067686874632136,
+        "paddingX": 0,
+        "paddingY": 131.60682754561515
+      }
+    },
+    {
+      "item": "spike-native-f3a1d293804f4d7293b3fafc6e9a44ca",
+      "source": "http://127.0.0.1:43817/fixture.html",
+      "bytes": 1262697,
+      "decodes": true,
+      "durationSeconds": 4.119,
+      "durationBasis": "packet-timestamps",
+      "sourceActualRange": [
+        2,
+        6.008702
+      ],
+      "selectedRange": [
+        2,
+        6
+      ],
+      "sourceStartBasis": "requested-seek",
+      "stopReason": "selected-end",
+      "durationDifferenceSeconds": 0.11029799999999934,
+      "video": {
+        "codec": "vp9",
+        "width": 964,
+        "height": 542,
+        "frames": 120
+      },
+      "audio": {
+        "codec": "opus",
+        "meanVolumeDb": -21.2
+      },
+      "sampledUniqueFrames": 8,
+      "averageLuma": 137.43556666666666,
+      "sourceMuted": null,
+      "sourceVolume": null,
+      "captureFrame": {
+        "width": 2560,
+        "height": 1440
+      },
+      "cropGeometry": {
+        "x": 36.162448499117126,
+        "y": 309.75084148763983,
+        "width": 964.3319599764567,
+        "height": 542.4367274867569,
+        "outputWidth": 964,
+        "outputHeight": 542,
+        "scale": 1.5067686874632136,
+        "paddingX": 0,
+        "paddingY": 131.60682754561515
+      }
+    },
+    {
+      "item": "spike-native-2cb271f9ce9f493c8b5889c7128c2710",
+      "source": "https://x.com/SpaceX/status/2110886603371536546",
+      "bytes": 1135091,
+      "decodes": true,
+      "durationSeconds": 4.116,
+      "durationBasis": "packet-timestamps",
+      "sourceActualRange": [
+        12,
+        16.019064
+      ],
+      "selectedRange": [
+        12,
+        16
+      ],
+      "sourceStartBasis": "requested-seek",
+      "stopReason": "selected-end",
+      "durationDifferenceSeconds": 0.09693599999999947,
+      "video": {
+        "codec": "vp9",
+        "width": 942,
+        "height": 530,
+        "frames": 122
+      },
+      "audio": {
+        "codec": "opus",
+        "meanVolumeDb": -33.2
+      },
+      "sampledUniqueFrames": 8,
+      "averageLuma": 96.96288524590163,
+      "sourceMuted": null,
+      "sourceVolume": null,
+      "captureFrame": {
+        "width": 2560,
+        "height": 1440
+      },
+      "cropGeometry": {
+        "x": 702.130966828479,
+        "y": 454.5118325242719,
+        "width": 941.8397046925567,
+        "height": 529.1560983009709,
+        "outputWidth": 942,
+        "outputHeight": 530,
+        "scale": 1.656957928802589,
+        "paddingX": 0,
+        "paddingY": 131.7799352750809
+      }
+    }
+  ],
+  "openQualityIssues": [
+    {
+      "item": "spike-native-8208b9defbe844dc8274e216fb0c82a6",
+      "status": "unresolved",
+      "observation": "Shortcut start/stop worked. Only 16 video frames; final visible source clock about 2.400 seconds despite source stopping at 3.918114. Short capture quality is not accepted."
+    }
+  ],
+  "promotion": {
+    "sourceAbsent": true,
+    "destinationExists": true,
+    "filesMatch": true,
+    "files": {
+      "description.md": {
+        "bytes": 1422,
+        "sha256": "26b391d51866321d910738fbbf7f36a9634aa702ee26e3a25ce8438df1a40d20"
+      },
+      "material.webm": {
+        "bytes": 1135091,
+        "sha256": "b5bca608d058f395031ce5ba03f8838cc0ece4920793cd039d77060494c3b094"
+      }
+    }
+  },
+  "notCovered": [
+    "Extension-origin directory picker and permission persistence",
+    "Native Messaging installation and packaging",
+    "Browser restart and capture lifecycle under worker suspension",
+    "All platform page types, DRM, scrolling and resizing",
+    "WebM duration-header finalization and compatibility across local players"
+  ]
+}
