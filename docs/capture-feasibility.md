@@ -4,9 +4,11 @@
 
 需求更新：用户已明确视频需要起终点可拖动、键盘调整、动态预览和整段预览的预录制选段模式，见 [视频选段交互草案](video-range-selection.md)。本文的“点击后短录屏”是底层采集技术试验，不能替代最终选段交互；区间回放、动态定位和所得片段范围一致性需要另行验收。
 
+图片入口更新：正在讨论优先复用现有截图工具，以粘贴、拖入和选择文件收图，见 [图片导入草案](image-intake.md)。内置网页截图/裁剪在下表保留为可行能力参考，暂不作为当前首版建议的必做功能。
+
 ## 结论
 
-建议第一轮技术试验只闭环三种输入：当前可见网页截图、普通 HTML 视频的时间戳、用户点击后开始的短录屏。统一附带页面来源与个人注释，保存到本地草稿库，再由用户决定是否入库。先验证这条链路，再增加 AI 分类与回看缓冲。
+按当前建议，第一轮技术试验闭环三种输入：外部图片导入、普通 HTML 视频的时间戳、用户点击后开始的基础短录屏。统一保存到本地草稿库，并保留个人注释与可靠来源；外部图片来源可留空或由用户确认。先验证这条链路，再增加 AI 分类与回看缓冲。
 
 资产内容方向不限。未来 AI 只能给出可撤销的标签、摘要、分类或取舍建议；“进入正式资产库”必须由人工确认，不能由模型评分自动晋级。
 
@@ -16,8 +18,8 @@ Microsoft 的官方兼容表明确列出桌面 Edge 支持 `tabs`、`scripting`�
 
 | 能力 | 官方依据 | 对产品的含义 |
 | --- | --- | --- |
-| 可见区域截图 | `tabs.captureVisibleTab()` 返回当前活动标签页可见区域；要求 `activeTab` 或 `<all_urls>`。Chrome 文档限制每秒最多两次调用。[Tabs API](https://developer.chrome.com/docs/extensions/reference/api/tabs#method-captureVisibleTab) | 首版用用户主动触发的 `activeTab`。这是网页视口截图，不是整页长截图、桌面截图或视频录制。 |
-| 截图框选 | Canvas 的 `drawImage()` 支持从图像中取源矩形。[MDN drawImage](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage) | 建议先捕捉一张静态截图，再在预览中框选裁剪，避免框选遮罩进入截图。按实际位图尺寸映射预览坐标；缩放和高 DPI 需实测。 |
+| 可见区域截图（可选） | `tabs.captureVisibleTab()` 返回当前活动标签页可见区域；要求 `activeTab` 或 `<all_urls>`。Chrome 文档限制每秒最多两次调用。[Tabs API](https://developer.chrome.com/docs/extensions/reference/api/tabs#method-captureVisibleTab) | 如后续启用内置截图，优先用户主动触发的 `activeTab`。这是网页视口截图，不是整页长截图、桌面截图或视频录制。 |
+| 截图框选（可选） | Canvas 的 `drawImage()` 支持从图像中取源矩形。[MDN drawImage](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage) | 如后续启用，建议先捕捉一张静态截图，再在预览中框选裁剪，避免框选遮罩进入截图。按实际位图尺寸映射预览坐标；缩放和高 DPI 需实测。 |
 | 视频时间戳 | `HTMLMediaElement.currentTime` 是播放位置秒数；设置它会尝试跳转，但直播的过期片段可能无法回看，读数也不等于逐帧精确定位。[MDN currentTime](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/currentTime) | 时间戳是来源定位数据，不会自动生成片段文件；通用页面 URL 也未必支持打开即跳到该秒。 |
 | 读取页面播放器 | 内容脚本能访问页面 DOM；程序注入需 `scripting` 及对应主机权限，可用临时 `activeTab`。默认注入主框架。[Content scripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts)、[Scripting API](https://developer.chrome.com/docs/extensions/reference/api/scripting) | v0.1 限定可访问的普通 `<video>`；多个播放器让用户选择。跨源 iframe、封闭组件、自定义播放器分别列为未支持/待适配，失败时允许手填时间戳。 |
 | 标签页音视频流 | `tabCapture` 需要用户调用扩展；获取流后原标签页声音不再直接播放，可用 `AudioContext` 接回输出。stream ID 只能用一次且会很快过期。[Tab Capture API](https://developer.chrome.com/docs/extensions/reference/api/tabCapture) | 不应安装后自动录制。必须有开始、录制中、停止与失败状态；实测录到声音的同时用户仍听得到声音。 |
@@ -56,7 +58,7 @@ IndexedDB 支持结构化数据和文件/Blob，适合原图、短片及元数�
 
 | 门槛 | 最小可复现实验 | 通过条件 |
 | --- | --- | --- |
-| G1 截图 | 普通网页，浏览器缩放 100%/125%，Windows 不同显示缩放 | 图像可读，裁剪区域对应选区；重复点击不会超限失控；权限错误可见。 |
+| G1 图片导入 | 现有截图工具复制图片后粘贴；拖入与选择本地文件；无图片的剪贴板 | 原图可预览与保存，非图片输入不生成空草稿；来源不被错误绑定；保存失败可重试。内置截图和缩放裁剪测试暂作为可选专项。 |
 | G2 时间戳 | 自有普通 HTML 视频，暂停、播放、多播放器、无播放器 | 选中正确播放器，保存时间与画面相符；读取失败可手填；不伪造自动定位成功。 |
 | G3 10–30 秒录屏 | 自有非 DRM 视频，带可视计时器与音频；关 popup，切标签页，停止录制 | 文件画面/声音可回放；用户录制时仍能听到；状态与实际流一致；停止后释放捕捉。 |
 | G4 生命周期 | worker 休眠后再打开界面；关闭源标签页；重启浏览器 | 现有草稿完整；界面不残留假录制状态；中断被明确标记；不把残缺录制标成成功。 |
