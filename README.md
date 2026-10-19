@@ -19,7 +19,7 @@
 ## 设计与研究
 
 - [产品落地草案](docs/product-brief.md)：已确认需求、第一版范围、交互和验收目标。
-- [视频选段与预录制交互](docs/video-range-selection.md)：起终点、键盘步长、动态预览和区间采集草案。
+- [视频选段与预录制交互](docs/video-range-selection.md)：网页内可调整大小的悬浮窗、模式开关、观看恢复、起终点和预览规则。
 - [浏览器采集可行性](docs/capture-feasibility.md)：官方依据、录屏限制和待验证事项。
 - [Codex 接入方向](docs/codex-integration.md)：采集入口与 AI 整理入口的分工。
 
