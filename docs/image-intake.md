@@ -8,6 +8,8 @@
 
 已确认的方向：优先让已有图片方便地进入草稿资产库，复用用户的截图习惯。内置框选截图后续再评估，不视为永久取消截图能力。
 
+用户进一步明确：点击“接收截图”入口后，能直接 Ctrl + V 粘贴图片，也能拖入图片。两种输入方式作为接收入口的明确需求。
+
 ## 首版建议
 
 优先完成图片接收与保存，以粘贴为主入口，拖入文件和选择本地文件作为补充。内置框选截图后续再评估。
@@ -18,12 +20,14 @@
 
 ## 最小交互
 
-- 打开收集入口后，明确提示“粘贴、拖入或选择图片”，并让粘贴区域容易获得焦点。
+- 点击“接收截图”后，在当前网页展开小型接收区域，提示“Ctrl + V 粘贴图片，或将图片拖到这里”。接收区域自动获得输入焦点，不要求用户再点一次输入框才能粘贴。
+- Ctrl + V 接收剪贴板中的图片并显示预览；拖动图片进入接收区时高亮，放下后显示图片预览。本地图片文件拖放与网页图片元素拖放需分别验证。
 - 粘贴后显示真实图片预览，用户可以移除或重新选择。保存原始图片文件，预览缩略图不能替代原图。
 - 标题、来源链接和一句备注都可稍后补充；不在收图时强制分类、OCR 或 AI 分析。
 - 用户点击保存后，图片与草稿记录均落地成功才显示“已保存到草稿库”。该操作不进入正式资产库。
 - 保存后继续使用原网页，不接管网页输入框里的正常粘贴，也不在用户未操作时持续读取剪贴板。
 - 拖入图片文件与从网页拖动链接/图片元素分开处理；图片链接不等于已经拿到图片文件，失败时提供选择本地文件的入口。
+- 粘贴与拖放的接管限定在激活的接收区域；关闭后释放输入焦点和事件接管。图片拖入该区域时避免触发浏览器默认跳转打开图片，区域外的网页交互保持正常。
 
 默认是一图一条草稿还是一条草稿允许多图、收图面板采用何种布局，留待后续讨论，不在本轮擅自锁定。
 
@@ -57,7 +61,7 @@
 
 ## 技术依据与待验证事项
 
-浏览器的 `paste` 事件响应用户主动粘贴；`ClipboardEvent.clipboardData` 提供剪贴板数据，文件类型的 `DataTransferItem` 可通过 `getAsFile()` 取得文件对象。见 [MDN paste](https://developer.mozilla.org/en-US/docs/Web/API/Element/paste_event)、[clipboardData](https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent/clipboardData)、[getAsFile](https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/getAsFile)。
+浏览器的 `paste` 事件响应用户主动粘贴；`ClipboardEvent.clipboardData` 提供剪贴板数据，文件类型的 `DataTransferItem` 可通过 `getAsFile()` 取得文件对象。文件拖放使用 `dragover` 与 `drop` 等事件处理。见 [MDN paste](https://developer.mozilla.org/en-US/docs/Web/API/Element/paste_event)、[clipboardData](https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent/clipboardData)、[getAsFile](https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/getAsFile) 和 [文件拖放](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop)。
 
 建议先验证用户主动 Ctrl + V 的路径，再判断是否需要额外的“读取剪贴板”按钮。不能把浏览器文档能力当作 Edge 扩展页面或网页内面板已经实测成功。
 
@@ -65,12 +69,13 @@
 
 验收重点：
 
-1. 用现有截图工具复制图片，打开收集入口后能直接粘贴、预览并保存。
+1. 用现有截图工具复制图片，点击“接收截图”后无需再点输入框，Ctrl + V 就显示图片预览，并能完成草稿保存。
 2. 导入图片文件能通过拖入与文件选择完成；保存后重启仍可查看原图。
 3. 剪贴板没有可用图片时有明确反馈，不创建空白草稿；备注框中粘贴文字保持正常。
 4. 从其他页面或软件复制图片，不会错误绑定当前网页或当前视频时间。
 5. 保存失败时保留当前图片预览和用户备注，允许重试；不能显示成功。
 6. 导出和恢复包含实际原图、已确认来源、备注与草稿状态。
+7. 拖入接收区域时有高亮反馈，放下图片后出现预览；原网页不因这次拖放跳转到图片文件。
 
 ## 何时重新评估内置截图
 
