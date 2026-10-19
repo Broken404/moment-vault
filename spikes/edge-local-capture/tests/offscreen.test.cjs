@@ -21,7 +21,7 @@ function harness({saveFailure=false,empty=false}={}){
     stop(){this.state='inactive';queueMicrotask(()=>{this.ondataavailable?.({data:new Blob(empty?[]:['test-recorded-bytes'])});this.onstop?.();});}
   }
   class Reader{
-    readAsDataURL(blob){blob.arrayBuffer().then(data=>{this.result='data:video/webm;base64,'+Buffer.from(data).toString('base64');this.onload();});}
+    readAsDataURL(blob){blob.arrayBuffer().then(data=>{this.result='data:'+blob.type+';base64,'+Buffer.from(data).toString('base64');this.onload();});}
   }
   const context={Blob,console,queueMicrotask,setInterval,clearInterval,setTimeout,clearTimeout,
     MediaRecorder:Recorder,FileReader:Reader,
@@ -44,7 +44,7 @@ async function prepare(h,saveMode='native-scratch'){
   assert.equal((await h.call('start')).ok,true);
 }
 
-test('native save works when chrome exposes runtime only',async()=>{
+test('native save preserves bytes with runtime-only API and comma in MIME codecs',async()=>{
   const h=harness();await prepare(h);
   const result=await h.call('stop',{metadata:{source:'self-made',collectedAt:'2026-10-19'}});
   assert.equal(result.ok,true,result.error);

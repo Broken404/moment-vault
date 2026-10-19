@@ -45,7 +45,10 @@ async function stop(metadata) {
   let result;
   if(saveMode==='native-scratch'){
     const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});
-    const response=await fetch(SPIKE_CONFIG.base+'/api/save',{method:'POST',headers:{'Content-Type':'application/json','X-Spike-Token':SPIKE_CONFIG.token},body:JSON.stringify({base64:dataUrl.split(',')[1],extension:'webm',metadata:measured})});
+    // The MIME codecs parameter itself contains a comma (vp9,opus).
+    const marker=';base64,', offset=dataUrl.indexOf(marker);
+    if(offset<0)throw new Error('Recorded media could not be encoded for saving');
+    const response=await fetch(SPIKE_CONFIG.base+'/api/save',{method:'POST',headers:{'Content-Type':'application/json','X-Spike-Token':SPIKE_CONFIG.token},body:JSON.stringify({base64:dataUrl.slice(offset+marker.length),extension:'webm',metadata:measured})});
     result=await response.json();if(!response.ok)throw new Error(result.error);
   }else result=await saveItem(blob,'webm',measured);
   lastBlob=null;
