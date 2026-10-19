@@ -1,5 +1,6 @@
 import {saveItem} from './files.js';
-let stream, outputStream, video, canvas, context, audio, drawId, recording, chunks=[], selection, lastBlob, saveMode;
+import {captureGeometry} from './capture-geometry.js';
+let stream, outputStream, video, canvas, context, audio, drawId, recording, chunks=[], selection, lastBlob, saveMode, geometry, captureFrame;
 async function release() {
   clearInterval(drawId);
   if(recording?.state==='recording')recording.stop();
@@ -19,11 +20,11 @@ async function prepare(message) {
   const audioTracks=stream.getAudioTracks();
   if(audioTracks.length){audio=new AudioContext();audio.createMediaStreamSource(stream).connect(audio.destination);await audio.resume();}
   canvas=document.createElement('canvas');
-  const sx=video.videoWidth/selection.viewport.width, sy=video.videoHeight/selection.viewport.height;
-  const r=selection.rect;
-  canvas.width=Math.max(2,Math.round(r.width*sx/2)*2);canvas.height=Math.max(2,Math.round(r.height*sy/2)*2);
+  captureFrame={width:video.videoWidth,height:video.videoHeight};
+  geometry=captureGeometry(captureFrame,selection.viewport,selection.rect);
+  canvas.width=geometry.outputWidth;canvas.height=geometry.outputHeight;
   context=canvas.getContext('2d',{alpha:false});
-  const draw=()=>context.drawImage(video,r.x*sx,r.y*sy,r.width*sx,r.height*sy,0,0,canvas.width,canvas.height);
+  const draw=()=>context.drawImage(video,geometry.x,geometry.y,geometry.width,geometry.height,0,0,canvas.width,canvas.height);
   draw();drawId=setInterval(draw,1000/30);
   outputStream=canvas.captureStream(30);for(const track of audioTracks)outputStream.addTrack(track);
   const mimeType=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(type=>MediaRecorder.isTypeSupported(type));
@@ -41,7 +42,7 @@ async function stop(metadata) {
   if(!blob.size)throw new Error('No media data received');
   // Keep the in-memory blob on a failed write for inspection/retry; do not report success.
   lastBlob=blob;
-  const measured={...metadata,mimeType,capture:'tabCapture-to-canvas',width:canvas.width,height:canvas.height,audioTracks:stream.getAudioTracks().length};
+  const measured={...metadata,mimeType,capture:'tabCapture-to-canvas',width:canvas.width,height:canvas.height,captureFrame,geometry,audioTracks:stream.getAudioTracks().length};
   let result;
   if(saveMode==='native-scratch'){
     const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});

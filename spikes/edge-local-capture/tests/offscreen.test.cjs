@@ -33,8 +33,9 @@ function harness({saveFailure=false,empty=false}={}){
     fetch:async(url,options)=>{request={url,body:JSON.parse(options.body)};return {ok:!saveFailure,json:async()=>saveFailure?{error:'injected write failure'}:{item:'spike-unit',bytes:19}};},
     saveItem:async()=>{fsSaved=true;return {item:'spike-fsa-unit'};}
   };
-  const sourceCode=readFileSync(path.join(__dirname,'../extension/offscreen.js'),'utf8').replace(/^import \{saveItem\} from '\.\/files\.js';\r?\n/,'');
-  vm.runInNewContext(sourceCode,context,{filename:'offscreen.js'});
+  const geometryCode=readFileSync(path.join(__dirname,'../extension/capture-geometry.js'),'utf8').replace('export function','function');
+  const sourceCode=readFileSync(path.join(__dirname,'../extension/offscreen.js'),'utf8').replace(/^import .*;\r?\n/gm,'');
+  vm.runInNewContext(geometryCode+'\n'+sourceCode,context,{filename:'offscreen.js'});
   const call=(type,data={})=>new Promise(resolve=>listener({target:'offscreen',type,...data},{},resolve));
   return {call,sourceTracks,outputTrack,get request(){return request;},get fsSaved(){return fsSaved;},get audioClosed(){return audioClosed;}};
 }

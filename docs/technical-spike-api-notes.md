@@ -66,6 +66,8 @@ Chromium 当前 `tab_capture_api.cc` 对 `getMediaStreamId` 检查该标签的 `
 
 选区开始与录制器开始之间、源 B 与最终编码停止之间有消息和编码延迟。自有带画面计时器的视频应记录实际首尾画面、文件时长与音画同步；先量出误差，再决定是否需要后处理。录制器成功产出文件不等于 A/B 区间已准确兑现。
 
+补充：Chromium 捕捉接口说明固定比例帧可能围绕内容补边。由此推断，矩形映射需要先计算网页视口在捕捉帧中的等比缩放和居中偏移，不能无条件分别缩放 X/Y。该推断在本轮 Edge 自制样本中用于解释已观察到的标题混入，修复是否正确仍以输出画面验收。[Chromium 捕捉帧约束说明](https://chromium.googlesource.com/chromium/src/+/27157b43/services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom)
+
 ## 三个平台只能逐站确认
 
 此次官方资料只能确认浏览器 API 路径。B站、YouTube、X 的当前 DOM、广告切换、播放器替换、可回看区间和登录条件，都必须由真实页面测试来确认。推荐先以普通、可回看、非受保护内容，各完成一段自动 B 停止和一段快捷键提前停止；之后再加 Shorts、多 P、时间线多视频等覆盖。
