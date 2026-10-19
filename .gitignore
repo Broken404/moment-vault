@@ -20,6 +20,9 @@ asset-library/
 browser-profile/
 playwright-report/
 test-results/
+.spike-data/
+spikes/edge-local-capture/extension/runtime-config.js
+__pycache__/
 
 # Editor and operating-system files
 .vscode/

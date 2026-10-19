@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Moment Vault technical spike</title>
+<style>body{font:16px system-ui;max-width:1000px;margin:32px auto;background:#f4f4f1;color:#222}button{font:inherit;margin:5px;padding:10px}pre{white-space:pre-wrap;background:white;padding:18px;min-height:220px}video{max-width:640px}label{display:block;margin:12px}input{width:560px}</style>
+<h1>Moment Vault 技术验证</h1>
+<p>仅使用项目内的 scratch 目录。不会自动录制；此页面不代表正式产品界面。</p>
+<section><h2>1. 纯浏览器目录操作</h2>
+<button id="draft">选择测试草稿箱</button><button id="library">选择测试资产库</button>
+<button id="restore">检查持久化权限</button><button id="write">写入并读回测试素材</button>
+<button id="promote">将最后一条测试素材整夹入库</button></section>
+<section><h2>2. 本地辅助打开目录</h2><p>临时 loopback 辅助程序只绑定本次测试目录，不注册系统服务。</p>
+<button id="open-draft">辅助打开测试草稿箱</button><button id="open-library">辅助打开测试资产库</button></section>
+<section><h2>3. 视频录制</h2><p>打开测试视频或三站视频，页面出现选段面板后选 A/B。Alt+Shift+R 开始／提前停止；正常到 B 自动停止。未选目录时拒绝录制。</p>
+<button id="fixture">打开自制视频测试页</button><button id="refresh">刷新录制结果</button></section>
+<h2>实际结果</h2><pre id="output" role="status">尚未执行</pre>
+<script src="runtime-config.js"></script><script type="module" src="probe.js"></script>

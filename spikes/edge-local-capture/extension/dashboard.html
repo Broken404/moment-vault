@@ -1,0 +1,11 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>Moment Vault 本地技术验证</title>
+<style>body{font:16px system-ui;max-width:1000px;margin:28px auto;background:#f6f6f1;color:#182c23}button{font:inherit;margin:6px;padding:10px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:16px;min-height:180px}h2{margin-top:28px}</style>
+<h1>Moment Vault 本地技术验证</h1><p>只处理项目内的独立测试素材。页面不会自动开始录制。</p>
+<h2>浏览器 File System Access 路线</h2>
+<button id="draft">选择测试草稿箱</button><button id="library">选择测试资产库</button><button id="restore">检查句柄与权限</button><button id="write">浏览器写入并读回</button><button id="promote">浏览器整夹入库</button>
+<p>此组验证普通本地网页的浏览器目录接口，单独标记来源，不冒充扩展来源测试。</p>
+<h2>本地辅助路线与录制扩展</h2>
+<button id="status">检查扩展连接和快捷键</button><button id="native-mode">启用辅助保存到测试目录</button><button id="open-draft">打开测试草稿箱</button><button id="open-library">打开测试资产库</button><button id="native-write">辅助写入并读回</button><button id="native-promote">辅助整夹入库</button><button id="fixture">打开自制视频</button><button id="capture-result">读取录制结果</button>
+<p>录制快捷键：Alt+Shift+R 开始／提前结束，到选区终点自动结束。</p>
+<h2>实际结果</h2><pre id="output" role="status">尚未执行</pre>
+<script src="/session.js"></script><script type="module" src="/dashboard.js"></script></html>
