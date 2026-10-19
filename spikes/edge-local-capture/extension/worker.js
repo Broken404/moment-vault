@@ -26,7 +26,7 @@ async function start(tabId,trigger) {
     if(!selection?.ok)throw new Error(selection?.error || 'Video selection is not ready');
     await offscreen();
     const streamId=await chrome.tabCapture.getMediaStreamId({targetTabId:tabId});
-    const ready=await recorder('prepare',{streamId,selection});
+    const ready=await recorder('prepare',{streamId,selection,saveMode:saveMode || 'browser-fsa'});
     if(!ready?.ok)throw new Error(ready?.error || 'Capture stream failed');
     const begun=await recorder('start');
     if(!begun?.ok)throw new Error(begun?.error || 'Recorder did not start');
@@ -62,6 +62,9 @@ chrome.action.onClicked.addListener(async tab=>{
 });
 chrome.runtime.onMessage.addListener((message,sender,sendResponse)=>{
   if(message.target!=='worker')return;
+  if(message.type==='shortcut-status'){
+    chrome.commands.getAll().then(commands=>sendResponse({ok:true,shortcut:commands.find(command=>command.name==='record-selection')?.shortcut || ''}));return true;
+  }
   const task=message.type==='page-start' ? start(sender.tab.id,'page-button') : message.type==='stop' ? stop(message.reason) : null;
   if(task){task.then(()=>sendResponse({ok:true})).catch(error=>sendResponse({ok:false,error:error.message}));return true;}
 });
@@ -72,7 +75,7 @@ chrome.tabs.onRemoved.addListener(async tabId=>{
 chrome.runtime.onMessageExternal.addListener((message,sender,sendResponse)=>{
   if(sender.origin!=='http://127.0.0.1:43817' || !sender.url?.startsWith('http://127.0.0.1:43817/'))return;
   (async()=>{
-    if(message.action==='status')return {ok:true,...await chrome.storage.local.get(['session','lastResult','lastError','saveMode']),commands:await chrome.commands.getAll()};
+    if(message.action==='status')return {ok:true,build:chrome.runtime.getManifest().version,...await chrome.storage.local.get(['session','lastResult','lastError','saveMode']),commands:await chrome.commands.getAll()};
     if(message.action==='fixture'){const tab=await chrome.tabs.create({url:'http://127.0.0.1:43817/fixture.html'});return {ok:true,tabId:tab.id};}
     if(message.action==='native-scratch'){
       const response=await fetch(SPIKE_CONFIG.base+'/api/ready',{method:'POST',headers:{'Content-Type':'application/json','X-Spike-Token':SPIKE_CONFIG.token},body:'{}'});

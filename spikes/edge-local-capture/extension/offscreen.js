@@ -1,16 +1,17 @@
 import {saveItem} from './files.js';
-let stream, video, canvas, context, audio, drawId, recording, chunks=[], selection, lastBlob;
+let stream, outputStream, video, canvas, context, audio, drawId, recording, chunks=[], selection, lastBlob, saveMode;
 async function release() {
   clearInterval(drawId);
   if(recording?.state==='recording')recording.stop();
-  for(const track of stream?.getTracks() || [])track.stop();
+  for(const track of new Set([...(stream?.getTracks() || []),...(outputStream?.getTracks() || [])]))track.stop();
   video?.pause();if(video)video.srcObject=null;
   await audio?.close().catch(()=>{});
-  stream=null;audio=null;video=null;recording=null;
+  stream=null;outputStream=null;audio=null;video=null;recording=null;
 }
 async function prepare(message) {
   await release();
   selection=message.selection;
+  saveMode=message.saveMode || 'browser-fsa';
   stream=await navigator.mediaDevices.getUserMedia({audio:{mandatory:{chromeMediaSource:'tab',chromeMediaSourceId:message.streamId}},video:{mandatory:{chromeMediaSource:'tab',chromeMediaSourceId:message.streamId,maxWidth:2560,maxHeight:1440}}});
   video=document.createElement('video');video.muted=true;video.srcObject=stream;
   await video.play();
@@ -24,10 +25,10 @@ async function prepare(message) {
   context=canvas.getContext('2d',{alpha:false});
   const draw=()=>context.drawImage(video,r.x*sx,r.y*sy,r.width*sx,r.height*sy,0,0,canvas.width,canvas.height);
   draw();drawId=setInterval(draw,1000/30);
-  const cropped=canvas.captureStream(30);for(const track of audioTracks)cropped.addTrack(track);
+  outputStream=canvas.captureStream(30);for(const track of audioTracks)outputStream.addTrack(track);
   const mimeType=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(type=>MediaRecorder.isTypeSupported(type));
   if(!mimeType)throw new Error('No supported WebM recorder');
-  recording=new MediaRecorder(cropped,{mimeType,videoBitsPerSecond:4000000});
+  recording=new MediaRecorder(outputStream,{mimeType,videoBitsPerSecond:4000000});
   chunks=[];recording.ondataavailable=event=>{if(event.data.size)chunks.push(event.data);};
   recording.onerror=event=>chrome.runtime.sendMessage({target:'worker',type:'stop',reason:'recorder-error'});
   return {ok:true,width:canvas.width,height:canvas.height,mimeType,audioTracks:audioTracks.length};
@@ -41,7 +42,6 @@ async function stop(metadata) {
   // Keep the in-memory blob on a failed write for inspection/retry; do not report success.
   lastBlob=blob;
   const measured={...metadata,mimeType,capture:'tabCapture-to-canvas',width:canvas.width,height:canvas.height,audioTracks:stream.getAudioTracks().length};
-  const {saveMode}=await chrome.storage.local.get('saveMode');
   let result;
   if(saveMode==='native-scratch'){
     const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});

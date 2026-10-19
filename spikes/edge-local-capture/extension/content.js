@@ -4,6 +4,11 @@
   const root=host.attachShadow({mode:'open'});
   root.innerHTML='<style>:host{font:14px system-ui;color:#14251e}.box{background:#f5fff9;border:2px solid #286747;border-radius:12px;padding:12px;width:310px;box-shadow:0 3px 20px #0004}button,input,select{font:inherit;margin:4px;padding:5px}label{display:block}input[type=number]{width:84px}input[type=range]{width:275px}small{display:block}#state{white-space:pre-wrap;margin:8px 0}button{cursor:pointer}</style><div class="box"><strong>Moment Vault 技术验证</strong><div id="state" role="status">未录制</div><div id="editor"><button id="enter">进入选段／刷新播放器</button><select id="source" aria-label="目标视频"></select><label>起点 A（秒）<input id="a" type="number" step="0.1" min="0" value="0"></label><input id="ar" aria-label="拖动起点" type="range" step="0.1" min="0" max="15" value="0"><label>终点 B（秒）<input id="b" type="number" step="0.1" min="0" value="5"></label><input id="br" aria-label="拖动终点" type="range" step="0.1" min="0" max="15" value="5"><button id="preview">仅预览选区</button><button id="pageStart">页面按钮开始（授权实验）</button><small>Alt+Shift+R：开始／提前结束。到 B 自动结束。先在扩展测试页配置两个目录。</small></div><button id="stop">提前结束录制</button><button id="close">退出选段并恢复观看</button></div>';
   document.documentElement.append(host);
+  const keyHelp=root.querySelector('#editor small');
+  keyHelp.textContent='正在检查录制快捷键…';
+  chrome.runtime.sendMessage({target:'worker',type:'shortcut-status'}).then(result=>{
+    keyHelp.textContent=result?.shortcut ? result.shortcut+'：开始／提前结束。到 B 自动结束。先配置测试保存目录。' : '录制快捷键未绑定，请先在 Edge 的扩展快捷键设置中配置。';
+  }).catch(()=>{keyHelp.textContent='无法读取录制快捷键，请检查扩展连接。';});
   const $=selector=>root.querySelector(selector);
   let videos=[],video,original,mode='idle',timer,preview=false,raf;
   const state=text=>{$('#state').textContent=text;};

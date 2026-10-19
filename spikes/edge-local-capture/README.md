@@ -39,9 +39,20 @@ http://127.0.0.1:43817/dashboard.html
 
 ```powershell
 py -3.13 spikes/edge-local-capture/tests/test_scratch.py
+node --test spikes/edge-local-capture/tests/offscreen.test.cjs
 ```
 
 覆盖真实文件读回与校验、媒体和描述完整移动、跨磁盘复制、重名保护、复制损坏、源清理失败和无效路径。测试仅清理其自行创建且已检查位置的临时目录。
+
+录制器回归检查使用仅含 `chrome.runtime` 的模拟 offscreen 环境，重放实际消息处理、停止、保存和资源释放流程。它能捕获错误调用 `chrome.storage` 及漏停 Canvas 视频轨的问题；不能代替真实浏览器音视频验收。
+
+实际生成文件后再执行媒体验收：
+
+```powershell
+py -3.13 spikes/edge-local-capture/inspect_recordings.py
+```
+
+输出包含解码结果、视频与音轨、时长、实际与选定范围、采样画面变化和声音能量。没有实际录像时会失败退出，不把空集合判为通过。
 
 ## 输出与约束
 

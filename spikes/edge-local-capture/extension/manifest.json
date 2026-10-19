@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Moment Vault — technical spike",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyTwXnNoFwX9C2MIqxuMRwkNHY4WeJLApmAcYOcVeSMT7Gjvs7NgUsnpezUw0+8l4I9rV1PQw9p/8MfsVtAXV6TzIyHiHPsqjdMBlFE2oF58e9MkNg1CcehoLMk43NNwf7jAJmP1CG8fruEJZSCNJEUwcfY8h4zdxMdrSy8xOVt5ogcWWTEX0eOorw6xLUV95QqBTjQ8VPnph28nrR5pnM3FVaxD5lmetNafGIM8DkI6ZxKL6gxKeZ93dCibEdRwKr/F7hZG82G9DcR/pbU2FODwpsBS3QXbPSJt207gabFaGpcKA2yd0qjNGBnBUgY1CKf39nhaVRoGibDP9yRpctQIDAQAB",
   "description": "Disposable local-file and selected-video capture experiment. Not a released product.",
   "permissions": ["activeTab", "scripting", "tabCapture", "offscreen", "storage"],

@@ -49,6 +49,23 @@ Windows 窗口控制器先后在扩展地址和普通本地测试页上返回无
 
 正式判定前仍须检查：实际生成的 WebM 可解码、视频与音轨存在且内容有效、时长与实际范围相符、到 B 自动结束、快捷键提前结束、退出后恢复观看位置、捕捉停止并释放资源。只出现“录制中”或只产出文件名都不算通过。
 
+## 首轮真实试录：保存失败与修复
+
+用户已依次在四个测试页面使用真实录制快捷键。自制视频页面及 B站、YouTube、X 三个页面的反馈均已直接读取，错误一致：`Cannot read properties of undefined (reading 'local')`。测试草稿箱尚无 WebM 文件；本轮不能标记为录制通过。
+
+定位到 0.0.1 的 offscreen 录制器在停止、收集媒体 Blob 后调用了 `chrome.storage.local`。offscreen 只支持 `chrome.runtime` 扩展接口，设置应由 worker 查询并通过消息传入。该接口边界的官方依据见 [API 补充笔记](technical-spike-api-notes.md)。
+
+已新增实际消息处理流程的回归检查。在只提供 `chrome.runtime` 的模拟 offscreen 环境中，旧代码稳定复现同一错误；移除不支持的存储调用、由 worker 传入保存模式后，该检查通过。另一个检查发现生成的 Canvas 视频轨未停止，已一并修复为清理源轨、输出轨和音频上下文。
+
+修复版为 0.0.2。五项录制器回归检查通过，覆盖原错误、轨道释放、两种保存路线区分、保存失败反馈及空媒体拒绝保存。它们使用模拟媒体事件，**不代表浏览器媒体编码、三站录像或实际音画通过**；修复版仍等待重载后的真实文件验收。
+
+```powershell
+node --test spikes/edge-local-capture/tests/offscreen.test.cjs
+py -3.13 spikes/edge-local-capture/inspect_recordings.py
+```
+
+后一命令只检查实际本地媒体，不下载站点视频。初次运行报告 `recordingCount: 0` 并以失败状态退出，避免空目录被当作验收成功。
+
 ## 尚未验证
 
 - 浏览器 FSA 两个目录的实际选择、读写、重启后权限；普通本地网页来源与扩展来源分别验收。
