@@ -1,0 +1,29 @@
+# Local dependencies and build output
+node_modules/
+dist/
+build/
+coverage/
+*.log
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.codex/
+
+# Personal captures, exports, and browser profiles
+captures/
+exports/
+asset-library/
+browser-profile/
+playwright-report/
+test-results/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
