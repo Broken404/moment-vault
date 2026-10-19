@@ -9,7 +9,7 @@ import math
 from pathlib import Path
 import re
 import subprocess
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 DATA = Path(__file__).resolve().parents[2] / '.spike-data'
 
@@ -50,17 +50,22 @@ def inspect(media):
     actual_start = metadata.get('actualStart')
     source_duration = actual_end - actual_start if actual_end is not None and actual_start is not None else None
     parsed = urlsplit(metadata.get('source', ''))
-    source = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, '', ''))
+    query = parse_qs(parsed.query)
+    # Keep the YouTube video identity while excluding tracking/query metadata.
+    identity = urlencode({'v': query['v'][0]}) if parsed.hostname in ('youtube.com', 'www.youtube.com', 'm.youtube.com') and query.get('v') else ''
+    source = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, identity, ''))
     return {
         'item': media.parent.name, 'source': source, 'bytes': media.stat().st_size,
         'decodes': True, 'durationSeconds': duration if math.isfinite(duration) else None, 'durationBasis': duration_basis,
         'sourceActualRange': [actual_start, actual_end], 'selectedRange': [metadata.get('a'), metadata.get('b')],
+        'sourceStartBasis': 'requested-seek',
         'stopReason': metadata.get('stopReason'),
         'durationDifferenceSeconds': duration-source_duration if math.isfinite(duration) and source_duration is not None else None,
         'video': {'codec': video['codec_name'], 'width': video['width'], 'height': video['height'], 'frames': int(video.get('nb_read_frames', 0))} if video else None,
         'audio': {'codec': audio['codec_name'], 'meanVolumeDb': audio_mean} if audio else None,
         'sampledUniqueFrames': unique_frames, 'averageLuma': sum(luma)/len(luma) if luma else None,
         'sourceMuted': metadata.get('sourceMuted'), 'sourceVolume': metadata.get('sourceVolume'),
+        'captureFrame': metadata.get('captureFrame'), 'cropGeometry': metadata.get('geometry'),
     }
 
 

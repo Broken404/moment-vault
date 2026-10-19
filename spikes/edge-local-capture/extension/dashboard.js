@@ -24,6 +24,12 @@ button('native-write',async()=>{const result=await api('save',{extension:'svg',b
 button('native-promote',async()=>api('promote',{item:await config('nativeItem')}));
 button('fixture',()=>extension('fixture'));
 button('capture-result',()=>extension('status'));
+button('native-promote-recording',async()=>{
+  const {session,lastResult}=await extension('status');
+  if(session?.phase!=='idle')throw new Error('请等待录制和保存完成');
+  if(lastResult?.saveMode!=='native-scratch'||!lastResult.item)throw new Error('没有可入库的辅助录制素材');
+  return api('promote',{item:lastResult.item});
+});
 // Local test telemetry only; this observes state and never starts a capture.
 let lastCaptureState;
 setInterval(async()=>{

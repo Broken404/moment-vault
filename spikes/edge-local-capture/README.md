@@ -39,12 +39,12 @@ http://127.0.0.1:43817/dashboard.html
 
 ```powershell
 py -3.13 spikes/edge-local-capture/tests/test_scratch.py
-node --test spikes/edge-local-capture/tests/offscreen.test.cjs
+node --test spikes/edge-local-capture/tests/offscreen.test.cjs spikes/edge-local-capture/tests/capture-geometry.test.cjs
 ```
 
 覆盖真实文件读回与校验、媒体和描述完整移动、跨磁盘复制、重名保护、复制损坏、源清理失败和无效路径。测试仅清理其自行创建且已检查位置的临时目录。
 
-录制器回归检查使用仅含 `chrome.runtime` 的模拟 offscreen 环境，重放实际消息处理、停止、保存和资源释放流程。它能捕获错误调用 `chrome.storage` 及漏停 Canvas 视频轨的问题；不能代替真实浏览器音视频验收。
+录制器回归检查使用仅含 `chrome.runtime` 的模拟 offscreen 环境，重放实际消息处理、停止、保存和资源释放流程；另检查捕捉帧补边与矩形映射。它们能捕获错误调用 `chrome.storage`、媒体类型带逗号时的数据截断及漏停 Canvas 视频轨的问题；不能代替真实浏览器音视频验收。
 
 实际生成文件后再执行媒体验收：
 
