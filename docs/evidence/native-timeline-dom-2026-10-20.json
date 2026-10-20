@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-20",
+  "project": "Moment Vault",
+  "method": "通过 Codex in-app browser 的 CUA 检查公开页面的可见控件、DOM 属性与矩形；点击 X 主视频使播放控件出现。",
+  "environment": {
+    "browser": "Codex in-app browser",
+    "edge_extension_installed_for_this_check": false,
+    "login_actions_performed": false
+  },
+  "scope": {
+    "observed": ["样本页面存在原播放器时间轨道", "候选节点的所属结构、语义与几何差异", "X 控件在交互前后出现与消失"],
+    "not_tested": ["正式 Edge 扩展注入与覆盖层", "A/B 实际拖动和键盘调整", "控制栏保持可见的适配", "滚动、影院模式、缩放与播放器重建后的重连", "独立预览缓存", "选段与真实录制联动"],
+    "conclusion_limit": "三个样本均有可利用的原进度条结构；不代表三个平台所有页面已兼容，也不代表正式选段能力已实现。几何只记录当前样本，不可作为代码常量。"
+  },
+  "samples": [
+    {
+      "platform": "Bilibili",
+      "url": "https://www.bilibili.com/video/BV1Sqpy6NEJC/",
+      "title": "AI · 高质量 Blender 场景创建_哔哩哔哩_bilibili",
+      "player_candidate": "#playerWrap",
+      "videos_in_player": 1,
+      "full_rail_candidate": ".bpx-player-progress",
+      "full_rail_rect_css_px": {"x": 88.3333, "y": 526, "width": 708, "height": 4},
+      "rail_role": null,
+      "other_candidates": [
+        {"selector": ".bpx-player-progress-area", "width_css_px": 708, "height_css_px": 10, "meaning": "完整轨道外围"},
+        {"selector": ".bpx-player-progress-schedule-buffer", "width_css_px": 253.7437, "meaning": "缓冲长度，不能作完整轨道"},
+        {"selector": ".bpx-player-progress-schedule-current", "width_css_px": 90.1075, "meaning": "已播放长度，不能作完整轨道"},
+        {"selector": ".bpx-player-progress-thumb", "width_css_px": 20, "meaning": "播放头，不能作完整轨道"}
+      ],
+      "implication": "不能只查 role=slider，也不能随便取名字带 progress 的第一个节点；需在目标播放器内验证完整轨道。"
+    },
+    {
+      "platform": "YouTube",
+      "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+      "title": "Me at the zoo - YouTube",
+      "player_candidate": "#movie_player",
+      "videos_in_player": 1,
+      "full_rail_candidate": ".ytp-progress-bar-container .ytp-progress-bar",
+      "full_rail_rect_css_px": {"x": 35.3333, "y": 610, "width": 781, "height": 6},
+      "rail_role": "slider",
+      "aria": {"label": "播放滑块", "min": "0", "max": "18", "now": "0"},
+      "visible_duration": "0:19",
+      "other_candidates": [
+        {"selector": ".ytp-fine-scrubbing-thumbnails", "role": "slider", "width_css_px": 160, "height_css_px": 0, "meaning": "精确跳转控件，当前几何不能作原轨道"},
+        {"selector": ".ytp-volume-panel", "role": "slider", "aria_max": "100", "meaning": "音量，不能作时间轨道"},
+        {"selector": ".ytp-progress-bar-padding", "width_css_px": 204, "meaning": "局部嵌套节点，不能代表全长 781 px 的轨道"}
+      ],
+      "implication": "语义有帮助，但需排除音量、精确跳转和局部进度节点；ARIA 整数上限与可见时长不同，不能代替精确媒体时间域校验。"
+    },
+    {
+      "platform": "X",
+      "url": "https://x.com/SpaceX/status/2110886603371536546",
+      "title": "X 上的 SpaceX：Falcon 9’s first stage lands on the Of Course I Still Love You droneship",
+      "view": "未登录公开帖子",
+      "videos_in_page": 2,
+      "lifecycle_observation": [
+        "初始主媒体显示无法播放媒体，页面未发现 slider；主视频和回复视频同时存在。",
+        "点击主视频播放按钮后，出现进度拖动条和 00:09 / 00:20 时间。",
+        "后续读取又未发现 slider；再次点击主视频后重新出现。不能仅据此区分自动隐藏与节点重建的全部机制。"
+      ],
+      "thumb_candidate": "[role=slider][aria-label=进度拖动条]",
+      "thumb_rect_css_px": {"width": 16, "height": 16},
+      "thumb_aria": {"orientation": "horizontal", "min": null, "max": null, "now_sample": "9.431859"},
+      "full_rail_container_candidate": "主视频对应的 [role=group][aria-label=进度拖动条] 内部轨道容器",
+      "full_rail_container_rect_css_px": {"x": 302, "y": 432.5, "width": 552, "height": 24},
+      "visible_rail_rect_css_px": {"x": 302, "y": 443.5, "width": 552, "height": 2},
+      "implication": "首次无 slider 不等于不可适配；控件需先挂载。slider 本身只是 16 px 播放头，完整轨道为 552 px；必须匹配目标视频及外层轨道，不可取全页第一个 slider 或动态生成 ID。"
+    }
+  ],
+  "next_gate": "在正式 Edge 扩展中实现并逐站验证原轨道 A/B 拖动、几何恢复、键盘、独立预览与真实录制；临时精调成功不算原轨道验收通过。"
+}
