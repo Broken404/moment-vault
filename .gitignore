@@ -3,6 +3,12 @@ node_modules/
 dist/
 build/
 coverage/
+.tools/
+.local-data/
+**/bin/
+**/obj/
+*.user
+*.suo
 *.log
 
 # Secrets and local configuration
