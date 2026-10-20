@@ -20,6 +20,14 @@ npm run build:host
 
 原生检查使用自行创建的临时目录和 PNG，覆盖真实分块、哈希、说明外部修改、完整转移、清理失败、重启重试、删除确认及长度前缀通信。此检查不是 Edge Native Messaging 的浏览器集成验收。
 
+`npm run build` 还会执行生成脚本检查：在无 Node 全局变量的 DOM 环境运行实际 content.js，检查身份、启动、四宫格与接收入口。该检查不代替真实浏览器视觉、拖放或 Native Messaging。
+
+```powershell
+node tools/check-native.mjs --require-cross-volume
+```
+
+该命令启动真实助手进程，使用临时目录和仓库的 .local-data 检查协议、分块重试、实际文件读回及跨卷入库；只有两处确实位于不同卷时才通过上述参数要求。自包含助手存在时优先检查它，未发布助手时使用本地 SDK 运行已编译 DLL。
+
 ## 自用开发安装
 
 构建完成后，执行注册脚本，只写当前用户的 Edge Native Messaging 项：

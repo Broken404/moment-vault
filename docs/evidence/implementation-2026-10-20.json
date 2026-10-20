@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-20",
+  "project": "Moment Vault",
+  "softwareVersion": "0.1.0 development",
+  "approvedPlanVersion": "1.0",
+  "branch": "codex/v1-implementation",
+  "designBaselineCommit": "cc3e8f5",
+  "toolchain": {"node": "22.23.2", "dotnetSdk": "10.0.402", "bundledDotnetRuntime": "10.0.13"},
+  "checks": {
+    "typescript": "passed",
+    "frontendLogic": {"passed": 9, "failed": 0, "scope": "range boundaries, preferences and acknowledged upload/retry; browser APIs mocked"},
+    "nativeFileAndProtocol": {"passed": 10, "failed": 0, "scope": "generated PNG and owned temporary directories; real filesystem and framed protocol"},
+    "nativeProcess": {"passed": true, "selfContainedExe": true, "crossVolume": true, "sourceVolume": "C:", "targetVolume": "D:", "scope": "real process stdin/stdout, idempotent begin, actual media byte readback and library transfer"},
+    "extensionBuild": {"passed": true, "path": "dist/extension", "identity": "hpchplafhkkndbocdiopnbmkkhbjokii"},
+    "contentBundleDomSmoke": {"passed": true, "scope": "actual generated bundle in jsdom without Node process; four entries, intake, hiding and theme; not real browser visual acceptance"},
+    "hostPublish": {"passed": true, "path": "dist/host", "selfContained": true, "platform": "win-x64"},
+    "developmentRegistration": {"completed": true, "scope": "current user Edge Native Messaging registration; not browser invocation proof"}
+  },
+  "retainedVideoFailure": {"resolved": false, "videoFrames": 16, "lastVideoTimestampSeconds": 0.528, "lastAudioTimestampSeconds": 1.889, "audioOnlyTailSeconds": 1.361, "guardExitCode": 1, "validMovingFixtureControl": "passed"},
+  "pending": ["manual Edge loading and native connection", "actual Windows folder picker and first configuration", "real paste, drag/drop and management flow", "material merging", "full language support and list thumbnails", "interrupted upload recovery UI", "native timeline A/B and preview cache", "recording and short-capture freeze diagnosis", "formal installer and restart acceptance"],
+  "browserLoadingGate": "The browser control URL policy rejected edge://extensions/ because only HTTP/HTTPS is allowed. User must load the unpacked development extension manually.",
+  "videoEnabled": false,
+  "releaseReady": false,
+  "personalMediaOrProfilesIncluded": false
+}

@@ -43,7 +43,7 @@
 | 数据保存 | 普通文件夹、媒体与 Markdown | 直接打开、复制、备份，首版不增加数据库或云端服务 |
 | 自用安装 | Inno Setup、自包含助手、扩展构建目录 | 助手携带运行环境，扩展手动加载一次，日常无需终端或 Python |
 
-.NET 10 当前属于长期支持版本，依据 [微软支持政策](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core)。原创代码的 MIT 许可建议纳入最终总审，允许使用、修改与分发并要求保留许可和版权声明，依据 [MIT 许可原文](https://opensource.org/license/mit)；FFmpeg 等组件按各自构建与许可证处理，依据 [FFmpeg 许可说明](https://ffmpeg.org/legal.html)。当前未新增 LICENSE 或进行软件公开分发。
+.NET 10 当前属于长期支持版本，依据 [微软支持政策](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core)。原创代码的 MIT 许可随整体总审确认，仓库已添加 LICENSE，允许使用、修改与分发并要求保留许可和版权声明，依据 [MIT 许可原文](https://opensource.org/license/mit)；FFmpeg 等组件按各自构建与许可证处理，依据 [FFmpeg 许可说明](https://ffmpeg.org/legal.html)。当前没有进行软件公开分发。
 
 ## 4 实施时必须拿到的真实结果
 
