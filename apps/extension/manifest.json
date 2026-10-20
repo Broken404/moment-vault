@@ -9,10 +9,15 @@
   "background": { "service_worker": "worker.js", "type": "module" },
   "action": { "default_title": "Moment Vault · 显示桌宠" },
   "options_page": "manage.html#settings",
-  "content_scripts": [{ "matches": ["http://*/*", "https://*/*"], "js": ["content.js"], "run_at": "document_idle" }],
+  "content_scripts": [
+    { "matches": ["http://*/*", "https://*/*"], "js": ["content.js"], "run_at": "document_idle" }
+  ],
   "commands": {
     "toggle-mode": { "description": "打开／关闭视频选段模式" },
-    "record-selection": { "suggested_key": { "default": "Ctrl+Shift+9" }, "description": "开始录制／提前结束" },
+    "record-selection": {
+      "suggested_key": { "default": "Ctrl+Shift+9" },
+      "description": "开始录制／提前结束"
+    },
     "toggle-menu": { "description": "打开／关闭桌宠菜单" },
     "receive-images": { "description": "打开图片接收面板" }
   }

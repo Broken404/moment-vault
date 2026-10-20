@@ -8,13 +8,20 @@ await build({
   configFile: false,
   plugins: [react()],
   define: { 'process.env.NODE_ENV': JSON.stringify('production') },
-  resolve: { alias: { '@shared': fileURLToPath(new URL('../packages/shared/src', import.meta.url)) } },
+  resolve: {
+    alias: { '@shared': fileURLToPath(new URL('../packages/shared/src', import.meta.url)) },
+  },
   build: {
     target: 'chrome120',
     minify: true,
     outDir: 'dist/extension',
     emptyOutDir: false,
-    lib: { entry: 'apps/extension/src/content.tsx', name: 'MomentVault', formats: ['iife'], fileName: () => 'content.js' },
+    lib: {
+      entry: 'apps/extension/src/content.tsx',
+      name: 'MomentVault',
+      formats: ['iife'],
+      fileName: () => 'content.js',
+    },
   },
 });
 await mkdir('dist/extension', { recursive: true });
@@ -27,7 +34,9 @@ await cp('LICENSE', 'dist/extension/LICENSE');
 const licenses = [];
 for (const name of ['react', 'react-dom', 'scheduler', 'lucide-react']) {
   const metadata = JSON.parse(await readFile(`node_modules/${name}/package.json`, 'utf8'));
-  licenses.push(`${name} ${metadata.version}\n${await readFile(`node_modules/${name}/LICENSE`, 'utf8')}`);
+  licenses.push(
+    `${name} ${metadata.version}\n${await readFile(`node_modules/${name}/LICENSE`, 'utf8')}`,
+  );
 }
 await writeFile('dist/extension/THIRD-PARTY-NOTICES.txt', licenses.join('\n\n---\n\n'));
 console.log(`Unpacked extension: dist/extension (${identity.id})`);

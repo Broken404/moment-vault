@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { formatTime, initialSelection, moveEndpoint, parseTime, timeAtPointer } from '../packages/shared/src/range';
+import {
+  formatTime,
+  initialSelection,
+  moveEndpoint,
+  parseTime,
+  timeAtPointer,
+} from '../packages/shared/src/range';
 import { validatePreferences } from '../packages/shared/src/model';
 
 describe('one shared A/B range', () => {
@@ -27,6 +33,7 @@ describe('one shared A/B range', () => {
 });
 
 it('repairs corrupted persisted preferences while keeping valid values', () => {
-  expect(validatePreferences({ petOpacity: 0, step: NaN, petPosition: { x: 2, y: -1 } }))
-    .toMatchObject({ petOpacity: 0.3, step: 5, petPosition: { x: 1, y: 0 } });
+  expect(
+    validatePreferences({ petOpacity: 0, step: NaN, petPosition: { x: 2, y: -1 } }),
+  ).toMatchObject({ petOpacity: 0.3, step: 5, petPosition: { x: 1, y: 0 } });
 });

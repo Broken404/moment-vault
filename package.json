@@ -4,13 +4,17 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "engines": { "node": ">=22.22.2" },
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
   "scripts": {
     "build": "tsc --noEmit && node tools/build.mjs && node tools/check-extension.mjs",
     "typecheck": "tsc --noEmit",
+    "format": "prettier --write apps packages tests tools/*.mjs *.json *.ts .github/workflows/*.yml",
+    "format:check": "prettier --check apps packages tests tools/*.mjs *.json *.ts .github/workflows/*.yml",
     "test": "vitest run",
     "dev": "vite --host 127.0.0.1",
-    "check": "npm run typecheck && npm test && npm run build",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run build",
     "build:host": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/build-host.ps1"
   },
   "dependencies": {
@@ -25,6 +29,7 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "jsdom": "30.1.3",
+    "prettier": "3.9.10",
     "typescript": "5.9.3",
     "vite": "8.3.4",
     "vitest": "5.0.5"
