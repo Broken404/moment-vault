@@ -2,12 +2,13 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, rm, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import os from 'node:os';
 import { randomUUID } from 'node:crypto';
 import assert from 'node:assert/strict';
 
 const root = path.resolve('.local-data', `native-smoke-${randomUUID()}`);
 const dataHome = path.join(root, 'state');
-const draftRoot = path.join(root, 'draft');
+const draftRoot = path.join(os.tmpdir(), `moment-vault-smoke-${randomUUID()}`);
 const libraryRoot = path.join(root, 'library');
 await mkdir(draftRoot, { recursive: true }); await mkdir(libraryRoot, { recursive: true });
 const selfContained = path.resolve('dist/host/MomentVault.Host.exe');
@@ -59,7 +60,9 @@ try {
   await call('items.promote', { ids: [item.id] });
   assert.equal((await call('items.list', { bucket: 'library' })).items.length, 1);
   assert.equal((await call('items.list', { bucket: 'draft' })).items.length, 0);
-  console.log('PASS actual native process: framed ping/config, idempotent begin, media write/readback and promotion');
+  const crossVolume = path.parse(draftRoot).root.toLowerCase() !== path.parse(libraryRoot).root.toLowerCase();
+  if (process.argv.includes('--require-cross-volume')) assert.equal(crossVolume, true, 'This check needs two actual volumes');
+  console.log(`PASS actual native process: framed ping/config, idempotent begin, media write/readback and promotion; crossVolume=${crossVolume}`);
 } finally {
   child.stdin.end();
   await new Promise(resolve => {
@@ -70,4 +73,7 @@ try {
   const allowed = path.resolve('.local-data');
   if (!root.startsWith(allowed + path.sep) || !path.basename(root).startsWith('native-smoke-')) throw new Error('Unsafe smoke-test cleanup path');
   await rm(root, { recursive: true, force: true });
+  const temporaryRoot = path.resolve(os.tmpdir());
+  if (!draftRoot.startsWith(temporaryRoot + path.sep) || !path.basename(draftRoot).startsWith('moment-vault-smoke-')) throw new Error('Unsafe temporary cleanup path');
+  await rm(draftRoot, { recursive: true, force: true });
 }

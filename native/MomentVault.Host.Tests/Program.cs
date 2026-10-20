@@ -31,6 +31,17 @@ var tests = new List<(string Name, Action Action)>
         Equal(store.Commit(upload.Material.Id).Id, item.Id);
         Equal(store.List("draft").Items.Count, 1);
     }),
+    ("missing storage does not disconnect the helper or prevent directory repair", () =>
+    {
+        var store = Store("repair");
+        Directory.Move(store.Config.DraftRoot, store.Config.DraftRoot + "-moved");
+        using var status = JsonDocument.Parse(MomentVault.Host.Json.Write(store.Status()));
+        True(!status.RootElement.GetProperty("configured").GetBoolean());
+        True(status.RootElement.GetProperty("storageError").GetString()!.Length > 0);
+        var repaired = store.Config.DraftRoot + "-new"; Directory.CreateDirectory(repaired);
+        store.Configure(new(repaired, store.Config.LibraryRoot));
+        Equal(store.Config.DraftRoot, repaired);
+    }),
     ("incomplete or out-of-order uploads never become visible materials", () =>
     {
         var store = Store("incomplete"); var file = FileDescriptor();

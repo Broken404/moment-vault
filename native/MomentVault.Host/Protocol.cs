@@ -56,7 +56,7 @@ public static class Protocol
 
     public static object Dispatch(VaultStore store, string op, JsonElement p) => op switch
     {
-        "ping" => new { protocol = Version, version = "0.1.0", configured = store.Configured, config = store.Config, pendingUploads = store.PendingCount },
+        "ping" => store.Status(),
         "config.get" => store.Config,
         "config.set" => Configure(store, p),
         "folder.pick" => PickFolder(p),

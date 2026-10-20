@@ -21,6 +21,19 @@ public sealed class VaultStore
     public void ReleaseUpload(string id) => activeUploads.Remove(id);
     public bool Configured => !string.IsNullOrEmpty(config.DraftRoot) && !string.IsNullOrEmpty(config.LibraryRoot);
 
+    public object Status()
+    {
+        var ready = false;
+        var pending = 0;
+        string? storageError = null;
+        if (Configured)
+        {
+            try { _ = Root("draft"); _ = Root("library"); pending = PendingCount; ready = true; }
+            catch (Exception ex) when (ex is VaultException or IOException or UnauthorizedAccessException) { storageError = ex.Message; }
+        }
+        return new { protocol = Protocol.Version, version = "0.1.0", configured = ready, config, pendingUploads = pending, storageError };
+    }
+
     public void Configure(HostConfig next)
     {
         if (activeUploads.Count > 0)
