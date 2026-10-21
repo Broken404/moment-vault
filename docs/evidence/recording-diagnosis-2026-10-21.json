@@ -1,6 +1,6 @@
 {
   "date": "2026-10-21",
-  "status": "unresolved-real-command-auto-stop-passed-early-stop-pending",
+  "status": "unresolved-auto-and-short-early-command-stops-passed-original-failure-not-reproduced",
   "spikeBuild": "0.0.5",
   "formalVideoEnabled": false,
   "liveBrowserObserved": {
@@ -78,6 +78,56 @@
       "interpretation": "The resulting media visibly changes through the selected range despite zero presentation callbacks and high playback-quality dropped count. These offscreen counters cannot alone determine recording failure."
     }
   },
+  "realCommandEarlyStop": {
+    "collectedAt": "2026-10-21T04:05:15.526Z",
+    "stoppedAt": "2026-10-21T04:05:16.656Z",
+    "trigger": "extension-command",
+    "stopReason": "manual-shortcut",
+    "selectedRangeSeconds": [2, 12],
+    "actualSourceStartSeconds": 2.0,
+    "actualSourceEndSeconds": 3.075405,
+    "effectiveSourceDurationSeconds": 1.075405,
+    "croppedBaseline": {
+      "sha256": "358f3c2920342219f212315ab251b64620da56bdcd1cb297948f37f1db13d9f5",
+      "bytes": 331308,
+      "dimensions": [964, 542],
+      "codecs": "VP9/Opus",
+      "checkOk": true,
+      "videoFrames": 32,
+      "lastVideoTime": 1.056,
+      "lastAudioTime": 1.048,
+      "maximumVideoGapSeconds": 0.066,
+      "maximumUnchangedPictureSeconds": 0.098,
+      "sampledFirstSourceClockSeconds": 2.0,
+      "sampledLastSourceClockSeconds": 2.933,
+      "audioMeanDb": -21.4,
+      "audioMaxDb": -17.7
+    },
+    "rawControl": {
+      "sha256": "419b69ccbd7daa0cad0322a6f392d6c4de423e961901f39a7f2db1679c7bde20",
+      "bytes": 408209,
+      "dimensions": [2560, 1440],
+      "codecs": "VP9/Opus",
+      "checkOk": true,
+      "videoFrames": 34,
+      "lastVideoTime": 1.086,
+      "lastAudioTime": 1.061,
+      "maximumVideoGapSeconds": 0.049,
+      "maximumUnchangedPictureSeconds": 0.113,
+      "sampledFirstSourceClockSeconds": 2.0,
+      "sampledLastSourceClockSeconds": 3.0,
+      "audioMeanDb": -21.4,
+      "audioMaxDb": -17.7
+    },
+    "inputObservation": {
+      "drawCalls": 35,
+      "drawErrors": 0,
+      "presentedCallbacks": 0,
+      "totalVideoFramesFromPlaybackQuality": 35,
+      "droppedVideoFramesFromPlaybackQuality": 34
+    },
+    "coverage": "Genuine command start and manual command stop, approximately 1.1 seconds of effective capture; not a repeated two-second or cold-start baseline without instrumentation."
+  },
   "syntheticRepeatedPictureControl": {
     "origin": "retained failure with explicitly cloned tail; not a new browser capture or proposed fix",
     "videoFilter": "tpad=stop_mode=clone:stop_duration=1.4,fps=30",
@@ -90,7 +140,8 @@
   "limitations": [
     "Motion check is only for short continuously moving self-made fixtures, not ordinary static footage.",
     "Dual encoders and observations may alter timing and cannot alone establish a fix.",
-    "This real command sample passed automatic end stopping; the original command early-stop failure has not yet been reproduced with the diagnostic build.",
+    "Real command automatic and approximately 1.1-second manual stops passed, but the original approximately two-second failure has not been reproduced or causally resolved.",
+    "Cold-start repetition and capture without the diagnostic observers and parallel encoder remain unverified.",
     "Actual original-timeline A/B, independent preview, formal MP4 output and video release remain pending."
   ]
 }
