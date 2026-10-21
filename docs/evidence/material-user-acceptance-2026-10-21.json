@@ -30,12 +30,22 @@
     "externalLocalImageOpen": {
       "status": "user-confirmed",
       "scope": "User selected the single-image library material, used its local-open action, and confirmed that the computer opened the original image normally"
+    },
+    "confirmedPermanentDeletion": {
+      "status": "user-confirmed",
+      "scope": "Following instructions to use disposable test material, move it to the recycle area, confirm permanent deletion, and refresh, user confirmed that the entry disappeared; removal of physical files was not independently inspected"
+    },
+    "browserRestartDataPersistence": {
+      "status": "user-confirmed",
+      "scope": "After the guided Edge restart, user confirmed saved directory settings, retained materials and normal image opening; the reported missing pet was clarified as occurring only on the separate settings/management page"
     }
   },
+  "petVisibilityClarification": {
+    "status": "expected-scope-confirmed",
+    "scope": "User clarified that the pet was absent only on settings/management pages. The floating pet is injected into ordinary HTTP/HTTPS pages; a newly opened ordinary page in real Edge after restart displayed the P3-C button. No missing-pet fix was applied."
+  },
   "pending": [
-    "independent filesystem confirmation",
-    "confirmed permanent deletion",
-    "browser restart persistence"
+    "independent filesystem confirmation"
   ],
   "personalMaterialOrPathsIncluded": false,
   "videoEnabled": false,
