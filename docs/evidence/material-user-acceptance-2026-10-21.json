@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-21",
+  "softwareVersion": "0.1.0 development",
+  "evidenceSource": "Direct user replies during guided testing in the installed Edge extension",
+  "checks": {
+    "singleImageDraftIntake": {
+      "status": "user-confirmed",
+      "scope": "User confirmed one new material was visible in the draft list following instructions to drag a local image file onto the pet"
+    },
+    "draftMetadataPersistence": {
+      "status": "user-confirmed",
+      "scope": "User changed the material name and note, saved, refreshed the management page, reselected the material, and explicitly confirmed both values remained"
+    }
+  },
+  "pending": [
+    "independent confirmation of image preview and local media opening",
+    "promotion to the library with media and metadata retained",
+    "batch grouping and clipboard intake",
+    "draft recycling and restoration",
+    "confirmed permanent deletion",
+    "browser restart persistence"
+  ],
+  "personalMaterialOrPathsIncluded": false,
+  "videoEnabled": false,
+  "releaseReady": false
+}
