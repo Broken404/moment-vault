@@ -20,13 +20,14 @@ async function start(tabId,trigger) {
   if(session && session.phase!=='idle')return;
   await chrome.storage.local.set({session:{phase:'preparing',tabId,trigger},lastError:null});
   try {
-    const {saveMode}=await chrome.storage.local.get('saveMode');
+    const {saveMode,diagnosticCapture}=await chrome.storage.local.get(['saveMode','diagnosticCapture']);
     if(saveMode!=='native-scratch')await roots();
     const selection=await tell(tabId,'prepare');
     if(!selection?.ok)throw new Error(selection?.error || 'Video selection is not ready');
     await offscreen();
     const streamId=await chrome.tabCapture.getMediaStreamId({targetTabId:tabId});
-    const ready=await recorder('prepare',{streamId,selection,saveMode:saveMode || 'browser-fsa'});
+    const diagnostic=diagnosticCapture===true&&selection.source===SPIKE_CONFIG.base+'/fixture.html';
+    const ready=await recorder('prepare',{streamId,selection,saveMode:saveMode || 'browser-fsa',diagnosticCapture:diagnostic});
     if(!ready?.ok)throw new Error(ready?.error || 'Capture stream failed');
     const begun=await recorder('start');
     if(!begun?.ok)throw new Error(begun?.error || 'Recorder did not start');
@@ -75,7 +76,12 @@ chrome.tabs.onRemoved.addListener(async tabId=>{
 chrome.runtime.onMessageExternal.addListener((message,sender,sendResponse)=>{
   if(sender.origin!=='http://127.0.0.1:43817' || !sender.url?.startsWith('http://127.0.0.1:43817/'))return;
   (async()=>{
-    if(message.action==='status')return {ok:true,build:chrome.runtime.getManifest().version,...await chrome.storage.local.get(['session','lastResult','lastError','saveMode']),commands:await chrome.commands.getAll()};
+    if(message.action==='status')return {ok:true,build:chrome.runtime.getManifest().version,diagnosticsVersion:1,...await chrome.storage.local.get(['session','lastResult','lastError','saveMode','diagnosticCapture']),commands:await chrome.commands.getAll()};
+    if(message.action==='diagnostics'){
+      const {session}=await chrome.storage.local.get('session');
+      if(session&&session.phase!=='idle')throw new Error('Wait for the current capture to finish');
+      await chrome.storage.local.set({diagnosticCapture:true});return {ok:true,diagnosticCapture:true,scope:'self-made fixture only; no capture starts from this action'};
+    }
     if(message.action==='fixture'){const tab=await chrome.tabs.create({url:'http://127.0.0.1:43817/fixture.html'});return {ok:true,tabId:tab.id};}
     if(message.action==='native-scratch'){
       const response=await fetch(SPIKE_CONFIG.base+'/api/ready',{method:'POST',headers:{'Content-Type':'application/json','X-Spike-Token':SPIKE_CONFIG.token},body:'{}'});

@@ -19,6 +19,7 @@ button('write',async()=>{const result=await saveItem(new Blob([svg],{type:'image
 button('promote',async()=>promote(await config('lastItem')));
 button('status',()=>extension('status'));
 button('native-mode',()=>extension('native-scratch'));
+button('diagnostics',()=>extension('diagnostics'));
 for(const kind of ['draft','library'])button('open-'+kind,()=>api('open',{root:kind}));
 button('native-write',async()=>{const result=await api('save',{extension:'svg',base64:btoa(svg),metadata:{source:'self-made',collectedAt:new Date().toISOString(),notes:'Native helper write/read'}});await config('nativeItem',result.item);return result;});
 button('native-promote',async()=>api('promote',{item:await config('nativeItem')}));

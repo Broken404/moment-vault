@@ -1,4 +1,4 @@
-"""Check timestamp continuity of an explicitly moving, self-made fixture.
+"""Check timestamps and picture changes of a short, moving self-made fixture.
 
 This catches the retained 0.0.4 short-capture failure. It does not interpret
 legitimately static platform footage as a broken recording, or claim a fix.
@@ -7,6 +7,35 @@ import argparse
 import json
 from pathlib import Path
 import subprocess
+
+
+def picture_changes(media: Path, timestamps: list[float]) -> dict:
+    # Small grayscale frames keep this check independent of codec and resolution.
+    # Compare against the last changed picture so slow movement can accumulate.
+    pixels = 96 * 54
+    decoded = subprocess.run([
+        'ffmpeg', '-v', 'error', '-i', str(media), '-map', '0:v:0',
+        '-vf', 'scale=96:54,format=gray', '-fps_mode', 'passthrough',
+        '-f', 'rawvideo', '-pix_fmt', 'gray', 'pipe:1',
+    ], capture_output=True, check=True).stdout
+    if len(decoded) != len(timestamps) * pixels:
+        return {'pictureCheckOk': False, 'reason': 'decoded picture and timestamp counts differ'}
+    reference = decoded[:pixels]
+    last_change = timestamps[0]
+    unchanged = 0
+    threshold = 0.5
+    for index, timestamp in enumerate(timestamps[1:], 1):
+        frame = decoded[index * pixels:(index + 1) * pixels]
+        difference = sum(abs(a - b) for a, b in zip(frame, reference)) / pixels
+        if difference >= threshold:
+            reference, last_change = frame, timestamp
+        else:
+            unchanged = max(unchanged, timestamp - last_change)
+    return {
+        'pictureCheckOk': True,
+        'maximumUnchangedPictureSeconds': round(unchanged, 6),
+        'pictureChangeThresholdGrayLevels': threshold,
+    }
 
 
 def check(media: Path, tolerance: float = 0.25) -> dict:
@@ -27,14 +56,17 @@ def check(media: Path, tolerance: float = 0.25) -> dict:
     # inferred video boundary. A long audio-only tail catches the known failure.
     tail = max(0, max(audio, default=video[-1]) - video[-1])
     maximum_gap = max(gaps, default=0)
+    pictures = picture_changes(media, video)
+    pictures_ok = pictures['pictureCheckOk'] and pictures['maximumUnchangedPictureSeconds'] <= tolerance
     return {
-        'ok': len(video) > 1 and tail <= tolerance and maximum_gap <= tolerance,
-        'scope': 'timestamp continuity of explicitly moving self-made fixture',
+        'ok': len(video) > 1 and tail <= tolerance and maximum_gap <= tolerance and pictures_ok,
+        'scope': 'timestamps and picture changes of short, explicitly moving self-made fixture',
         'videoFrames': len(video), 'firstVideoTime': video[0],
         'lastVideoTime': video[-1], 'lastAudioTime': max(audio, default=None),
         'audioOnlyTailSeconds': round(tail, 6),
         'maximumVideoGapSeconds': round(maximum_gap, 6),
         'toleranceSeconds': tolerance,
+        **pictures,
     }
 
 

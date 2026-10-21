@@ -8,6 +8,7 @@ const vm=require('node:vm');
 
 function harness({saveFailure=false,empty=false}={}){
   let listener,request,fsSaved=false,audioClosed=false;
+  const requests=[],recorders=[];
   const track=name=>({name,stopped:false,stop(){this.stopped=true;}});
   const sourceTracks=[track('source-video'),track('source-audio')];
   const outputTrack=track('canvas-video');
@@ -16,28 +17,29 @@ function harness({saveFailure=false,empty=false}={}){
   const video={readyState:2,videoWidth:640,videoHeight:360,play:async()=>{},pause(){},srcObject:null};
   class Recorder{
     static isTypeSupported(){return true;}
-    constructor(stream,options){this.mimeType=options.mimeType;this.state='inactive';}
+    constructor(stream,options){this.mimeType=options.mimeType;this.state='inactive';recorders.push(this);}
     start(){this.state='recording';}
     stop(){this.state='inactive';queueMicrotask(()=>{this.ondataavailable?.({data:new Blob(empty?[]:['test-recorded-bytes'])});this.onstop?.();});}
   }
   class Reader{
     readAsDataURL(blob){blob.arrayBuffer().then(data=>{this.result='data:'+blob.type+';base64,'+Buffer.from(data).toString('base64');this.onload();});}
   }
-  const context={Blob,console,queueMicrotask,setInterval,clearInterval,setTimeout,clearTimeout,
+  const context={Blob,console,performance,queueMicrotask,setInterval,clearInterval,setTimeout,clearTimeout,
     MediaRecorder:Recorder,FileReader:Reader,
     navigator:{mediaDevices:{getUserMedia:async()=>source}},
     document:{createElement:type=>type==='video'?video:{getContext:()=>({drawImage(){}}),captureStream:()=>({getTracks:()=>outputTracks,addTrack:t=>outputTracks.push(t)})}},
     AudioContext:class{createMediaStreamSource(){return {connect(){}};}resume(){return Promise.resolve();}close(){audioClosed=true;return Promise.resolve();}},
     SPIKE_CONFIG:{base:'http://127.0.0.1:43817',token:'unit-test-only'},
     chrome:{runtime:{onMessage:{addListener:callback=>listener=callback},sendMessage:async()=>{}}},
-    fetch:async(url,options)=>{request={url,body:JSON.parse(options.body)};return {ok:!saveFailure,json:async()=>saveFailure?{error:'injected write failure'}:{item:'spike-unit',bytes:19}};},
+    fetch:async(url,options)=>{request={url,body:JSON.parse(options.body)};requests.push(request);return {ok:!saveFailure,json:async()=>saveFailure?{error:'injected write failure'}:{item:'spike-unit-'+requests.length,bytes:19}};},
     saveItem:async()=>{fsSaved=true;return {item:'spike-fsa-unit'};}
   };
   const geometryCode=readFileSync(path.join(__dirname,'../extension/capture-geometry.js'),'utf8').replace('export function','function');
+  const diagnosticsCode=readFileSync(path.join(__dirname,'../extension/capture-diagnostics.js'),'utf8').replace('export function','function');
   const sourceCode=readFileSync(path.join(__dirname,'../extension/offscreen.js'),'utf8').replace(/^import .*;\r?\n/gm,'');
-  vm.runInNewContext(geometryCode+'\n'+sourceCode,context,{filename:'offscreen.js'});
+  vm.runInNewContext(geometryCode+'\n'+diagnosticsCode+'\n'+sourceCode,context,{filename:'offscreen.js'});
   const call=(type,data={})=>new Promise(resolve=>listener({target:'offscreen',type,...data},{},resolve));
-  return {call,sourceTracks,outputTrack,get request(){return request;},get fsSaved(){return fsSaved;},get audioClosed(){return audioClosed;}};
+  return {call,sourceTracks,outputTrack,requests,recorders,get request(){return request;},get fsSaved(){return fsSaved;},get audioClosed(){return audioClosed;}};
 }
 const selection={a:2,b:6,rect:{x:0,y:0,width:640,height:360},viewport:{width:640,height:360}};
 async function prepare(h,saveMode='native-scratch'){
@@ -71,4 +73,38 @@ test('write failure is reported and capture is released',async()=>{
 test('empty media is not saved as a successful recording',async()=>{
   const h=harness({empty:true});await prepare(h);const result=await h.call('stop',{metadata:{}});
   assert.equal(result.ok,false);assert.match(result.error,/No media data/);assert.equal(h.request,undefined);
+});
+
+test('opt-in self-made diagnosis flushes two recorders and labels separate saved controls',async()=>{
+  const h=harness();
+  const ready=await h.call('prepare',{streamId:'unit',selection:{...selection,source:'http://127.0.0.1:43817/fixture.html'},saveMode:'native-scratch',diagnosticCapture:true});
+  assert.equal(ready.ok,true,ready.error);
+  assert.equal(ready.diagnosticCapture,true);
+  assert.equal((await h.call('start')).ok,true);
+  assert.equal(h.recorders.length,2);
+  assert.ok(h.recorders.every(r=>r.state==='recording'));
+  const result=await h.call('stop',{metadata:{trigger:'unit-test-only'}});
+  assert.equal(result.ok,true,result.error);
+  assert.equal(h.requests.length,2);
+  assert.equal(h.requests[0].body.metadata.diagnosticRole,'cropped-baseline');
+  assert.equal(h.requests[1].body.metadata.diagnosticRole,'raw-tab-control');
+  assert.equal(h.requests[1].body.metadata.capture,'tabCapture-direct');
+  assert.ok(h.requests[0].body.metadata.diagnostics.drawCalls>=1);
+  assert.notEqual(result.item,result.diagnosticControl.item);
+  assert.ok(h.recorders.every(r=>r.state==='inactive'));
+  assert.ok(h.sourceTracks.every(t=>t.stopped));
+});
+
+test('raw diagnostic controls cannot record platform pages or browser-picked directories',async()=>{
+  for(const options of [
+    {selection:{...selection,source:'https://www.youtube.com/watch?v=unit'},saveMode:'native-scratch'},
+    {selection:{...selection,source:'http://127.0.0.1:43817/fixture.html'},saveMode:'browser-fsa'},
+  ]){
+    const h=harness();
+    const result=await h.call('prepare',{streamId:'unit',...options,diagnosticCapture:true});
+    assert.equal(result.ok,false);
+    assert.match(result.error,/self-made fixture and isolated/);
+    assert.equal(h.recorders.length,0);
+    assert.equal(h.requests.length,0);
+  }
 });

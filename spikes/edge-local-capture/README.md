@@ -35,11 +35,13 @@ http://127.0.0.1:43817/dashboard.html
 
 首次只点击页面内按钮可能因缺少当前标签的扩展调用授权被拒绝，这个实验入口专门用于记录该限制。
 
+0.0.5 增加“启用停帧诊断（仅自制视频）”。先选择辅助保存到测试目录，再手动启用诊断；这些操作都不开始录制。仅精确的本地 fixture 页面会同时保存 Canvas 裁剪结果与原始标签流对照，并附带最多 64 个输入/绘制采样点。对照文件可能包含自制页面的视频以外区域，只保存至 `.spike-data`。平台页面维持单路录制。该构建用于定位问题，尚未修复已知短片停帧；双编码器和观测可能影响时序，不能把一次成功当作修复。
+
 ## 文件系统回归检查
 
 ```powershell
 py -3.13 spikes/edge-local-capture/tests/test_scratch.py
-node --test spikes/edge-local-capture/tests/offscreen.test.cjs spikes/edge-local-capture/tests/capture-geometry.test.cjs
+node --test spikes/edge-local-capture/tests/offscreen.test.cjs spikes/edge-local-capture/tests/capture-geometry.test.cjs spikes/edge-local-capture/tests/capture-diagnostics.test.cjs
 ```
 
 覆盖真实文件读回与校验、媒体和描述完整移动、跨磁盘复制、重名保护、复制损坏、源清理失败和无效路径。测试仅清理其自行创建且已检查位置的临时目录。
@@ -53,6 +55,8 @@ py -3.13 spikes/edge-local-capture/inspect_recordings.py
 ```
 
 输出包含解码结果、视频与音轨、时长、实际与选定范围、采样画面变化和声音能量。没有实际录像时会失败退出，不把空集合判为通过。
+
+针对短、持续运动的自制素材，另用 `py tools/check_recording.py <实际媒体路径>` 检查帧时间、音频独自延续及重复画面。它能识别旧反例及人为补齐重复帧的反例，不适合判断普通静态视频。当前结果与待验证范围见 `docs/recording-diagnosis.md`。
 
 ## 输出与约束
 

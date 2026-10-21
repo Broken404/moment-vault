@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-21",
+  "status": "unresolved-awaiting-real-command-capture",
+  "spikeBuild": "0.0.5",
+  "formalVideoEnabled": false,
+  "liveBrowserObserved": {
+    "build": "0.0.5",
+    "recordCommand": "Ctrl+Shift+9",
+    "saveMode": "native-scratch",
+    "diagnosticOptInAccepted": true,
+    "automationKeyTriggeredCommand": false,
+    "newDualMediaProduced": false,
+    "browserControlInterruptedAndRecovered": true,
+    "preparedSelectionSeconds": [2, 4]
+  },
+  "mockChecks": {
+    "passed": 12,
+    "scope": "bounded counters, recorder lifecycle and capture geometry; not codec evidence"
+  },
+  "retainedRealFailure": {
+    "ok": false,
+    "videoFrames": 16,
+    "lastVideoTime": 0.528,
+    "lastAudioTime": 1.889,
+    "audioOnlyTailSeconds": 1.361
+  },
+  "retainedRealControl": {
+    "ok": true,
+    "videoFrames": 59,
+    "lastVideoTime": 2.047,
+    "maximumUnchangedPictureSeconds": 0.134
+  },
+  "syntheticRepeatedPictureControl": {
+    "origin": "retained failure with explicitly cloned tail; not a new browser capture or proposed fix",
+    "videoFilter": "tpad=stop_mode=clone:stop_duration=1.4,fps=30",
+    "limitSeconds": 1.95,
+    "codecs": "H.264/AAC",
+    "timestampOnlyCheckOk": true,
+    "strengthenedCheckOk": false,
+    "maximumUnchangedPictureSeconds": 1.366667
+  },
+  "limitations": [
+    "Motion check is only for short continuously moving self-made fixtures, not ordinary static footage.",
+    "Dual encoders and observations may alter timing and cannot alone establish a fix.",
+    "Original failure has not yet been reproduced with the new diagnostic build.",
+    "Actual original-timeline A/B, independent preview, formal MP4 output and video release remain pending."
+  ]
+}
