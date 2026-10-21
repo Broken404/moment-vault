@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-21",
+  "browser": "Microsoft Edge 155.0.4283.62",
+  "extensionId": "hpchplafhkkndbocdiopnbmkkhbjokii",
+  "extensionVersion": "0.1.0",
+  "symptom": "Specified native messaging host not found.",
+  "probe": "Real Edge content-script local image chooser on an ordinary HTTPS page; generated 1 pixel PNG only; original extension and host executables",
+  "results": [
+    { "configuration": "Edge HKCU registration only", "result": "Original error reproduced, including a fresh retry" },
+    { "configuration": "Same Edge registration plus documented Chrome HKCU fallback pointing to the unchanged manifest", "result": "Helper started; UI returned unconfigured-root validation" },
+    { "configuration": "Removed probe-created fallback and closed probe-owned helper for fresh lookup", "result": "Original error reproduced again" },
+    { "configuration": "Ran fixed tools/register-helper.ps1 under Windows PowerShell", "result": "Real Edge started helper again; UI returned unconfigured-root validation" }
+  ],
+  "registrationCheck": {
+    "command": "npm run check:registration",
+    "missingFallbackExitCode": 1,
+    "repairedExitCode": 0,
+    "scope": "Actual current-user registry paths and REG_SZ values, built manifest and fixed origin, executable resolved from registration, isolated real framed ping using extension origin"
+  },
+  "conclusion": "The compatibility registration is necessary for the observed local lookup; why this installation did not use the existing Edge-specific registration is not established.",
+  "source": "https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/developer-guide/native-messaging",
+  "userStorageConfigured": false,
+  "materialSaved": false,
+  "folderPickerVerified": false,
+  "restartVerified": false,
+  "videoEnabled": false,
+  "releaseReady": false
+}

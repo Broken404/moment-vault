@@ -34,11 +34,16 @@ node tools/check-native.mjs --require-cross-volume
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/register-helper.ps1
+npm run check:registration
 ```
+
+注册脚本同时写入当前用户的 Edge 注册位置与微软文档支持的 Chrome 兼容查找位置，指向同一份清单，仍仅允许本扩展的固定 ID。2026-10-21 在本机 Edge 155.0.4283.62 上实测：仅有 Edge 项时返回 `Specified native messaging host not found.`；补上兼容项后同一扩展可启动助手。删除兼容项并重新建立连接可重现原错误，恢复后再次接通。没有将这一现象推断为所有 Edge 版本的规则。
+
+`check:registration` 检查两个实际注册项、REG_SZ 类型、清单与扩展身份，并从注册清单定位真实助手，以扩展 origin 和长度前缀协议执行隔离 ping。它不改动用户的目录配置；缺少兼容项时已确认返回失败。此检查仍不能替代真实浏览器联动。
 
 在 Edge 扩展管理页打开开发人员模式，加载 dist/extension。正式开发扩展 ID 固定为 config/extension-identity.json 中的 ID，与试验版不同；仓库只保存公钥，不保存私钥。扩展首次打开设置，检测助手并使用系统目录选择器配置草稿箱和资产库。已有网页刷新后显示 P3-C。
 
-注册脚本是开发安装工具，尚不等于已交付 Inno Setup 安装包。移除开发注册可执行同一脚本的 -Unregister；保留所有素材。
+注册脚本是开发安装工具，尚不等于已交付 Inno Setup 安装包。移除开发注册可执行同一脚本的 -Unregister，同时移除本助手的两处注册；保留所有素材。
 
 ## 数据与接口
 
