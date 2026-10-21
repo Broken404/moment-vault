@@ -1,6 +1,6 @@
 {
   "date": "2026-10-21",
-  "status": "unresolved-awaiting-real-command-capture",
+  "status": "unresolved-real-command-auto-stop-passed-early-stop-pending",
   "spikeBuild": "0.0.5",
   "formalVideoEnabled": false,
   "liveBrowserObserved": {
@@ -9,7 +9,7 @@
     "saveMode": "native-scratch",
     "diagnosticOptInAccepted": true,
     "automationKeyTriggeredCommand": false,
-    "newDualMediaProduced": false,
+    "newDualMediaProduced": true,
     "browserControlInterruptedAndRecovered": true,
     "preparedSelectionSeconds": [2, 4]
   },
@@ -30,6 +30,54 @@
     "lastVideoTime": 2.047,
     "maximumUnchangedPictureSeconds": 0.134
   },
+  "realCommandAutoStop": {
+    "collectedAt": "2026-10-21T03:58:18.662Z",
+    "stoppedAt": "2026-10-21T03:58:20.751Z",
+    "trigger": "extension-command",
+    "stopReason": "selected-end",
+    "selectedRangeSeconds": [2, 4],
+    "actualSourceEndSeconds": 4.010456,
+    "croppedBaseline": {
+      "sha256": "67568f9bf5a40a62c67eaaa2acf79d2c4f47ab3fd0f6e4f62d10a48f4a82b142",
+      "bytes": 687663,
+      "dimensions": [964, 542],
+      "codecs": "VP9/Opus",
+      "checkOk": true,
+      "videoFrames": 62,
+      "lastVideoTime": 2.079,
+      "lastAudioTime": 2.011,
+      "maximumVideoGapSeconds": 0.066,
+      "maximumUnchangedPictureSeconds": 0.066,
+      "sampledFirstSourceClockSeconds": 2.0,
+      "sampledLastSourceClockSeconds": 3.967,
+      "audioMeanDb": -21.3,
+      "audioMaxDb": -17.7
+    },
+    "rawControl": {
+      "sha256": "5cb842d43f85a333236f6c50294853c190d74f50cb7daa33e30c8dbec74aea46",
+      "bytes": 777403,
+      "dimensions": [2560, 1440],
+      "codecs": "VP9/Opus",
+      "checkOk": true,
+      "videoFrames": 68,
+      "lastVideoTime": 2.079,
+      "lastAudioTime": 2.015,
+      "maximumVideoGapSeconds": 0.049,
+      "maximumUnchangedPictureSeconds": 0.096,
+      "sampledFirstSourceClockSeconds": 2.0,
+      "sampledLastSourceClockSeconds": 4.0,
+      "audioMeanDb": -21.3,
+      "audioMaxDb": -17.7
+    },
+    "inputObservation": {
+      "drawCalls": 64,
+      "drawErrors": 0,
+      "presentedCallbacks": 0,
+      "totalVideoFramesFromPlaybackQuality": 70,
+      "droppedVideoFramesFromPlaybackQuality": 69,
+      "interpretation": "The resulting media visibly changes through the selected range despite zero presentation callbacks and high playback-quality dropped count. These offscreen counters cannot alone determine recording failure."
+    }
+  },
   "syntheticRepeatedPictureControl": {
     "origin": "retained failure with explicitly cloned tail; not a new browser capture or proposed fix",
     "videoFilter": "tpad=stop_mode=clone:stop_duration=1.4,fps=30",
@@ -42,7 +90,7 @@
   "limitations": [
     "Motion check is only for short continuously moving self-made fixtures, not ordinary static footage.",
     "Dual encoders and observations may alter timing and cannot alone establish a fix.",
-    "Original failure has not yet been reproduced with the new diagnostic build.",
+    "This real command sample passed automatic end stopping; the original command early-stop failure has not yet been reproduced with the diagnostic build.",
     "Actual original-timeline A/B, independent preview, formal MP4 output and video release remain pending."
   ]
 }
