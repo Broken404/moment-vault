@@ -10,11 +10,14 @@
     "draftMetadataPersistence": {
       "status": "user-confirmed",
       "scope": "User changed the material name and note, saved, refreshed the management page, reselected the material, and explicitly confirmed both values remained"
+    },
+    "singleImageLibraryPromotion": {
+      "status": "user-confirmed",
+      "scope": "After promoting the material and selecting it in the library, user explicitly confirmed that the image preview displayed normally and the name and note were retained; source-folder cleanup and external image opening were not separately inspected"
     }
   },
   "pending": [
-    "independent confirmation of image preview and local media opening",
-    "promotion to the library with media and metadata retained",
+    "independent filesystem confirmation and external local media opening",
     "batch grouping and clipboard intake",
     "draft recycling and restoration",
     "confirmed permanent deletion",
