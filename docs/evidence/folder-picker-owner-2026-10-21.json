@@ -15,9 +15,11 @@
     "realProcessMediaReadbackAndCrossVolumeTransfer": "passed",
     "savedUserConfigurationHashUnchanged": true
   },
-  "updatedWindowStackingVerified": false,
+  "updatedWindowStackingVerified": true,
+  "updatedWindowStackingVerification": "User reopened settings after reloading the extension and confirmed that the picker appeared in front of the browser",
   "updatedRepeatedPickerVerified": false,
-  "requiresUserExtensionReload": true,
+  "requiresUserExtensionReload": false,
+  "userExtensionReloadCompleted": true,
   "videoEnabled": false,
   "releaseReady": false,
   "sources": [
