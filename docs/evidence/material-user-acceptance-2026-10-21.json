@@ -22,11 +22,18 @@
     "batchDraftRecycleAndRestore": {
       "status": "user-confirmed",
       "scope": "User moved that draft material to the recycle area, restored it, and confirmed that the draft list still showed one material with both attachments; independent byte comparison was not performed"
+    },
+    "clipboardImageIntake": {
+      "status": "user-confirmed",
+      "scope": "User reported having already tried screenshot paste; when asked for the result, explicitly confirmed that pasting automatically saved the image to drafts; no repeat test was required"
+    },
+    "externalLocalImageOpen": {
+      "status": "user-confirmed",
+      "scope": "User selected the single-image library material, used its local-open action, and confirmed that the computer opened the original image normally"
     }
   },
   "pending": [
-    "independent filesystem confirmation and external local media opening",
-    "clipboard image intake",
+    "independent filesystem confirmation",
     "confirmed permanent deletion",
     "browser restart persistence"
   ],
