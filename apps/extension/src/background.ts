@@ -96,6 +96,8 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
     !sender.tab?.url?.startsWith('https:');
   const task = (async () => {
     if (message.type === 'host') {
+      if (message.op === 'folder.pick')
+        throw new Error('请从扩展设置页直接选择目录，更新后请刷新设置页');
       const contentOperations = [
         'ping',
         'items.begin',

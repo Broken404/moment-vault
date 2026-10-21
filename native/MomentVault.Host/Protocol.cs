@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Text.Json;
+using System.Runtime.InteropServices;
 
 namespace MomentVault.Host;
 
@@ -8,7 +9,7 @@ public static class Protocol
     public const int Version = 1;
     private const int MaximumMessage = 900_000;
 
-    public static void Run(Stream input, Stream output, VaultStore store)
+    public static void Run(Stream input, Stream output, VaultStore store, nint parentWindow = 0)
     {
         var header = new byte[4];
         while (true)
@@ -33,7 +34,7 @@ public static class Protocol
                     throw new VaultException("protocol-version", "扩展与本地助手版本不兼容，请重新安装配套版本");
                 var payload = request.GetProperty("payload");
                 uploadId = Text(payload, "uploadId");
-                var result = Dispatch(store, request.GetProperty("op").GetString()!, payload);
+                var result = Dispatch(store, request.GetProperty("op").GetString()!, payload, parentWindow);
                 response = new { id, ok = true, result };
             }
             catch (Exception ex) when (ex is VaultException or IOException or UnauthorizedAccessException or JsonException
@@ -54,12 +55,12 @@ public static class Protocol
         }
     }
 
-    public static object Dispatch(VaultStore store, string op, JsonElement p) => op switch
+    public static object Dispatch(VaultStore store, string op, JsonElement p, nint parentWindow = 0) => op switch
     {
         "ping" => store.Status(),
         "config.get" => store.Config,
         "config.set" => Configure(store, p),
-        "folder.pick" => PickFolder(p),
+        "folder.pick" => PickFolder(p, parentWindow),
         "items.list" => List(store, p),
         "items.get" => View(Description.Load(store.Find(Text(p, "bucket"), Text(p, "id"))), Text(p, "bucket")),
         "items.begin" => Begin(store, p),
@@ -85,8 +86,19 @@ public static class Protocol
     private static object Configure(VaultStore store, JsonElement p)
     { store.Configure(new(Text(p, "draftRoot"), Text(p, "libraryRoot"))); return store.Config; }
 
-    private static object PickFolder(JsonElement p)
+    private sealed class DialogOwner(nint handle) : IWin32Window
     {
+        public nint Handle { get; } = handle;
+    }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool IsWindow(nint window);
+
+    private static object PickFolder(JsonElement p, nint parentWindow)
+    {
+        if (parentWindow == 0 || !IsWindow(parentWindow))
+            throw new VaultException("folder-picker-owner", "目录选择窗口需要关联浏览器，请重新加载扩展并刷新设置页后重试");
         string? selected = null;
         Exception? error = null;
         var title = Text(p, "title", "选择素材目录");
@@ -97,7 +109,7 @@ public static class Protocol
             {
                 using var dialog = new FolderBrowserDialog { Description = title, UseDescriptionForTitle = true, ShowNewFolderButton = true };
                 if (Directory.Exists(initial)) dialog.InitialDirectory = initial;
-                if (dialog.ShowDialog() == DialogResult.OK) selected = dialog.SelectedPath;
+                if (dialog.ShowDialog(new DialogOwner(parentWindow)) == DialogResult.OK) selected = dialog.SelectedPath;
             }
             catch (Exception ex) { error = ex; }
         });

@@ -116,6 +116,30 @@ var tests = new List<(string Name, Action Action)>
         Equal(store.List("library").Items.Count, 0);
         Throws(() => store.Find("draft", "../escape"), "invalid-id");
     }),
+    ("folder picks require the browser owner and keep the protocol usable after rejection", () =>
+    {
+        var store = Store("folder-owner");
+        using var input = new MemoryStream(); using var output = new MemoryStream();
+        Frame(input, "draft", "folder.pick", new { title = "选择草稿箱", parentWindow = 123 });
+        Frame(input, "library", "folder.pick", new { title = "选择资产库" });
+        Frame(input, "still-connected", "ping", new { });
+        input.Position = 0; Protocol.Run(input, output, store); output.Position = 0;
+        using var first = ReadFrame(output); using var second = ReadFrame(output); using var third = ReadFrame(output);
+        Equal(first.RootElement.GetProperty("error").GetProperty("code").GetString(), "folder-picker-owner");
+        Equal(second.RootElement.GetProperty("error").GetProperty("code").GetString(), "folder-picker-owner");
+        Equal(third.RootElement.GetProperty("id").GetString(), "still-connected");
+        True(third.RootElement.GetProperty("ok").GetBoolean());
+        Equal(output.Position, output.Length);
+    }),
+    ("browser owner is parsed from the native invocation rather than a request payload", () =>
+    {
+        Equal(MomentVault.Host.Program.ParentWindow(["chrome-extension://example/", "--parent-window=12345"]), (nint)12345);
+        Equal(MomentVault.Host.Program.ParentWindow(["--parent-window=0"]), (nint)0);
+        Equal(MomentVault.Host.Program.ParentWindow(["--parent-window=not-a-number"]), (nint)0);
+        Equal(MomentVault.Host.Program.ParentWindow(["--parent-window=-1"]), (nint)0);
+        Equal(MomentVault.Host.Program.ParentWindow(["--parent-window=9999999999999999999999"]), (nint)0);
+        Equal(MomentVault.Host.Program.ParentWindow([]), (nint)0);
+    }),
     ("framed protocol handles multiple messages and keeps stdout structured", () =>
     {
         var store = Store("protocol");

@@ -22,12 +22,28 @@ export async function host<T>(
   op: HostOperation,
   payload: Record<string, unknown> = {},
 ): Promise<T> {
-  const response: HostResponse<T> = await chrome.runtime.sendMessage({
-    target: 'background',
-    type: 'host',
-    op,
-    payload,
-  });
+  let response: HostResponse<T>;
+  if (op === 'folder.pick') {
+    if (location.href.split('#')[0] !== chrome.runtime.getURL('manage.html'))
+      throw new Error('请从扩展设置页选择目录');
+    // A page-originated native request carries the browser window handle.
+    // Service-worker requests carry parent-window=0 and cannot own a dialog.
+    const id = crypto.randomUUID();
+    response = await chrome.runtime.sendNativeMessage('com.momentvault.host', {
+      protocol: 1,
+      id,
+      op,
+      payload,
+    });
+    if (response?.id !== id) throw new Error('目录选择器返回的结果无效，请重试');
+  } else {
+    response = await chrome.runtime.sendMessage({
+      target: 'background',
+      type: 'host',
+      op,
+      payload,
+    });
+  }
   if (!response?.ok)
     throw new Error(response?.error?.message ?? '本地助手没有返回结果，请重新检测连接');
   return response.result!;

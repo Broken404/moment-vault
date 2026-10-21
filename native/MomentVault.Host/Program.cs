@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Globalization;
 
 namespace MomentVault.Host;
 
@@ -21,7 +22,7 @@ public static class Program
             var dataHome = homeIndex >= 0 && homeIndex + 1 < args.Length ? args[homeIndex + 1]
                 : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MomentVault");
             var store = new VaultStore(dataHome);
-            Protocol.Run(Console.OpenStandardInput(), Console.OpenStandardOutput(), store);
+            Protocol.Run(Console.OpenStandardInput(), Console.OpenStandardOutput(), store, ParentWindow(args));
             return 0;
         }
         catch (Exception ex)
@@ -30,5 +31,13 @@ public static class Program
             Console.Error.WriteLine($"Moment Vault host: {ex.GetType().Name}");
             return 1;
         }
+    }
+
+    public static nint ParentWindow(string[] args)
+    {
+        const string prefix = "--parent-window=";
+        var argument = args.FirstOrDefault(value => value.StartsWith(prefix, StringComparison.Ordinal));
+        return argument is not null && nint.TryParse(argument[prefix.Length..], NumberStyles.None,
+            CultureInfo.InvariantCulture, out var handle) ? handle : 0;
     }
 }

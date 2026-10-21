@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-21",
+  "symptom": "Second folder picker appeared behind Edge",
+  "userConfirmation": "User found the library picker with Alt+Tab and completed both directory settings",
+  "observedOriginalInvocation": "--parent-window=0",
+  "originalCallPath": "settings -> runtime.sendMessage -> service worker -> connectNative -> unowned FolderBrowserDialog",
+  "updatedCallPath": "settings -> sendNativeMessage -> browser-supplied parent-window -> FolderBrowserDialog.ShowDialog(owner)",
+  "checks": {
+    "frontendRegressionBeforeFix": { "failed": 3, "scope": "Actual API call site with mocked Chrome boundaries; does not reproduce native window stacking" },
+    "frontendAfterFix": { "passed": 12, "failed": 0 },
+    "nativeAfterFix": { "passed": 12, "failed": 0, "scope": "Real filesystem and framed protocol; missing owner rejected without opening a window; repeated errors followed by successful ping" },
+    "productionBuildAndDomSmoke": "passed",
+    "publishedSelfContainedHelper": "passed",
+    "registeredExecutableOriginPing": "passed",
+    "realProcessMediaReadbackAndCrossVolumeTransfer": "passed",
+    "savedUserConfigurationHashUnchanged": true
+  },
+  "updatedWindowStackingVerified": false,
+  "updatedRepeatedPickerVerified": false,
+  "requiresUserExtensionReload": true,
+  "videoEnabled": false,
+  "releaseReady": false,
+  "sources": [
+    "https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/developer-guide/native-messaging",
+    "https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.commondialog.showdialog?view=windowsdesktop-10.0"
+  ]
+}

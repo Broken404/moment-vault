@@ -45,6 +45,14 @@ npm run check:registration
 
 注册脚本是开发安装工具，尚不等于已交付 Inno Setup 安装包。移除开发注册可执行同一脚本的 -Unregister，同时移除本助手的两处注册；保留所有素材。
 
+### 目录选择窗口
+
+目录选择由扩展管理页直接调用 `runtime.sendNativeMessage`，每次启动一个短时助手。浏览器会向助手传入当前浏览器窗口的 `--parent-window`；服务工作线程发起的请求则为 0，不能用于关联目录弹窗。助手使用浏览器提供的有效句柄作为 `FolderBrowserDialog.ShowDialog` 的 owner，不接受请求正文指定任意窗口，不设置全局置顶或抢占其他应用焦点。其他文件操作继续通过后台连接。
+
+2026-10-21 用户确认第二次目录窗口实际出现在浏览器后面，并已完成两处配置。旧助手的启动参数确认为 `--parent-window=0`。修复加入直接管理页调用、父窗口传递和无效窗口的可恢复错误。更新开发构建后，在扩展管理页点本扩展的“重新加载”，然后刷新管理页；已保存的目录保持不变。需要在真实 Edge 中连续打开和取消两次目录选择，确认更新后的窗口层级；自动检查不代替这项人工确认。
+
+依据：[Edge Native Messaging 窗口参数](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/developer-guide/native-messaging)、[CommonDialog.ShowDialog owner](https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.commondialog.showdialog?view=windowsdesktop-10.0)。
+
 ## 数据与接口
 
 - 原生宿主只通过标准输入/输出长度前缀协议通信，没有本地 HTTP 服务；stdout 只输出协议消息。
