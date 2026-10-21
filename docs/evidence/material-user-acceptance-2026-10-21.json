@@ -14,12 +14,19 @@
     "singleImageLibraryPromotion": {
       "status": "user-confirmed",
       "scope": "After promoting the material and selecting it in the library, user explicitly confirmed that the image preview displayed normally and the name and note were retained; source-folder cleanup and external image opening were not separately inspected"
+    },
+    "twoImageBatchGrouping": {
+      "status": "user-confirmed",
+      "scope": "User selected two local image files and dragged them onto the pet together, then explicitly confirmed that the draft list gained only one material containing two attachments"
+    },
+    "batchDraftRecycleAndRestore": {
+      "status": "user-confirmed",
+      "scope": "User moved that draft material to the recycle area, restored it, and confirmed that the draft list still showed one material with both attachments; independent byte comparison was not performed"
     }
   },
   "pending": [
     "independent filesystem confirmation and external local media opening",
-    "batch grouping and clipboard intake",
-    "draft recycling and restoration",
+    "clipboard image intake",
     "confirmed permanent deletion",
     "browser restart persistence"
   ],
