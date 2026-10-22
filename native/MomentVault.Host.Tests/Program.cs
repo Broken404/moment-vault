@@ -140,6 +140,41 @@ var tests = new List<(string Name, Action Action)>
         Equal(MomentVault.Host.Program.ParentWindow(["--parent-window=9999999999999999999999"]), (nint)0);
         Equal(MomentVault.Host.Program.ParentWindow([]), (nint)0);
     }),
+    ("recordings cannot publish intermediate WebM and preserve capture when tools are missing", () =>
+    {
+        var store = Store("recording", new RecordingMedia(Path.Combine(testRoot, "missing-ffmpeg.exe"), Path.Combine(testRoot, "missing-ffprobe.exe")));
+        var fileId = Guid.NewGuid().ToString("N");
+        Throws(() => store.BeginRecording("无效", fileId, "self-made", new(4, 2)), "invalid-recording-range");
+        var upload = store.BeginRecording("录制", fileId, "self-made", new(2, 12), "录制备注");
+        store.Append(upload.Material.Id, fileId, 0, "AQID");
+        store.FinishFile(upload.Material.Id, fileId, 1, 3);
+        Throws(() => store.Commit(upload.Material.Id), "recording-not-ready");
+        Throws(() => store.ProcessRecording(upload.Material.Id, new(2, 4, "manual-shortcut")), "media-tools-missing");
+        Equal(store.List("draft").Items.Count, 0);
+        Equal(store.PendingCount, 1);
+        var pending = Path.Combine(store.Config.DraftRoot, ".moment-vault", "pending", upload.Material.Id);
+        True(File.ReadAllBytes(Path.Combine(pending, "视频-001.webm")).SequenceEqual(new byte[] { 1, 2, 3 }));
+        using var recovered = new VaultStore(Path.Combine(testRoot, "recording", "state"));
+        Equal(recovered.RecordingStatus(upload.Material.Id).Phase, "failed");
+    }),
+    ("an interrupted recording job is recoverable and never becomes a listed draft", () =>
+    {
+        var store = Store("recording-interrupted");
+        var upload = store.BeginRecording("录制", Guid.NewGuid().ToString("N"), "self-made", new(2, 12));
+        var path = Path.Combine(store.Config.DraftRoot, ".moment-vault", "pending", upload.Material.Id, "upload.json");
+        var state = MomentVault.Host.Json.Read<UploadState>(File.ReadAllText(path));
+        state.Recording!.Phase = "processing";
+        File.WriteAllText(path, MomentVault.Host.Json.Write(state));
+        using var recovered = new VaultStore(Path.Combine(testRoot, "recording-interrupted", "state"));
+        Equal(recovered.RecordingStatus(upload.Material.Id).Phase, "failed");
+        Equal(recovered.List("draft").Items.Count, 0);
+        Equal(recovered.PendingCount, 1);
+    }),
+    ("initial notes survive pending upload bookkeeping and commit", () =>
+    {
+        var store = Store("initial-notes");
+        Equal(Save(store).Note, "原有备注");
+    }),
     ("framed protocol handles multiple messages and keeps stdout structured", () =>
     {
         var store = Store("protocol");
@@ -174,12 +209,12 @@ finally
 Console.WriteLine($"{tests.Count - failures}/{tests.Count} native file/protocol checks passed.");
 return failures == 0 ? 0 : 1;
 
-VaultStore Store(string name)
+VaultStore Store(string name, RecordingMedia? media = null)
 {
     var root = Path.Combine(testRoot, name);
     var draft = Path.Combine(root, "草稿箱"); var library = Path.Combine(root, "资产库");
     Directory.CreateDirectory(draft); Directory.CreateDirectory(library);
-    var store = new VaultStore(Path.Combine(root, "state")); store.Configure(new(draft, library)); return store;
+    var store = new VaultStore(Path.Combine(root, "state"), media); store.Configure(new(draft, library)); return store;
 }
 static FileUpload FileDescriptor() => new(Guid.NewGuid().ToString("N"), "png", "image", "image/png", "https://example.com/self-made", "附件说明");
 static byte[] ImageBytes()

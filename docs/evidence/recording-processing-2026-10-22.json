@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-22",
+  "status": "native-processing-verified-browser-integration-pending",
+  "formalVideoEnabled": false,
+  "captureFreezeResolved": false,
+  "scope": "isolated native store, real framed protocol in process, real FFmpeg child processes and real media files",
+  "toolchain": "FFmpeg 8.1.1-full_build-www.gyan.dev",
+  "actualRecordingInputSha256": "67568f9bf5a40a62c67eaaa2acf79d2c4f47ab3fd0f6e4f62d10a48f4a82b142",
+  "actualRecordingOutput": {
+    "container": "MP4",
+    "videoCodec": "H.264",
+    "audioCodec": "AAC",
+    "width": 964,
+    "height": 542,
+    "fps": 30,
+    "bytes": 402105,
+    "sha256": "2ce1b4be9079b181988932bbfc4a08ad1e70fbd9e8087044e81829a8b7d8ee26",
+    "durationSeconds": 2.1,
+    "decodedFrames": 63,
+    "lastVideoTime": 2.066667,
+    "lastAudioTime": 2.057,
+    "maximumVideoGapSeconds": 0.033334,
+    "maximumUnchangedPictureSeconds": 0.066667,
+    "sampledFirstSourceClockSeconds": 2.0,
+    "sampledLastSourceClockSeconds": 3.967,
+    "motionFixtureCheckOk": true
+  },
+  "realMediaChecks": {
+    "passed": 6,
+    "processRequestReturnedMs": 14,
+    "cases": [
+      "framed chunk upload, processing, verified commit and idempotent retry",
+      "missing tools preserve original and restart retry succeeds",
+      "retained real audio-tail failure cannot publish a draft and original hash is unchanged",
+      "static portrait remains 180x320 with H.264/AAC and two-second video/audio",
+      "interrupted processor preserves original and restart retry succeeds",
+      "imported WebM retains its original bytes and format"
+    ]
+  },
+  "portableGeneratedFixtureChecks": {
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/check-recording-media.ps1",
+    "passed": 6,
+    "counterexample": "synthetic 0.5-second video with two-second audio, not a captured browser failure"
+  },
+  "coreNativeChecksPassed": 15,
+  "frontendChecksPassed": 12,
+  "frontendTypecheckFormatBuildAndGeneratedExtensionCheckPassed": true,
+  "limitations": [
+    "Registered helper and browser recording UI have not been updated with this module.",
+    "Bundled tool versions, licenses and installer integration remain pending.",
+    "A codec and track-duration check does not prove content correctness or resolve the original capture freeze.",
+    "Original timeline, independent preview, source-cache behavior and new browser end-to-end saving remain pending.",
+    "Remote CI result was not inspected."
+  ]
+}

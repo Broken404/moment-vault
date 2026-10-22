@@ -21,7 +21,7 @@ public static class Program
             var homeIndex = Array.IndexOf(args, "--data-home");
             var dataHome = homeIndex >= 0 && homeIndex + 1 < args.Length ? args[homeIndex + 1]
                 : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MomentVault");
-            var store = new VaultStore(dataHome);
+            using var store = new VaultStore(dataHome);
             Protocol.Run(Console.OpenStandardInput(), Console.OpenStandardOutput(), store, ParentWindow(args));
             return 0;
         }

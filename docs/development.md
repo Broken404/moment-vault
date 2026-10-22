@@ -62,6 +62,16 @@ npm run check:registration
 - .moment-vault 是草稿目录中的管理区，包含未完成上传、回收区和转移记录，不作为素材显示；不应手动混入普通素材附件。
 - 未完成事务、目标校验失败或源被外部修改时保留原数据并显示真实结果。永久删除只处理用户确认的资产库或回收区条目。
 
+### 录制本地处理检查
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/check-recording-media.ps1
+```
+
+开发环境需 .NET 10 和已安装的 FFmpeg。脚本只在 `.local-data` 生成自制运动片、音频尾段反例与独立草稿/资产库，执行真实编解码、分块协议、失败保留、重启重试和导入保留原格式检查。实际 Edge 保留样本也已单独跑过同组检查；脚本生成的反例不代表浏览器复现。原生普通文件/协议检查当前为 15 项。
+
+产品助手从自身目录的 `media/ffmpeg.exe`、`media/ffprobe.exe` 取工具；未随包时报告缺失，不自动使用系统 PATH。本轮没有部署新助手或开放浏览器录制入口。录制协议、验收结果和剩余范围见 [本地处理](recording-processing.md)。
+
 ## Git 与发布
 
 codex/v1-implementation 按职责提交，保留设计基线和试验历史。不把 SDK、node_modules、bin/obj、dist、浏览器配置、实际录像、凭据或本机目录配置提交。软件候选标签与发布必须等实际验收完成，当前不把开发构建称为首版交付完成。

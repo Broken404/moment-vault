@@ -56,9 +56,26 @@ public sealed record FileUpload(string Id, string Extension, string Kind, string
 public sealed class UploadState
 {
     public Material Material { get; set; } = new();
+    public string Note { get; set; } = "";
     public Dictionary<string, int> FinishedChunks { get; set; } = [];
     public Dictionary<string, long> ExpectedBytes { get; set; } = [];
+    public RecordingUpload? Recording { get; set; }
 }
+public sealed record RecordingSelection(double A, double B);
+public sealed record RecordingEnd(double ActualStart, double ActualEnd, string StopReason);
+public sealed record RecordingMediaInfo(int Width, int Height, double Duration, double VideoDuration,
+    double AudioDuration, long Bytes, string Sha256);
+public sealed class RecordingUpload
+{
+    public RecordingSelection Selection { get; set; } = new(0, 0);
+    public RecordingEnd? End { get; set; }
+    public string InputFileName { get; set; } = "视频-001.webm";
+    public string OutputFileName { get; set; } = "";
+    public string Phase { get; set; } = "capturing";
+    public string? Error { get; set; }
+    public RecordingMediaInfo? Result { get; set; }
+}
+public sealed record RecordingProgress(string Phase, Material? Item = null, string? Error = null);
 public sealed record TransferResult(string Id, string Status, string? Error = null);
 public sealed record TransferJournal(string Id, string Source, string Target, string Staging, Dictionary<string, string> SourceHashes,
     Dictionary<string, string> TargetHashes);

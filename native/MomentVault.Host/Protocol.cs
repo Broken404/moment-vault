@@ -67,6 +67,10 @@ public static class Protocol
         "items.append" => Append(store, p),
         "items.finishFile" => FinishFile(store, p),
         "items.commit" => View(store.Commit(Text(p, "uploadId")), "draft"),
+        "recordings.begin" => BeginRecording(store, p),
+        "recordings.process" => RecordingView(store.ProcessRecording(Text(p, "uploadId"),
+            Json.Read<RecordingEnd>(p.GetProperty("end").GetRawText()))),
+        "recordings.status" => RecordingView(store.RecordingStatus(Text(p, "uploadId"))),
         "items.update" => Update(store, p),
         "items.promote" => Transfer(store, p, "draft", "library"),
         "items.recycle" => Transfer(store, p, "draft", "trash"),
@@ -134,6 +138,15 @@ public static class Protocol
     }
     private static object Append(VaultStore store, JsonElement p)
     { store.Append(Text(p, "uploadId"), Text(p, "attachmentId"), p.GetProperty("sequence").GetInt32(), Text(p, "base64")); return new { accepted = true }; }
+    private static object BeginRecording(VaultStore store, JsonElement p)
+    {
+        var id = Text(p, "uploadId");
+        var upload = store.BeginRecording(Text(p, "name"), Text(p, "attachmentId"), Text(p, "source"),
+            Json.Read<RecordingSelection>(p.GetProperty("selection").GetRawText()), Text(p, "note"), id.Length == 0 ? null : id);
+        return new { uploadId = upload.Material.Id, attachments = upload.Material.Attachments.Select(a => new { a.Id, a.FileName }) };
+    }
+    private static object RecordingView(RecordingProgress progress) => new
+    { progress.Phase, item = progress.Item is null ? null : View(progress.Item, "draft"), progress.Error };
     private static object FinishFile(VaultStore store, JsonElement p)
     { store.FinishFile(Text(p, "uploadId"), Text(p, "attachmentId"), p.GetProperty("chunks").GetInt32(), p.GetProperty("bytes").GetInt64()); return new { complete = true }; }
     private static object Update(VaultStore store, JsonElement p)

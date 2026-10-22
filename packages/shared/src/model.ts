@@ -35,7 +35,14 @@ export interface Attachment {
   collectedAt: string;
   source: string;
   note: string;
-  range?: { a: number; b: number; actualStart: number | null; actualEnd: number | null };
+  range?: {
+    a: number;
+    b: number;
+    actualStart: number | null;
+    actualEnd: number | null;
+    stopReason?: string;
+    duration?: number;
+  };
 }
 
 export interface Material {
@@ -62,6 +69,13 @@ export interface HostStatus {
   config: HostConfig;
   pendingUploads: number;
   storageError?: string;
+  recordingToolsAvailable?: boolean;
+}
+
+export interface RecordingProgress {
+  phase: 'capturing' | 'processing' | 'failed' | 'saved';
+  item?: Material;
+  error?: string;
 }
 
 export type HostOperation =
@@ -75,6 +89,9 @@ export type HostOperation =
   | 'items.append'
   | 'items.finishFile'
   | 'items.commit'
+  | 'recordings.begin'
+  | 'recordings.process'
+  | 'recordings.status'
   | 'items.update'
   | 'items.open'
   | 'items.promote'

@@ -3,13 +3,14 @@ using System.Text.Json;
 
 namespace MomentVault.Host;
 
-public sealed class VaultStore
+public sealed partial class VaultStore : IDisposable
 {
     private readonly string stateDirectory;
     private HostConfig config;
     private readonly HashSet<string> activeUploads = [];
-    public VaultStore(string stateDirectory)
+    public VaultStore(string stateDirectory, RecordingMedia? recordingMedia = null)
     {
+        this.recordingMedia = recordingMedia ?? RecordingMedia.Bundled();
         this.stateDirectory = Path.GetFullPath(stateDirectory);
         Directory.CreateDirectory(this.stateDirectory);
         SafeFiles.RejectLinks(this.stateDirectory);
@@ -18,7 +19,8 @@ public sealed class VaultStore
 
     private string ConfigPath => Path.Combine(stateDirectory, "config.json");
     public HostConfig Config => config;
-    public void ReleaseUpload(string id) => activeUploads.Remove(id);
+    public void ReleaseUpload(string id)
+    { if (!recordingJobs.ContainsKey(id)) activeUploads.Remove(id); }
     public bool Configured => !string.IsNullOrEmpty(config.DraftRoot) && !string.IsNullOrEmpty(config.LibraryRoot);
 
     public object Status()
@@ -31,12 +33,13 @@ public sealed class VaultStore
             try { _ = Root("draft"); _ = Root("library"); pending = PendingCount; ready = true; }
             catch (Exception ex) when (ex is VaultException or IOException or UnauthorizedAccessException) { storageError = ex.Message; }
         }
-        return new { protocol = Protocol.Version, version = "0.1.0", configured = ready, config, pendingUploads = pending, storageError };
+        return new { protocol = Protocol.Version, version = "0.1.0", configured = ready, config, pendingUploads = pending, storageError,
+            recordingToolsAvailable = recordingMedia.Available };
     }
 
     public void Configure(HostConfig next)
     {
-        if (activeUploads.Count > 0)
+        if (activeUploads.Count > 0 || recordingJobs.Count > 0)
             throw new VaultException("pending-operation", "有尚未完成的保存，请先重试完成后再更换目录");
         var draft = SafeFiles.Root(next.DraftRoot);
         var library = SafeFiles.Root(next.LibraryRoot);
@@ -128,14 +131,24 @@ public sealed class VaultStore
         return path;
     }
     private static string UploadStatePath(string directory) => Path.Combine(directory, "upload.json");
-    private static UploadState ReadUpload(string directory) => Json.Read<UploadState>(File.ReadAllText(UploadStatePath(directory)));
-    private static void WriteUpload(string directory, UploadState state) => SafeFiles.AtomicText(UploadStatePath(directory), Json.Write(state));
+    private static UploadState ReadUpload(string directory)
+    {
+        var state = Json.Read<UploadState>(File.ReadAllText(UploadStatePath(directory)));
+        state.Material.Note = state.Note;
+        return state;
+    }
+    private static void WriteUpload(string directory, UploadState state)
+    {
+        state.Note = state.Material.Note;
+        SafeFiles.AtomicText(UploadStatePath(directory), Json.Write(state));
+    }
 
-    public UploadState Begin(string name, FileUpload[] files, string note = "", string? requestedId = null)
+    public UploadState Begin(string name, FileUpload[] files, string note = "", string? requestedId = null,
+        RecordingUpload? recording = null)
     {
         _ = Root("draft"); _ = Root("library");
         if (files.Length == 0 || files.Length > 200) throw new VaultException("invalid-files", "每次请选择 1–200 个素材文件");
-        var state = new UploadState();
+        var state = new UploadState { Recording = recording };
         if (requestedId is not null) state.Material.Id = SafeFiles.Id(requestedId);
         state.Material.Name = SafeFiles.Name(string.IsNullOrWhiteSpace(name) ? $"{DateTime.Now:yyyyMMdd}-素材组" : name);
         state.Material.Note = note;
@@ -156,17 +169,19 @@ public sealed class VaultStore
             });
         }
         var directory = Path.Combine(Area("pending"), state.Material.Id);
+        var committed = List("draft").Items.SingleOrDefault(i => i.Id == state.Material.Id);
+        if (committed is not null) return new() { Material = committed };
         if (Directory.Exists(directory))
         {
             var previous = ReadUpload(directory);
             if (previous.Material.Name != state.Material.Name || previous.Material.Attachments.Count != files.Length ||
-                !previous.Material.Attachments.Zip(state.Material.Attachments).All(pair => pair.First.Id == pair.Second.Id && pair.First.FileName == pair.Second.FileName && pair.First.Kind == pair.Second.Kind))
+                previous.Recording?.Selection != recording?.Selection ||
+                !previous.Material.Attachments.Zip(state.Material.Attachments).All(pair => pair.First.Id == pair.Second.Id &&
+                    (previous.Recording?.InputFileName ?? pair.First.FileName) == pair.Second.FileName && pair.First.Kind == pair.Second.Kind))
                 throw new VaultException("upload-conflict", "重试保存与原输入不同，原内容保留");
             activeUploads.Add(previous.Material.Id);
             return previous;
         }
-        var committed = List("draft").Items.SingleOrDefault(i => i.Id == state.Material.Id);
-        if (committed is not null) return new() { Material = committed };
         Directory.CreateDirectory(directory);
         WriteUpload(directory, state);
         activeUploads.Add(state.Material.Id);
@@ -199,6 +214,8 @@ public sealed class VaultStore
     {
         var directory = Pending(uploadId);
         var state = ReadUpload(directory);
+        if (state.Recording is { Phase: not "capturing" })
+            throw new VaultException("recording-processing", "录制已开始处理，原始文件不能再改变");
         var file = state.Material.Attachments.SingleOrDefault(a => a.Id == attachmentId)
             ?? throw new VaultException("missing-attachment", "附件不存在");
         if (chunks <= 0 || chunks > 100001 || bytes <= 0) throw new VaultException("empty-file", "没有收到完整文件");
@@ -232,6 +249,8 @@ public sealed class VaultStore
         if (existing is not null) { activeUploads.Remove(uploadId); return existing; }
         var directory = Pending(uploadId);
         var state = ReadUpload(directory);
+        if (state.Recording is not null && state.Recording.Phase != "ready")
+            throw new VaultException("recording-not-ready", "录制尚未完成转码和检查，原片已保留");
         foreach (var file in state.Material.Attachments)
         {
             var path = Path.Combine(directory, file.FileName);
