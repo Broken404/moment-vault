@@ -1,0 +1,442 @@
+{
+  "date": "2026-10-22",
+  "scope": "Formal selection and preview only; recording remains unavailable",
+  "build": {
+    "sourceCommit": "b412d55",
+    "contentSha256": "65f7d73a227a6c431d88eb9ce22c7225344467180b400f0722863df32ae5fa7a",
+    "unitTests": 30,
+    "fullCheck": "passed",
+    "nativeCodeChanged": false,
+    "remoteCI": "not checked"
+  },
+  "ownedFixture": {
+    "source": "Locally generated testsrc2 with burned clock and sine; 15 seconds, 960x540, 30fps",
+    "productionModules": true,
+    "secondVideoCreatedByPreview": false,
+    "cacheLimitBytes": 8388608,
+    "cacheLimitEntries": 8,
+    "observations": [
+      {
+        "check": "keyboard-target-frame",
+        "observed": {
+          "structure": "youtube",
+          "connection": "connected",
+          "a": 1,
+          "b": 10,
+          "requested": 10,
+          "actual": 10,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 1843200,
+          "cacheEntries": 2,
+          "message": ""
+        }
+      },
+      {
+        "check": "rapid-latest-boundary",
+        "observed": {
+          "structure": "youtube",
+          "connection": "connected",
+          "a": 1,
+          "b": 9,
+          "requested": 9,
+          "actual": 9,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 2764800,
+          "cacheEntries": 3,
+          "message": ""
+        }
+      },
+      {
+        "check": "cached-boundary",
+        "observed": {
+          "structure": "youtube",
+          "connection": "connected",
+          "a": 1,
+          "b": 9,
+          "requested": 9,
+          "actual": 9,
+          "loading": false,
+          "playing": false,
+          "cached": true,
+          "cacheBytes": 3686400,
+          "cacheEntries": 4,
+          "message": ""
+        }
+      },
+      {
+        "check": "pointer-drag",
+        "observed": {
+          "structure": "youtube",
+          "connection": "connected",
+          "a": 2.512,
+          "b": 9,
+          "requested": 2.512,
+          "actual": 2.5,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 4608000,
+          "cacheEntries": 5,
+          "message": ""
+        }
+      },
+      {
+        "check": "rail-rebuild",
+        "observed": {
+          "structure": "youtube",
+          "connection": "connected",
+          "a": 2.512,
+          "b": 9,
+          "requested": 2.512,
+          "actual": 2.5,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 4608000,
+          "cacheEntries": 5,
+          "message": ""
+        }
+      },
+      {
+        "check": "trial-auto-stop-at-b",
+        "observed": {
+          "structure": "youtube",
+          "connection": "connected",
+          "a": 2.512,
+          "b": 9,
+          "requested": 9,
+          "actual": 9,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 1843200,
+          "cacheEntries": 2,
+          "message": ""
+        },
+        "media": {
+          "count": 1,
+          "paused": true,
+          "time": 9
+        }
+      },
+      {
+        "check": "same-source-player-rebuild",
+        "observed": {
+          "structure": "youtube",
+          "connection": "connected",
+          "a": 2.512,
+          "b": 9,
+          "requested": 2.512,
+          "actual": 2.5,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 921600,
+          "cacheEntries": 1,
+          "message": ""
+        }
+      },
+      {
+        "check": "watch-before-enter",
+        "media": {
+          "paused": true,
+          "time": 2
+        }
+      },
+      {
+        "check": "close-during-seek-restores-watch-time",
+        "media": {
+          "paused": true,
+          "selectionHosts": 0,
+          "time": 2
+        }
+      },
+      {
+        "check": "bilibili-owned-rail-frame",
+        "observed": {
+          "structure": "bilibili",
+          "connection": "connected",
+          "a": 2,
+          "b": 8,
+          "requested": 8,
+          "actual": 8,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 1843200,
+          "cacheEntries": 2,
+          "message": ""
+        }
+      },
+      {
+        "check": "x-owned-rail-and-exact-input",
+        "observed": {
+          "structure": "x",
+          "connection": "connected",
+          "a": 2.125,
+          "b": 5,
+          "requested": 2.125,
+          "actual": 2.1,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 1843200,
+          "cacheEntries": 2,
+          "message": ""
+        }
+      },
+      {
+        "check": "missing-rail-no-automatic-fallback",
+        "observed": {
+          "structure": "x",
+          "connection": "unavailable",
+          "a": 2.125,
+          "b": 5,
+          "requested": 2.125,
+          "actual": 2.1,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 1843200,
+          "cacheEntries": 2,
+          "message": ""
+        },
+        "fineExpanded": "false"
+      },
+      {
+        "check": "source-change",
+        "observed": {
+          "structure": "x",
+          "connection": "changed",
+          "a": 2.125,
+          "b": 5,
+          "requested": 2.125,
+          "actual": 2.1,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "message": ""
+        }
+      },
+      {
+        "check": "source-change-close-no-old-seek",
+        "media": {
+          "paused": true,
+          "selectionHosts": 0,
+          "time": 0
+        }
+      },
+      {
+        "check": "source-switch-original-watch-nonzero",
+        "media": {
+          "paused": true,
+          "time": 2
+        }
+      },
+      {
+        "check": "source-switch-from-nonzero-watch",
+        "observed": {
+          "structure": "x",
+          "connection": "changed",
+          "a": 2,
+          "b": 7,
+          "requested": 2,
+          "actual": 2,
+          "loading": false,
+          "playing": false,
+          "cached": false,
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "message": ""
+        }
+      },
+      {
+        "check": "source-switch-from-nonzero-close",
+        "media": {
+          "paused": true,
+          "selectionHosts": 0,
+          "time": 0
+        }
+      },
+      {
+        "check": "existing-player-reparent-regression",
+        "before": {
+          "hostConnected": true,
+          "popoverOpen": false
+        },
+        "after": {
+          "hostConnected": true,
+          "popoverOpen": true
+        }
+      }
+    ],
+    "screenshots": [
+      ".local-data/video-preview-lab/preview-light-20261022.png",
+      ".local-data/video-preview-lab/preview-dark-20261022.png"
+    ]
+  },
+  "platformSamples": {
+    "urls": {
+      "youtube": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+      "bilibili": "https://www.bilibili.com/video/BV1Sqpy6NEJC/",
+      "x": "https://x.com/SpaceX/status/2110886603371536546"
+    },
+    "browser": "Real Edge with formal unpacked extension; technical-spike extension also enabled but none of its capture actions used",
+    "initialFailures": [
+      {
+        "site": "youtube",
+        "symptom": "Connected selection host and 2 endpoints but popover false, display none after initial page reparent"
+      },
+      {
+        "site": "x",
+        "symptom": "No role=group, English Seek slider; native rail unavailable; boundary frame timeout"
+      }
+    ],
+    "observations": [
+      {
+        "site": "youtube",
+        "phase": "entered",
+        "observed": {
+          "a": "13.906601",
+          "b": "18.906601000000002",
+          "caption": "画面 00:13.908",
+          "paused": true,
+          "videoCount": 2,
+          "videoTime": 13.907588
+        }
+      },
+      {
+        "site": "bilibili",
+        "phase": "pointer-drag",
+        "observed": {
+          "a": "65.825",
+          "b": "75.663108",
+          "caption": "画面 01:05.792",
+          "paused": true,
+          "pending": false,
+          "popover": true,
+          "time": 65.825
+        }
+      },
+      {
+        "site": "x",
+        "phase": "after-fix-keyboard-frame",
+        "observed": {
+          "a": "10.761",
+          "b": "16.761293000000002",
+          "caption": "画面 00:10.744",
+          "paused": true,
+          "pending": false,
+          "popover": true,
+          "time": 10.761
+        }
+      },
+      {
+        "site": "x",
+        "phase": "after-fix-pointer-drag",
+        "observed": {
+          "a": "11.563",
+          "b": "16.761293000000002",
+          "caption": "画面 00:11.545",
+          "paused": true,
+          "pending": false,
+          "popover": true,
+          "time": 11.563
+        }
+      },
+      {
+        "site": "youtube",
+        "phase": "after-fix-theater-reparent",
+        "observed": {
+          "caption": "画面 00:17.000",
+          "nativeRail": {
+            "bottom": 612.3333740234375,
+            "height": 6,
+            "left": 12,
+            "right": 1672,
+            "top": 606.3333740234375,
+            "width": 1660,
+            "x": 12,
+            "y": 606.3333740234375
+          },
+          "overlay": {
+            "bottom": 611.3333740234375,
+            "height": 4,
+            "left": 12,
+            "right": 1672,
+            "top": 607.3333740234375,
+            "width": 1660,
+            "x": 12,
+            "y": 607.3333740234375
+          },
+          "popover": true,
+          "theater": true
+        }
+      },
+      {
+        "site": "youtube",
+        "phase": "after-fix-pointer-drag",
+        "observed": {
+          "a": "10.653",
+          "b": "17.053764",
+          "caption": "画面 00:10.600",
+          "paused": true,
+          "pending": false,
+          "popover": true,
+          "time": 10.653
+        }
+      },
+      {
+        "site": "x",
+        "phase": "after-fix-trial-at-b",
+        "observed": {
+          "a": "11.563",
+          "b": "16.761293000000002",
+          "button": "预览选区",
+          "caption": "画面 00:16.750",
+          "paused": true,
+          "time": 16.761292
+        }
+      },
+      {
+        "site": "bilibili",
+        "phase": "final-build-keyboard-frame",
+        "observed": {
+          "a": "69.305",
+          "b": "75.304981",
+          "caption": "画面 01:09.292",
+          "paused": true,
+          "pending": false,
+          "popover": true,
+          "time": 69.305
+        }
+      }
+    ],
+    "limits": [
+      "Only listed sample pages and actions verified",
+      "No complete long-video/portrait/weak-network/performance acceptance",
+      "No actual recording or MP4 browser integration tested this turn",
+      "Old short-capture freeze remains unresolved"
+    ]
+  },
+  "regressions": {
+    "reparent": {
+      "before": {
+        "hostConnected": true,
+        "popoverOpen": false
+      },
+      "after": {
+        "hostConnected": true,
+        "popoverOpen": true
+      }
+    },
+    "frameBeforeSeeked": "New unit test failed before fix and passed after fix; real X frame preview succeeded after update",
+    "englishRailWithoutGroup": "New DOM test failed before adapter fix and passed after fix"
+  }
+}
