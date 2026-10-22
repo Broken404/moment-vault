@@ -1,4 +1,4 @@
-param([switch]$Unregister)
+param([switch]$Unregister, [string]$HostDirectory = 'dist/host')
 $ErrorActionPreference = 'Stop'
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $registryPaths = @(
@@ -14,9 +14,11 @@ if ($Unregister) {
     exit
 }
 $identity = Get-Content -Raw -LiteralPath (Join-Path $repositoryRoot 'config/extension-identity.json') | ConvertFrom-Json
-$hostExecutable = Join-Path $repositoryRoot 'dist/host/MomentVault.Host.exe'
+$hostRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot $HostDirectory))
+if (-not $hostRoot.StartsWith($repositoryRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) { throw 'Development helper must stay inside the repository.' }
+$hostExecutable = Join-Path $hostRoot 'MomentVault.Host.exe'
 if (-not (Test-Path -LiteralPath $hostExecutable)) { throw 'Build the helper first: npm run build:host' }
-$manifestPath = Join-Path $repositoryRoot 'dist/host/com.momentvault.host.json'
+$manifestPath = Join-Path $hostRoot 'com.momentvault.host.json'
 $hostManifest = @{ name='com.momentvault.host'; description='Moment Vault local material helper'; path=$hostExecutable; type='stdio'; allowed_origins=@("chrome-extension://$($identity.id)/") } | ConvertTo-Json -Depth 4
 # Windows PowerShell 5.1 and PowerShell 7 use different defaults for UTF-8.
 [IO.File]::WriteAllText($manifestPath, $hostManifest + [Environment]::NewLine, (New-Object System.Text.UTF8Encoding($false)))

@@ -1,8 +1,8 @@
 # 开发与本地检查
 
-正式代码从批准的 v1.0 方案开始，保留 spikes 作为独立实验与证据。当前版本先接通扩展、本地助手与图片/文件流程；视频录制未启用，不能拿已有试验成片作为正式代码验收。
+正式代码从批准的 v1.0 方案开始，保留 spikes 作为独立实验与证据。当前已接通扩展、本地助手、图片/文件流程，并加入正式录制到 MP4 草稿的代码链路；实际采集验收单独记录，不能拿已有试验成片作为正式代码验收。
 
-2026-10-22 开发构建已开放支持页面的原轨道选段与独立预览，实际录制仍未开放。正式扩展重新加载后刷新视频页，从桌宠的“屏幕录制”进入；可以调整、试播和随时退出，不会保存素材。实现、可复跑的自制媒体夹具及三站实测边界见 [选段与预览](video-preview-implementation.md)。
+2026-10-23 开发构建可从桌宠的“屏幕录制”进入原轨道选段与独立预览，真正采集由扩展录制快捷键触发，到 B 自动停止并异步保存 MP4。选段和试播本身不保存。首轮真实触发发现的状态条布局错误已修正，修正版采集验收仍待完成。见 [选段与预览](video-preview-implementation.md)、[录制联动](recording-integration.md)。
 
 ## 环境与构建
 
@@ -72,7 +72,31 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/check-recording-media.
 
 开发环境需 .NET 10 和已安装的 FFmpeg。脚本只在 `.local-data` 生成自制运动片、音频尾段反例与独立草稿/资产库，执行真实编解码、分块协议、失败保留、重启重试和导入保留原格式检查。实际 Edge 保留样本也已单独跑过同组检查；脚本生成的反例不代表浏览器复现。原生普通文件/协议检查当前为 15 项。
 
-产品助手从自身目录的 `media/ffmpeg.exe`、`media/ffprobe.exe` 取工具；未随包时报告缺失，不自动使用系统 PATH。本轮没有部署新助手或开放浏览器录制入口。录制协议、验收结果和剩余范围见 [本地处理](recording-processing.md)。
+产品助手从自身目录的 `media/ffmpeg.exe`、`media/ffprobe.exe` 取工具；未随包时报告缺失，不自动使用系统 PATH。录制协议及剩余范围见 [本地处理](recording-processing.md)。
+
+### 正式录制开发部署与文件管线检查
+
+浏览器占用原助手文件时可以构建到新的仓库内开发目录；注册后重新加载正式扩展，已有用户目录配置保持原位置。不要直接结束浏览器正在使用的助手进程。
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/build-host.ps1 -OutputDirectory dist/host-recording
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/stage-media-tools.ps1 -SourceDirectory '<已安装的 FFmpeg 分发目录>' -HostDirectory dist/host-recording
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/register-helper.ps1 -HostDirectory dist/host-recording
+npm run check:registration -- --host-directory dist/host-recording
+```
+
+`stage-media-tools.ps1` 需要源目录内的 `bin/ffmpeg.exe`、`bin/ffprobe.exe`、`LICENSE` 和 `README.txt`，保留原许可证、README 及工具版本/哈希。这只是显式选择现有安装用于本机开发，不会下载组件或完成最终分发包。脚本默认目标仍为 `dist/host`；使用其他目录注册后，注册检查必须带匹配的 `--host-directory` 参数。
+
+```powershell
+$env:MOMENT_VAULT_TEST_HOST = (Resolve-Path 'dist/host-recording/MomentVault.Host.exe').Path
+$env:MOMENT_VAULT_TEST_FFMPEG = (Resolve-Path 'dist/host-recording/media/ffmpeg.exe').Path
+$env:MOMENT_VAULT_TEST_FFPROBE = (Resolve-Path 'dist/host-recording/media/ffprobe.exe').Path
+node tools/check-recording-pipeline.mjs
+```
+
+该检查编译并执行生产 TypeScript 上传代码，通过真实长度前缀协议连接助手，生成自制 WebM，模拟服务端接受分片后确认丢失，重放后检查仅有一条 MP4、实际解码及编解码信息。配置、媒体与结果都位于独立 `.local-data` 目录，不使用用户素材目录；不验证浏览器标签页采集。
+
+首次加载录制构建需接受 Edge 显示的扩展权限变化。关闭试验扩展以免争用快捷键，并在 `edge://extensions/shortcuts` 检查正式扩展的实际绑定；仅关闭试验版不保证绑定自动转移。内部扩展页需人工操作。开发构建新增 `tabCapture`、`offscreen`，采集只由实际命令开始，没有开放普通网页启动采集的接口。
 
 ## Git 与发布
 

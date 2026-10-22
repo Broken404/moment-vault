@@ -7,7 +7,15 @@ import { promisify } from 'node:util';
 
 assert.equal(process.platform, 'win32', 'Run the registration check on Windows');
 const identity = JSON.parse(await readFile('config/extension-identity.json', 'utf8'));
-const expectedManifest = path.resolve('dist/host/com.momentvault.host.json');
+const directoryIndex = process.argv.indexOf('--host-directory');
+const hostDirectory = path.resolve(
+  directoryIndex >= 0 ? process.argv[directoryIndex + 1] : 'dist/host',
+);
+assert.ok(
+  hostDirectory.startsWith(path.resolve('.') + path.sep),
+  'Development helper must remain inside this repository',
+);
+const expectedManifest = path.join(hostDirectory, 'com.momentvault.host.json');
 const registryProbe = String.raw`
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
@@ -40,7 +48,7 @@ const origin = `chrome-extension://${identity.id}/`;
 assert.equal(manifest.name, 'com.momentvault.host');
 assert.equal(manifest.type, 'stdio');
 assert.deepEqual(manifest.allowed_origins, [origin]);
-assert.equal(path.resolve(manifest.path), path.resolve('dist/host/MomentVault.Host.exe'));
+assert.equal(path.resolve(manifest.path), path.join(hostDirectory, 'MomentVault.Host.exe'));
 assert.ok((await stat(manifest.path)).isFile());
 
 const scratchRoot = path.resolve('.local-data');

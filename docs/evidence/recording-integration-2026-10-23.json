@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-23",
+  "scope": "Formal shortcut capture and durable MP4 publication implementation; corrected browser capture acceptance pending",
+  "baseCommit": "693b168",
+  "implementationCommit": "c9d52df",
+  "buildHashes": {
+    "contentJsSha256": "2bf025a456ba6c0de200b8fb13d6ff5476102193ac51676ade9eab4cdc4b9af2",
+    "workerJsSha256": "68e56616bb35824c23a8c009944ef7980c216d471e084269049a84b273a7f062",
+    "offscreenJsSha256": "56802d6556d701f7e0f79a19321f601aabf13c476f9789ca2a5f22f2a6e88190",
+    "nativeExecutableSha256": "ae38193af1857a5a261e4bd3470d1d31f9d8199792c9cff3386ca48218e871f2"
+  },
+  "checks": {
+    "frontEndUnitTests": { "passed": 42, "recordingTests": 12 },
+    "nativeFileAndProtocolTests": { "passed": 15 },
+    "formatAndTypes": "passed",
+    "aggregateCheck": "unit checks passed; build process ran out of memory",
+    "subsequentProductionBuildAndGeneratedScriptCheck": "passed",
+    "registrationAndRealOriginFramedPing": "passed with --host-directory dist/host-recording",
+    "remoteCI": "not checked"
+  },
+  "generatedMediaPipeline": {
+    "productionTypescriptPublisher": true,
+    "actualNativeProcess": true,
+    "actualFfmpegAndIndependentDecode": true,
+    "lostAcknowledgementReplay": true,
+    "materialCount": 1,
+    "video": { "codec": "h264", "width": 640, "height": 360, "duration": 2, "frames": 60 },
+    "audio": { "codec": "aac", "duration": 2, "frames": 94 },
+    "bytes": 291669,
+    "sha256": "7e79a6aed01d4c02709bab506eeb011fc6037b47a7753b875ea619228a1babcd",
+    "browserCaptureProven": false
+  },
+  "realBrowserFirstAttempt": {
+    "page": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "a": 2,
+    "b": 4,
+    "trigger": "User pressed actual formal-extension Ctrl+Shift+9 after binding it in Edge",
+    "result": "Preparation failed: recording status bar overlaps source picture",
+    "userSymptom": "Looked as if it stopped immediately or jumped to B",
+    "savedMp4": false
+  },
+  "layoutRegression": {
+    "productionPrepareFunctionRedBeforeFix": true,
+    "browserFixtureRedBeforeFix": true,
+    "cause": "Placement used 44px minimum height instead of actual two-line rendered height",
+    "fix": "Measure rendered status bar and reposition before capture checks; prevent text wrapping",
+    "productionPrepareFunctionGreenAfterFix": true,
+    "browserFixtureGreenAfterFix": true,
+    "observedBar": { "x": 162, "top": 6, "width": 310, "height": 54, "bottom": 60 },
+    "observedVideoTop": 68,
+    "gapPixels": 8,
+    "realCaptureProvenByLayoutFixture": false
+  },
+  "deployment": {
+    "developmentHostDirectory": "dist/host-recording",
+    "tools": "Explicit staging from already installed FFmpeg 8.1.1 distribution",
+    "originalLicenseReadmeVersionsAndHashesRetainedLocally": true,
+    "userDirectoryConfigurationHashUnchanged": true,
+    "finalRedistributionPackage": false
+  },
+  "remaining": [
+    "User reload of corrected formal extension and actual shortcut capture to a verified MP4",
+    "Close-mode capture stop and background-save browser validation",
+    "Old short-capture freeze root cause and owned-clock cold/repeated quality gate",
+    "Full supported-platform capture matrix and release installer"
+  ]
+}
