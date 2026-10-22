@@ -74,7 +74,77 @@ try {
   assert.equal(
     root.querySelector('.menu-grid button').disabled,
     true,
-    'Unimplemented video capture must stay disabled',
+    'Video mode must stay disabled on unsupported pages',
+  );
+  // Exercise the actual bundled entry wiring. These fake media methods do not
+  // verify decoding, top-layer layout, or platform integration.
+  dom.reconfigure({ url: 'https://www.youtube.com/watch?v=owned-smoke' });
+  const player = window.document.createElement('div');
+  player.id = 'movie_player';
+  player.innerHTML =
+    '<video></video><div class="ytp-progress-bar-container"><div class="ytp-progress-bar"></div></div>';
+  window.document.body.append(player);
+  for (const element of player.querySelectorAll('*'))
+    element.getBoundingClientRect = () => ({
+      left: 20,
+      top: 30,
+      right: 620,
+      bottom: 36,
+      width: 600,
+      height: 6,
+    });
+  player.getBoundingClientRect = () => ({
+    left: 10,
+    top: 10,
+    right: 650,
+    bottom: 370,
+    width: 640,
+    height: 360,
+  });
+  const video = player.querySelector('video');
+  video.getBoundingClientRect = player.getBoundingClientRect;
+  Object.defineProperties(video, {
+    duration: { value: 15 },
+    videoWidth: { value: 640 },
+    videoHeight: { value: 360 },
+    readyState: { value: 4 },
+    seekable: { value: { length: 1, start: () => 0, end: () => 15 } },
+  });
+  video.pause = () => {};
+  video.play = async () => {};
+  window.ResizeObserver = class {
+    observe() {}
+    disconnect() {}
+  };
+  window.HTMLElement.prototype.showPopover = function () {
+    this.setAttribute('data-owned-popover', 'shown');
+  };
+  const nativeMatches = window.Element.prototype.matches;
+  window.HTMLElement.prototype.matches = function (selector) {
+    return selector === ':popover-open'
+      ? this.hasAttribute('data-owned-popover')
+      : nativeMatches.call(this, selector);
+  };
+  window.HTMLCanvasElement.prototype.getContext = () => ({ drawImage() {} });
+  messages.forEach((fn) => fn({ target: 'content', type: 'toggle-mode' }));
+  await until(() =>
+    player.querySelector('[data-moment-vault-video]')?.shadowRoot?.querySelector('.video-panel'),
+  );
+  const videoRoot = player.querySelector('[data-moment-vault-video]').shadowRoot;
+  assert.equal(videoRoot.querySelectorAll('.endpoint').length, 2);
+  assert.equal(
+    videoRoot.querySelector('footer button').disabled,
+    true,
+    'Recording must remain disabled while selection is available',
+  );
+  window.document.dispatchEvent(
+    new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+  );
+  await until(() => !player.querySelector('[data-moment-vault-video]'));
+  assert.equal(
+    player.hasAttribute('data-mv-selection'),
+    false,
+    'Closing selection must remove scoped native styles',
   );
   messages.forEach((fn) => fn({ target: 'content', type: 'receive-images' }));
   await until(() => !root.querySelector('.intake').hidden);
@@ -89,7 +159,7 @@ try {
   assert.equal(root.querySelector('.vault-root').dataset.theme, 'dark');
   assert.deepEqual(errors, []);
   process.stdout.write(
-    'PASS built extension: stable identity, browser-shaped startup, four actions, scoped intake and persisted hiding/theme\n',
+    'PASS built extension: stable identity, startup, supported video mode open/Escape cleanup, disabled recording, scoped intake and persisted hiding/theme\n',
   );
 } finally {
   window.close();
