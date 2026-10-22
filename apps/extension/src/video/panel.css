@@ -1,6 +1,55 @@
 :host {
   all: initial;
 }
+.video-layer[data-capture] .video-panel,
+.video-layer[data-capture] .native-selection {
+  display: none;
+}
+.recording-bar {
+  position: fixed;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(310px, calc(100vw - 16px));
+  min-height: 44px;
+  padding: 7px 9px;
+  border: 2px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 #0003;
+}
+.recording-bar div {
+  display: grid;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+.recording-bar b {
+  font-size: 12px;
+}
+.recording-bar b,
+.recording-bar small {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.recording-bar small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.recording-bar .button {
+  flex-shrink: 0;
+  font-size: 11px;
+  padding: 4px 6px;
+  min-height: 28px;
+}
+.recording-bar .icon-button {
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+}
 .video-layer:popover-open {
   display: block;
 }

@@ -132,10 +132,9 @@ try {
   );
   const videoRoot = player.querySelector('[data-moment-vault-video]').shadowRoot;
   assert.equal(videoRoot.querySelectorAll('.endpoint').length, 2);
-  assert.equal(
-    videoRoot.querySelector('footer button').disabled,
-    true,
-    'Recording must remain disabled while selection is available',
+  assert.ok(
+    videoRoot.querySelector('[data-record-shortcut]'),
+    'Selection must expose the actual shortcut requirement rather than capture from a page click',
   );
   window.document.dispatchEvent(
     new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
@@ -159,7 +158,7 @@ try {
   assert.equal(root.querySelector('.vault-root').dataset.theme, 'dark');
   assert.deepEqual(errors, []);
   process.stdout.write(
-    'PASS built extension: stable identity, startup, supported video mode open/Escape cleanup, disabled recording, scoped intake and persisted hiding/theme\n',
+    'PASS built extension: stable identity, startup, selection/Escape cleanup, shortcut-only recording entry, scoped intake and persisted hiding/theme\n',
   );
 } finally {
   window.close();

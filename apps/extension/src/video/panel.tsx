@@ -7,6 +7,8 @@ import { VideoSession, type SelectionState, type VideoEnvironment } from './sess
 import type { VideoTarget } from './sites';
 import themeCss from '../theme.css?inline';
 import panelCss from './panel.css?inline';
+import { videoCapture, type CaptureHooks } from './capture';
+import type { CaptureStatus } from '../recording/types';
 
 export function VideoMode({
   target,
@@ -16,6 +18,11 @@ export function VideoMode({
   onError,
   environment,
   onState,
+  onCaptureHooks,
+  recording,
+  closing = false,
+  shortcut = '',
+  onStop,
 }: {
   target: VideoTarget;
   theme: string;
@@ -24,11 +31,19 @@ export function VideoMode({
   onError: (message: string) => void;
   environment?: VideoEnvironment;
   onState?: (state: SelectionState) => void;
+  onCaptureHooks?: (hooks: CaptureHooks | null) => void;
+  recording?: CaptureStatus | null;
+  closing?: boolean;
+  shortcut?: string;
+  onStop?: () => void;
 }) {
   const controller = useRef<VideoSession | null>(null);
   const [mount, setMount] = useState<HTMLElement | null>(null);
   const [snapshot, setSnapshot] = useState<SelectionState | null>(null);
   const [fine, setFine] = useState(false);
+  const [recordPosition, setRecordPosition] = useState<{ left: number; top: number } | null>(null);
+  const hooksRef = useRef(onCaptureHooks);
+  hooksRef.current = onCaptureHooks;
   const [fineWindow, setFineWindow] = useState({ start: 0, end: 20 });
   const [position, setPosition] = useState(() => {
     const rect = target.video.getBoundingClientRect();
@@ -90,6 +105,8 @@ export function VideoMode({
       return;
     }
     const session = opened;
+    const capture = videoCapture(session, layer, setRecordPosition);
+    hooksRef.current?.(capture);
     controller.current = session;
     setSnapshot(session.state);
     setMount(layer);
@@ -135,6 +152,8 @@ export function VideoMode({
       document.removeEventListener('keydown', key, true);
       document.removeEventListener('fullscreenchange', fullscreen);
       layer.removeEventListener('toggle', reconnectLayer);
+      hooksRef.current?.(null);
+      capture.release();
       session.close();
       controller.current = null;
       host.remove();
@@ -144,6 +163,9 @@ export function VideoMode({
   useEffect(() => {
     if (mount) mount.dataset.theme = theme;
   }, [mount, theme]);
+  useEffect(() => {
+    if (mount) mount.style.visibility = closing ? 'hidden' : '';
+  }, [mount, closing]);
   useEffect(() => {
     const bounded = () =>
       setPosition((value) => ({
@@ -156,7 +178,9 @@ export function VideoMode({
 
   if (!mount || !snapshot) return null;
   const session = controller.current!;
-  const disabled = snapshot.connection === 'changed';
+  const busyRecording =
+    !!recording && ['preparing', 'recording', 'stopping', 'processing'].includes(recording.phase);
+  const disabled = snapshot.connection === 'changed' || busyRecording;
   const move = (endpoint: Endpoint, value: number) => session.move(endpoint, value);
   const openFine = () => {
     const at = snapshot.selection[snapshot.active],
@@ -186,6 +210,30 @@ export function VideoMode({
   };
   return createPortal(
     <>
+      {recordPosition && (
+        <section className="recording-bar" style={recordPosition} aria-label="录制状态">
+          <div>
+            <b>{recording?.message ?? '正在准备录制…'}</b>
+            <small
+              title={
+                recording?.phase === 'recording'
+                  ? `${shortcut || '录制快捷键'} 提前结束`
+                  : '关闭后继续完成必要保存'
+              }
+            >
+              {recording?.phase === 'recording'
+                ? `已录 ${formatTime(recording.elapsed ?? 0)} · ${shortcut || '录制快捷键'} 提前结束`
+                : '关闭后继续完成必要保存'}
+            </small>
+          </div>
+          <button className="button" onClick={onStop} disabled={recording?.phase !== 'recording'}>
+            结束并保存
+          </button>
+          <button className="icon-button" onClick={onClose} aria-label="关闭录制模式">
+            <X />
+          </button>
+        </section>
+      )}
       {snapshot.rail && snapshot.connection === 'connected' && (
         <div className="native-selection" style={snapshot.rail} aria-label="原进度条选区">
           <div
@@ -414,9 +462,9 @@ export function VideoMode({
             ← → {prefs.step} 秒 · Ctrl + ← → {prefs.fineStep} 秒
           </span>
           <span>选段与预览不会保存素材</span>
-          <button className="button" disabled title="录制联动正在开发，当前仅提供选段和预览">
-            录制暂未开放
-          </button>
+          <span data-record-shortcut>
+            {shortcut ? `按 ${shortcut} 开始／提前结束录制` : '录制快捷键尚未绑定，请在设置中配置'}
+          </span>
         </footer>
       </section>
     </>,

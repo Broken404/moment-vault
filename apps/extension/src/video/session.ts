@@ -52,6 +52,7 @@ export interface VideoEnvironment {
 export class VideoSession {
   state: SelectionState;
   private closed = false;
+  private captureLocked = false;
   private cache = new FrameCache();
   private queue!: LatestPreview<{ frame: Frame; cached: boolean }>;
   private lease!: ReturnType<typeof watchLease>;
@@ -249,6 +250,7 @@ export class VideoSession {
   };
   private refresh() {
     if (this.closed) return;
+    if (this.captureLocked) return;
     if (
       !this.target.player.isConnected ||
       !this.target.video.isConnected ||
@@ -359,13 +361,19 @@ export class VideoSession {
     this.visible.getContext('2d')?.drawImage(source, 0, 0, w, h);
   }
   select(endpoint: Endpoint) {
-    if (this.closed || !this.sameSource()) return;
+    if (this.closed || this.captureLocked || !this.sameSource()) return;
     this.stopPlayback();
     this.state.active = endpoint;
     void this.request(this.state.selection[endpoint]);
   }
   move(endpoint: Endpoint, time: number) {
-    if (this.closed || this.state.connection === 'changed' || !this.sameSource()) return;
+    if (
+      this.closed ||
+      this.captureLocked ||
+      this.state.connection === 'changed' ||
+      !this.sameSource()
+    )
+      return;
     const { selection, domain } = this.state;
     const minimum = endpoint === 'a' ? domain.start : selection.a + 0.001;
     const maximum = endpoint === 'a' ? selection.b - 0.001 : domain.end;
@@ -403,6 +411,7 @@ export class VideoSession {
     return false;
   }
   async preview() {
+    if (this.captureLocked) return;
     if (this.state.playing) {
       this.stopPreview();
       return;
@@ -474,6 +483,24 @@ export class VideoSession {
   private visibility = () => {
     if (document.hidden && this.state.playing) this.stopPreview();
   };
+  validSource() {
+    return !this.closed && this.sameSource();
+  }
+  async prepareCapture() {
+    if (this.captureLocked || !this.validSource()) throw new Error('当前视频不可录制。');
+    this.captureLocked = true;
+    this.stopPlayback();
+    this.queue.cancel();
+    const result = await this.request(this.state.selection.a, true);
+    if (!result || !this.validSource()) throw new Error('起点画面尚未就绪，未开始录制。');
+    return this.target.video.currentTime;
+  }
+  releaseCapture() {
+    if (this.closed) return;
+    this.captureLocked = false;
+    this.schedule();
+    if (this.sameSource()) void this.request(this.state.selection[this.state.active]);
+  }
   close() {
     if (this.closed) return;
     selections.set(this.target.key, { ...this.state.selection });

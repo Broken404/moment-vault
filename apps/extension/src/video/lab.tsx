@@ -5,6 +5,8 @@ import { VideoMode } from './panel';
 import { findVideoTargets, type Site, type VideoTarget } from './sites';
 import type { SelectionState, VideoEnvironment } from './session';
 import { DEFAULT_PREFERENCES } from '@shared/model';
+import type { CaptureHooks } from './capture';
+import type { CaptureStatus } from '../recording/types';
 import { Pet } from '../ui';
 import themeCss from '../theme.css?inline';
 
@@ -20,6 +22,9 @@ function Lab() {
     [railEpoch, setRailEpoch] = useState(0),
     [playerEpoch, setPlayerEpoch] = useState(0);
   const [source, setSource] = useState(1);
+  const capture = useRef<CaptureHooks | null>(null);
+  const [recording, setRecording] = useState<CaptureStatus | null>(null);
+  const [layoutResult, setLayoutResult] = useState('');
   const video = useRef<HTMLVideoElement>(null);
   const url =
     site === 'youtube'
@@ -43,6 +48,8 @@ function Lab() {
     setTarget(targets[0]);
   };
   const close = () => {
+    capture.current?.release();
+    setRecording(null);
     setTarget(null);
   };
   const rail = (
@@ -83,7 +90,10 @@ function Lab() {
     </div>
   );
   return (
-    <div className="vault-root fixture-page" data-theme={theme}>
+    <div
+      className={`vault-root fixture-page${new URLSearchParams(location.search).has('reported-layout') ? ' reported-layout' : ''}`}
+      data-theme={theme}
+    >
       <style>
         {themeCss +
           `
@@ -99,6 +109,9 @@ function Lab() {
       .fixture-proof{padding:15px;border:1px solid var(--line);background:var(--paper)}.fixture-proof h2{font-size:14px;margin:0 0 12px}
       .fixture-proof pre{font-size:11px;line-height:1.7;white-space:pre-wrap}.fixture-note{font-size:12px;color:var(--muted);max-width:780px;line-height:1.8}
       .fixture-pet{display:flex;align-items:center;gap:12px;margin:20px 0 4px}.fixture-pet span+span{font-size:12px}
+      .reported-layout .fixture-player{position:fixed;left:162px;top:68px;width:885px;height:calc(100vh - 116px);aspect-ratio:auto}
+      .reported-layout .fixture-toolbar{margin-left:1060px;width:500px}.reported-layout .fixture-pet{position:fixed;right:30px;bottom:10px}
+      .reported-layout [data-layout-check]{position:fixed;right:30px;bottom:70px}.reported-layout [data-layout-end]{position:fixed;right:220px;bottom:70px}
       @media(max-width:1000px){.fixture-layout{grid-template-columns:1fr}.fixture-proof{max-width:780px}}
     `}
       </style>
@@ -154,6 +167,41 @@ function Lab() {
         <button className="button" onClick={() => setSource((value) => value + 1)}>
           切换视频来源
         </button>
+        <button
+          className="button"
+          data-layout-check
+          disabled={!target || site !== 'youtube'}
+          onClick={() => {
+            setRecording({
+              id: 'owned-layout',
+              phase: 'preparing',
+              name: '自制布局检查',
+              message: '正在准备录制…',
+            });
+            void capture.current
+              ?.prepare('owned-layout')
+              .then(() => {
+                const bar = target?.player
+                  .querySelector('[data-moment-vault-video]')
+                  ?.shadowRoot?.querySelector('.recording-bar')
+                  ?.getBoundingClientRect();
+                setLayoutResult('布局检查通过：' + JSON.stringify(bar?.toJSON()));
+              })
+              .catch((failure) => setLayoutResult(String(failure)));
+          }}
+        >
+          检查录制准备布局
+        </button>
+        <button
+          className="button"
+          data-layout-end
+          onClick={() => {
+            capture.current?.release();
+            setRecording(null);
+          }}
+        >
+          结束布局检查
+        </button>
       </div>
       <div className="fixture-layout">
         <div>
@@ -205,7 +253,12 @@ function Lab() {
             A、B
             直接放在原进度条上。独立窗口复用这个视频取帧，显示画面内时间码；关闭后恢复原观看位置。实际录制仍未开放。可用上方按钮验证进度条重建、来源切换和显式备用精调。
           </p>
+          <p className="fixture-note">
+            录制布局检查只准备控件，不捕获标签页或保存文件；使用 ?v=owned-1 让自制 YouTube
+            身份一致，reported-layout 参数重现本次播放器边界。
+          </p>
           {error && <p role="alert">{error}</p>}
+          <p data-testid="recording-layout-result">{layoutResult}</p>
         </div>
         <aside className="fixture-proof">
           <h2>联调读数</h2>
@@ -242,6 +295,10 @@ function Lab() {
           onError={setError}
           environment={environment}
           onState={setSnapshot}
+          onCaptureHooks={(hooks) => {
+            capture.current = hooks;
+          }}
+          recording={recording}
         />
       )}
     </div>

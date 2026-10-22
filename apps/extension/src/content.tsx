@@ -19,6 +19,8 @@ import {
 import { Pet, themeName } from './ui';
 import { VideoMode } from './video/panel';
 import { findVideoTargets, supportedSite, videoDomain, type VideoTarget } from './video/sites';
+import type { CaptureHooks } from './video/capture';
+import type { CaptureStatus } from './recording/types';
 import sharedCss from './theme.css?inline';
 import contentCss from './content.css?inline';
 
@@ -39,6 +41,12 @@ function App() {
   const [hearts, setHearts] = useState(0);
   const [videoTarget, setVideoTarget] = useState<VideoTarget | null>(null);
   const [pickingVideo, setPickingVideo] = useState(false);
+  const [recording, setRecording] = useState<CaptureStatus | null>(null);
+  const [closingMode, setClosingMode] = useState(false);
+  const [recordShortcut, setRecordShortcut] = useState('');
+  const captureHooks = useRef<CaptureHooks | null>(null);
+  const recordingRef = useRef<CaptureStatus | null>(null);
+  const closeModeRef = useRef<() => void>(() => {});
   const toggleVideoRef = useRef<() => void>(() => {});
   const batch = useRef<UploadBatch | null>(null);
   const filesRef = useRef<File[]>([]);
@@ -105,20 +113,91 @@ function App() {
     };
   }, []);
   useEffect(() => {
-    const listener = (message: { target?: string; type?: string }) => {
+    const listener = (
+      message: { target?: string; type?: string; id?: string; status?: CaptureStatus },
+      _sender: chrome.runtime.MessageSender,
+      respond: (value: unknown) => void,
+    ) => {
       if (message.target !== 'content') return;
+      if (message.type === 'capture-state' && message.status) {
+        const next = message.status,
+          previous = recordingRef.current;
+        if (next.phase === 'preparing') setStatus('');
+        if (previous && previous.id !== next.id && next.phase !== 'preparing') return;
+        recordingRef.current = next;
+        setRecording(next);
+        if (['saved', 'failed', 'cancelled'].includes(next.phase)) {
+          captureHooks.current?.release();
+          setStatus(next.message);
+        }
+        respond({ ok: true });
+        return;
+      }
+      if (message.type?.startsWith('capture-')) {
+        const task = (async () => {
+          const hooks = captureHooks.current;
+          if (!hooks) throw new Error('请先从桌宠菜单打开视频选段，选择起点和终点。');
+          if (message.type === 'capture-prepare')
+            return { ok: true, selection: await hooks.prepare(message.id!) };
+          if (message.type === 'capture-check') {
+            hooks.check(message.id!);
+            return { ok: true };
+          }
+          if (message.type === 'capture-play') {
+            await hooks.play(message.id!);
+            return { ok: true };
+          }
+          if (message.type === 'capture-finish')
+            return { ok: true, actualEnd: hooks.finish(message.id!) };
+          throw new Error('未知录制请求');
+        })();
+        task.then(respond).catch((error) => respond({ ok: false, error: errorMessage(error) }));
+        return true;
+      }
       if (message.type === 'toggle-menu') setMenu((value) => !value);
       if (message.type === 'receive-images') {
         setIntake(true);
         setMenu(false);
       }
       if (message.type === 'toggle-mode') toggleVideoRef.current();
-      if (message.type === 'record-selection')
-        setStatus('录制暂未开放；可先进入视频选段，调整端点并预览。');
     };
     chrome.runtime.onMessage.addListener(listener);
     return () => chrome.runtime.onMessage.removeListener(listener);
   }, []);
+  useEffect(() => {
+    let alive = true;
+    const refresh = () => {
+      void chrome.runtime
+        .sendMessage({ target: 'background', type: 'commands' })
+        .then((commands) => {
+          if (alive && Array.isArray(commands))
+            setRecordShortcut(
+              commands.find((command) => command.name === 'record-selection')?.shortcut ?? '',
+            );
+        })
+        .catch(() => {});
+    };
+    refresh();
+    window.addEventListener('focus', refresh);
+    return () => {
+      alive = false;
+      window.removeEventListener('focus', refresh);
+    };
+  }, [videoTarget]);
+  const closeVideo = async () => {
+    setClosingMode(true);
+    try {
+      await chrome.runtime.sendMessage({ target: 'background', type: 'capture-close' });
+    } catch (error) {
+      setStatus(errorMessage(error));
+    } finally {
+      setVideoTarget(null);
+      setClosingMode(false);
+    }
+  };
+  closeModeRef.current = () => {
+    void closeVideo();
+  };
   const openVideo = (target: VideoTarget) => {
     try {
       videoDomain(target.video);
@@ -135,7 +214,7 @@ function App() {
   };
   const toggleVideo = () => {
     if (videoTarget || pickingVideo) {
-      setVideoTarget(null);
+      if (videoTarget) closeModeRef.current();
       setPickingVideo(false);
       setStatus('');
       return;
@@ -271,7 +350,12 @@ function App() {
       <div
         className="vault-root floating-root"
         data-theme={theme}
-        hidden={!loaded || prefs.petHidden || fullscreen}
+        hidden={
+          !loaded ||
+          prefs.petHidden ||
+          fullscreen ||
+          (!!recording && ['preparing', 'recording', 'stopping'].includes(recording.phase))
+        }
       >
         <div className="pet-anchor" style={{ left: position.x, top: position.y }}>
           <button
@@ -376,7 +460,7 @@ function App() {
                 disabled={!videoTarget && !supportedSite()}
                 title={
                   supportedSite()
-                    ? '调整视频端点并预览；录制暂未开放'
+                    ? '调整视频端点并预览，使用录制快捷键开始'
                     : '支持 B站、YouTube 和 X 的视频页面'
                 }
                 onClick={toggleVideo}
@@ -517,8 +601,24 @@ function App() {
           target={videoTarget}
           theme={theme}
           prefs={prefs}
-          onClose={() => setVideoTarget(null)}
+          onClose={() => closeModeRef.current()}
           onError={setStatus}
+          onCaptureHooks={(hooks) => {
+            captureHooks.current = hooks;
+          }}
+          recording={recording}
+          closing={closingMode}
+          shortcut={recordShortcut}
+          onStop={() => {
+            const id = recordingRef.current?.id;
+            if (id)
+              void chrome.runtime.sendMessage({
+                target: 'background',
+                type: 'capture-ended',
+                id,
+                reason: 'manual-button',
+              });
+          }}
         />
       )}
     </>

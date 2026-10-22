@@ -36,6 +36,7 @@ import { DEFAULT_PREFERENCES, errorMessage } from '@shared/model';
 import { Pet, themeName } from './ui';
 import './theme.css';
 import './manage.css';
+import { RecordingRecovery } from './recording/recovery';
 
 const names: Record<string, string> = {
   draft: '草稿箱',
@@ -217,7 +218,10 @@ function SettingsPage({
       </section>
       <section className="settings-card stack">
         <h2>视频与快捷键</h2>
-        <div className="status">此开发版本先交付本地助手与图片保存，视频录制尚未启用。</div>
+        <div className="status">
+          打开普通视频页的选段模式后，用录制快捷键开始或提前结束。录制停止后转成
+          MP4，保存成功才出现在草稿箱。
+        </div>
         <div className="settings-fields">
           {(['step', 'fineStep'] as const).map((key) => (
             <label className="field" key={key}>
@@ -666,6 +670,7 @@ function Manager() {
               </div>
             )}
             {!!warnings.length && <div className="status">{warnings.join('；')}</div>}
+            {bucket === 'draft' && <RecordingRecovery changed={() => void refresh(false)} />}
             <div className="collection">
               <section className="list-panel" aria-label="素材列表">
                 <div className="batch-bar">

@@ -4,7 +4,14 @@
   "version": "0.1.0",
   "minimum_chrome_version": "120",
   "description": "本地收集图片与视频，整理草稿并由你审核入库。",
-  "permissions": ["activeTab", "scripting", "storage", "nativeMessaging"],
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "nativeMessaging",
+    "tabCapture",
+    "offscreen"
+  ],
   "host_permissions": ["http://*/*", "https://*/*"],
   "background": { "service_worker": "worker.js", "type": "module" },
   "action": { "default_title": "Moment Vault · 显示桌宠" },

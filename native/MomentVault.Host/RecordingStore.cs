@@ -82,7 +82,7 @@ public sealed partial class VaultStore
             file.Range = JsonSerializer.SerializeToElement(new
             {
                 recording.Selection.A, recording.Selection.B, recording.End!.ActualStart,
-                recording.End.ActualEnd, recording.End.StopReason, duration = result.Duration
+                recording.End.ActualEnd, recording.End.StopReason, duration = result.Duration, capture = "tabCapture-to-canvas"
             }, Json.Options);
             recording.Result = result; recording.Phase = "ready"; recording.OutputFileName = file.FileName;
             WriteUpload(directory, state);

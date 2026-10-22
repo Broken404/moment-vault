@@ -1,5 +1,6 @@
 import { DEFAULT_PREFERENCES, errorMessage, validatePreferences } from '@shared/model';
 import type { HostOperation, HostRequest, HostResponse } from '@shared/model';
+import { recordingBackground } from './recording/background';
 
 let port: chrome.runtime.Port | null = null;
 const pending = new Map<
@@ -88,6 +89,7 @@ async function manager(page = 'draft') {
   } else await chrome.tabs.create({ url: `${url}#${encodeURIComponent(page)}` });
 }
 
+const recording = recordingBackground(requestHost);
 let prefQueue = Promise.resolve();
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   if (message?.target !== 'background' || sender.id !== chrome.runtime.id) return;
@@ -95,6 +97,19 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
     sender.url?.startsWith(chrome.runtime.getURL('manage.html')) === true &&
     !sender.tab?.url?.startsWith('https:');
   const task = (async () => {
+    if (
+      [
+        'recording-host',
+        'capture-status',
+        'capture-ended',
+        'capture-close',
+        'capture-progress',
+        'recording-jobs',
+        'recording-retry',
+        'capture-current',
+      ].includes(message.type)
+    )
+      return recording.handle(message, sender, isManager);
     if (message.type === 'host') {
       if (message.op === 'folder.pick')
         throw new Error('请从扩展设置页直接选择目录，更新后请刷新设置页');
@@ -159,6 +174,10 @@ chrome.commands.onCommand.addListener(async (command) => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (tab?.id === undefined) return;
   try {
+    if (command === 'record-selection') {
+      await recording.command(tab.id);
+      return;
+    }
     await chrome.tabs.sendMessage(tab.id, { target: 'content', type: command });
   } catch {
     await manager('settings');

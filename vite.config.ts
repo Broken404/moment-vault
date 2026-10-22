@@ -16,6 +16,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         manage: fileURLToPath(new URL('./apps/extension/manage.html', import.meta.url)),
+        offscreen: fileURLToPath(new URL('./apps/extension/offscreen.html', import.meta.url)),
         worker: fileURLToPath(new URL('./apps/extension/src/background.ts', import.meta.url)),
       },
       output: { entryFileNames: '[name].js' },

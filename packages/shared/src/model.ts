@@ -42,6 +42,7 @@ export interface Attachment {
     actualEnd: number | null;
     stopReason?: string;
     duration?: number;
+    capture?: string;
   };
 }
 
