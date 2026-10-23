@@ -1,6 +1,7 @@
 import { errorMessage } from '@shared/model';
 import { recordingStore as store } from './store';
 import { publishRecording } from './publish';
+import { startRecorder } from './recorder';
 import {
   captureGeometry,
   publicStatus,
@@ -18,6 +19,7 @@ interface Live {
   audio?: AudioContext;
   recorder?: MediaRecorder;
   timer?: ReturnType<typeof setInterval>;
+  startupTimer?: ReturnType<typeof setTimeout>;
   persisted: Promise<void>;
   backlog: number;
   stopped?: Promise<void>;
@@ -89,6 +91,7 @@ async function publish(job: RecordingJob) {
 }
 async function release(value: Live) {
   clearInterval(value.timer);
+  clearTimeout(value.startupTimer);
   for (const track of new Set([
     ...(value.stream?.getTracks() ?? []),
     ...(value.output?.getTracks() ?? []),
@@ -181,6 +184,7 @@ async function prepare(job: RecordingJob, streamId: string) {
     if (!mimeType) throw new Error('浏览器没有支持的录制编码器。');
     const recorder = new MediaRecorder(value.output, { mimeType, videoBitsPerSecond: 4_000_000 });
     value.recorder = recorder;
+    recorder.onstart = () => clearTimeout(value.startupTimer);
     value.ended = new Promise((resolve) => {
       recorder.onstop = () => resolve();
     });
@@ -223,18 +227,15 @@ async function start(id: string) {
   if (!value || value.job.id !== id || value.aborted || !value.recorder)
     throw new Error('录制准备已取消。');
   const recorder = value.recorder;
-  await new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('录制器启动超时。')), 5000);
-    recorder.onstart = () => {
-      clearTimeout(timer);
-      resolve();
-    };
-    recorder.start(500);
-    value.started = true;
-  });
-  if (value.aborted) throw new Error('录制已取消。');
   value.job.phase = 'recording';
   await store.put(value.job);
+  if (value.aborted || live !== value) throw new Error('录制准备已取消。');
+  startRecorder(recorder);
+  value.started = true;
+  // Keep the failure watchdog without holding source playback for this event.
+  value.startupTimer = setTimeout(() => {
+    if (!value.aborted) stopSignal(value, 'recorder-start-timeout');
+  }, 5000);
   return { ok: true };
 }
 async function stop(id: string, end?: CaptureEnd) {

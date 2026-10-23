@@ -29,6 +29,7 @@ export class CaptureCoordinator {
   private async update(task: CaptureTask, phase: CapturePhase, message: string) {
     task.phase = phase;
     await this.deps.persist(task);
+    if (this.current !== task || task.phase !== phase) return;
     await this.deps.notify(task, { id: task.id, name: task.name, phase, message });
   }
   private valid(task: CaptureTask) {
@@ -94,10 +95,12 @@ export class CaptureCoordinator {
       const started = await this.deps.media('start', { id: task.id });
       if (!this.valid(task)) return;
       if (!started.ok) throw new Error(started.error ?? '录制器未能启动。');
-      await this.update(task, 'recording', '录制中');
-      const played = await this.deps.tell<{ ok: boolean; error?: string }>(tabId, 'capture-play', {
-        id: task.id,
-      });
+      // Status storage and rendering must not hold a recording on its paused A frame.
+      const [, played] = await Promise.all([
+        this.update(task, 'recording', '录制中'),
+        this.deps.tell<{ ok: boolean; error?: string }>(tabId, 'capture-play', { id: task.id }),
+      ]);
+      if (task.cancelled || task.phase !== 'recording') return;
       if (!played.ok) throw new Error(played.error ?? '原视频未能播放。');
     } catch (error) {
       if (task.cancelled) return;
@@ -113,20 +116,29 @@ export class CaptureCoordinator {
     const cancelled = task.phase === 'preparing';
     task.cancelled = cancelled;
     this.stopping = (async () => {
-      await this.update(task, 'stopping', cancelled ? '正在取消准备…' : '正在结束录制…');
-      let actualEnd = task.lastTime;
-      try {
-        const result = await this.deps.tell<{ actualEnd?: number }>(task.tabId, 'capture-finish', {
-          id: task.id,
-        });
-        if (Number.isFinite(result.actualEnd)) actualEnd = result.actualEnd!;
-      } catch {}
-      const end: CaptureEnd | undefined =
-        !cancelled && task.selection && actualEnd > task.selection.actualStart
-          ? { actualStart: task.selection.actualStart, actualEnd, stopReason: reason }
-          : undefined;
-      const stopped = await this.deps.media('stop', { id: task.id, end });
-      if (!stopped.ok) throw new Error(stopped.error ?? '录制结束时出错，原始数据已保留。');
+      // Pause the source and stop the recorder without waiting for UI acknowledgements.
+      await Promise.all([
+        this.update(task, 'stopping', cancelled ? '正在取消准备…' : '正在结束录制…'),
+        (async () => {
+          let actualEnd = task.lastTime;
+          try {
+            const result = await this.deps.tell<{ actualEnd?: number }>(
+              task.tabId,
+              'capture-finish',
+              {
+                id: task.id,
+              },
+            );
+            if (Number.isFinite(result.actualEnd)) actualEnd = result.actualEnd!;
+          } catch {}
+          const end: CaptureEnd | undefined =
+            !cancelled && task.selection && actualEnd > task.selection.actualStart
+              ? { actualStart: task.selection.actualStart, actualEnd, stopReason: reason }
+              : undefined;
+          const stopped = await this.deps.media('stop', { id: task.id, end });
+          if (!stopped.ok) throw new Error(stopped.error ?? '录制结束时出错，原始数据已保留。');
+        })(),
+      ]);
       if (cancelled) await this.update(task, 'cancelled', '已取消录制');
       else if (task.phase === 'stopping') await this.update(task, 'processing', '正在保存 MP4…');
     })()

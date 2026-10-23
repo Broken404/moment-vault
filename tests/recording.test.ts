@@ -5,6 +5,7 @@ import {
   type CaptureDependencies,
 } from '../apps/extension/src/recording/coordinator';
 import { publishRecording } from '../apps/extension/src/recording/publish';
+import { startRecorder } from '../apps/extension/src/recording/recorder';
 import {
   captureGeometry,
   type JobStore,
@@ -57,6 +58,59 @@ function coordinator() {
   return { engine: new CaptureCoordinator(deps as unknown as CaptureDependencies), deps, events };
 }
 describe('recording coordination', () => {
+  it('does not add encoder-start events or slow status writes to the captured source interval', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(0);
+    const { engine, deps } = coordinator();
+    let recorderStarted = 0,
+      recorderStopped = 0,
+      sourceStarted = 0;
+    let stopped: Promise<void> | undefined;
+    const recorder = {
+      state: 'inactive',
+      onstart: null as null | (() => void),
+      start() {
+        recorderStarted = Date.now();
+        this.state = 'recording';
+        setTimeout(() => this.onstart?.(), 500);
+      },
+    };
+    const slowStatus = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    };
+    deps.persist.mockImplementation(slowStatus);
+    deps.notify.mockImplementation(slowStatus);
+    deps.tell.mockImplementation(async (_tab, type) => {
+      if (type === 'capture-prepare') return { ok: true, selection };
+      if (type === 'capture-play') {
+        sourceStarted = Date.now();
+        // At B the source pauses itself; everything after this timer is recorder padding.
+        setTimeout(() => {
+          stopped = engine.stop('selected-end');
+        }, 2000);
+      }
+      return type === 'capture-finish' ? { ok: true, actualEnd: 4 } : { ok: true };
+    });
+    deps.media.mockImplementation(async (type) => {
+      if (type === 'start') await startRecorder(recorder as unknown as MediaRecorder);
+      if (type === 'stop') recorderStopped = Date.now();
+      return { ok: true };
+    });
+    try {
+      const started = engine.start(7);
+      await vi.runAllTimersAsync();
+      await started;
+      await stopped;
+      expect(deps.media).toHaveBeenCalledWith('stop', {
+        id: engine.current!.id,
+        end: { actualStart: 2, actualEnd: 4, stopReason: 'selected-end' },
+      });
+      expect(sourceStarted - recorderStarted).toBeLessThanOrEqual(50);
+      expect(recorderStopped - recorderStarted - 2000).toBeLessThanOrEqual(100);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
   it('does not play the source until the recorder is really started, and preserves actual end on stop', async () => {
     const { engine, deps, events } = coordinator();
     await engine.start(7);

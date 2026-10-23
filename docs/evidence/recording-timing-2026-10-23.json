@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-23",
+  "scope": "Reduce capture padding; actual formal-extension YouTube recording after user reload",
+  "baseCommit": "81ba676",
+  "buildHashes": {
+    "contentJsSha256": "2bf025a456ba6c0de200b8fb13d6ff5476102193ac51676ade9eab4cdc4b9af2",
+    "workerJsSha256": "87ed0c2ac86dc45364fbca9f63d72bb946ac3cb088f7c7937758cf7749818429",
+    "offscreenJsSha256": "0bbb9e80a954fbd8b3739e1572ff82056fca9b96bb1633ac99b88dd2234dcce2",
+    "nativeExecutableSha256": "ae38193af1857a5a261e4bd3470d1d31f9d8199792c9cff3386ca48218e871f2"
+  },
+  "diagnosis": {
+    "baselineSourceSeconds": 2.046655,
+    "baselineContainerSeconds": 2.554333,
+    "baselineExcessSeconds": 0.507678,
+    "comparisonToleranceSeconds": 0.12,
+    "baselinePass": false,
+    "observedCodeWaits": [
+      "Source playback awaited the asynchronous MediaRecorder start event",
+      "Recording and stopping awaited status persistence and rendering before source commands"
+    ],
+    "changes": [
+      "Persist job before starting capture; recheck cancellation after persistence",
+      "Start source after recorder.start synchronously enters recording; retain nonblocking startup watchdog",
+      "Run status updates alongside playback and stopping, skipping obsolete phase notifications"
+    ],
+    "converterOrTrimmingChanged": false
+  },
+  "checks": {
+    "coupledRegression": {
+      "name": "does not add encoder-start events or slow status writes to the captured source interval",
+      "delayedStartEventMilliseconds": 500,
+      "eachStatusWriteOrNotificationMilliseconds": 100,
+      "redBeforeFixSourceDelayMilliseconds": 700,
+      "sourceStartDelayLimitMilliseconds": 50,
+      "totalPaddingLimitMilliseconds": 100,
+      "greenAfterFix": true,
+      "scope": "Fake-clock orchestration regression; does not encode media"
+    },
+    "recordingUnitTestsPassed": 13,
+    "allFrontEndUnitTestsPassed": 43,
+    "finalTargetedRecordingRerunPassed": 13,
+    "testInvocation": "node node_modules/vitest/vitest.mjs run --pool=threads --maxWorkers=1",
+    "formatCheck": "passed",
+    "typeCheckProductionBuildGeneratedScriptCheck": "passed",
+    "initialDefaultForkAttempt": "worker failed to start; no tests ran; not counted as a pass",
+    "initialTypeCheck": "TS2367 in recorder state narrowing; corrected before successful production build",
+    "nativeCodeChanged": false
+  },
+  "automaticStopSample": {
+    "source": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "trigger": "User pressed actual Ctrl+Shift+9 once, kept tab foreground, and confirmed automatic save",
+    "visibleResult": "已存入草稿箱",
+    "materialId": "20bcbf5c50474ea9a28415462b26bb8e",
+    "attachmentId": "e60fd9eeb99e414abbd4074bb626ba9a",
+    "sha256": "40b0f9ec5c4307c31b932ccb2596005f27a1708b2935178adad7280ed683f10e",
+    "bytes": 918793,
+    "a": 2,
+    "b": 4,
+    "actualStart": 2,
+    "actualEnd": 4.032694,
+    "stopReason": "selected-end",
+    "capture": "tabCapture-to-canvas",
+    "actualSourceSeconds": 2.032694,
+    "containerSeconds": 2.133333,
+    "maximumTrackSeconds": 2.121333,
+    "excessContainerSeconds": 0.100639,
+    "excessMaximumTrackSeconds": 0.088639,
+    "durationGatePassed": true,
+    "video": {
+      "codec": "h264",
+      "width": 1326,
+      "height": 994,
+      "duration": 2.1,
+      "frames": 63,
+      "maximumFrameTimestampGapSeconds": 0.033334
+    },
+    "audio": {
+      "codec": "aac",
+      "start": 0.012,
+      "duration": 2.121333,
+      "frames": 100,
+      "rmsDbfs": -25.550672
+    },
+    "metadataHashMatches": true,
+    "completeDecodePassed": true,
+    "visualContactSheet": "Sampled pictures change; no pet, selection panel or native controls observed; page captions remain",
+    "headComparison": {
+      "method": "Decode upper 75 percent, excluding captions, to 96 by 54 grayscale; inspect with contact sheet",
+      "thresholdGrayLevels": 2,
+      "baselineFirstDifferenceAboveThresholdSeconds": 0.533333,
+      "fixedFirstDifferenceAboveThresholdSeconds": 0.133333,
+      "fixedFirstFrameDifferenceFromBaselineAFrameGrayLevels": 2.368634,
+      "fixedFirstFrameDifferenceFromBaselineSourceAfterHalfSecondGrayLevels": 28.847994,
+      "interpretation": "Supports shorter leading hold while retaining the A-side picture; not frame-exact source alignment or a rule for cutting static footage"
+    }
+  },
+  "originalThreeFilesUnchangedSha256": [
+    "50cb3fa5ef9189761c42e2b8c7ae7190cfeb42b0c222502da0bda34db559d8c3",
+    "4dbbbe3141cadef3c6840887228f01e46508fcdd0f101071136f13744e50ccb4",
+    "1c94c9e2355d9e9f3074137320b03a41cfb55ec1c05583a6bd2f6911cc009859"
+  ],
+  "additionalCloseModeTimingSample": "Prepared but not started; explicitly deferred and not counted as passed",
+  "limitations": [
+    "This is a measured improvement on the same real YouTube interval, not a universal 120 ms guarantee",
+    "Actual endpoint still differs from requested B; no frame-exact clipping claim",
+    "Original short-clip freeze remains unresolved",
+    "Full three-site matrix, final tool distribution and installer remain pending",
+    "Audio energy proves non-silence, not human semantic or full sync acceptance"
+  ]
+}
