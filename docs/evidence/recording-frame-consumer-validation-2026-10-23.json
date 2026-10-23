@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "status": "instrumented-short-stop-passed-uninstrumented-cold-validation-prepared",
+  "status": "uninstrumented-first-cold-short-stop-passed-root-cause-unconfirmed",
   "freezeFixed": false,
   "implementation": "2c16bcb",
   "userConfirmedReload": true,
@@ -256,7 +256,7 @@
     "probeWriteEndpointRemovedFromFixtureServer": true,
     "inputFrameSubscriptionRetained": true,
     "ordinaryBuildFixtureStillDisabled": true,
-    "uninstrumentedColdCapture": "pending reload and first actual manual-shortcut recording on exact owned fixture",
+    "uninstrumentedColdCapture": "passed after user reloaded 1b1b9b1; first capture, actual manual shortcut start and stop",
     "acceptance": "Same unchanged 0.25 second continuity check on actual saved MP4, decode/hash/non-silence, selected/actual ranges and cached preview; original failures remain negative controls."
   },
   "cleanupChecks": {
@@ -282,5 +282,113 @@
     },
     "sourceHttpStatus": 200,
     "removedProbePostStatus": 404
+  },
+  "actualUninstrumentedColdCapture": {
+    "buildCommit": "1b1b9b1",
+    "userConfirmedReloadAndActualRecording": true,
+    "firstCaptureAfterReload": true,
+    "id": "7ed3860a4aba4cdb8f6e504e936b05cf",
+    "attachmentId": "bb1f92e521404d8aa8619027dec341d6",
+    "createdAt": "2026-10-23T21:16:29.7158311+08:00",
+    "selectedRange": [2, 12],
+    "actualSourceRange": [2, 3.860525],
+    "actualSourceDurationSeconds": 1.860525,
+    "stopReason": "manual-shortcut",
+    "storedRange": {
+      "a": 2,
+      "b": 12,
+      "actualStart": 2,
+      "actualEnd": 3.860525,
+      "stopReason": "manual-shortcut",
+      "duration": 1.937333,
+      "capture": "tabCapture-to-canvas"
+    },
+    "precheck": {
+      "method": "read-only DOM through CUA, before actual recording",
+      "readyState": 4,
+      "paused": true,
+      "currentTime": 12,
+      "muted": false,
+      "documentHidden": false,
+      "bufferedEnd": 15,
+      "viewport": {
+        "width": 1699,
+        "height": 777
+      },
+      "videoRect": {
+        "x": 24,
+        "y": 114.666672,
+        "width": 640,
+        "height": 360
+      },
+      "noPriorPreviewPlaybackOrCaptureOnFreshPage": true,
+      "browserNotObservedDuringUserRecording": true,
+      "noParallelEncoderOrMediaChecksDuringRecording": true
+    },
+    "noSourceInputOrDrawProbes": true,
+    "noProbeUploadDirectoryCreated": true,
+    "successfulPendingUploadCleaned": true,
+    "rawWebm": "not independently retained in this no-probe success; normal native success cleanup applied",
+    "mp4": {
+      "bytes": 110994,
+      "sha256": "4c0717f4902eaef90c5ebf7865e808d30b56aaa038d886742d670b26616d4ba5",
+      "videoCodec": "h264",
+      "audioCodec": "aac",
+      "width": 964,
+      "height": 542,
+      "videoDurationSeconds": 1.933333,
+      "audioDurationSeconds": 1.937333,
+      "containerDurationSeconds": 1.949333,
+      "containerMinusSourceRangeSeconds": 0.088808,
+      "report": {
+        "ok": true,
+        "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+        "videoFrames": 58,
+        "firstVideoTime": 0,
+        "lastVideoTime": 1.9,
+        "lastAudioTime": 1.928,
+        "audioOnlyTailSeconds": 0.028,
+        "maximumVideoGapSeconds": 0.033334,
+        "toleranceSeconds": 0.25,
+        "pictureCheckOk": true,
+        "maximumUnchangedPictureSeconds": 0.166667,
+        "pictureChangeThresholdGrayLevels": 0.5
+      },
+      "fullDecodePassed": true,
+      "hashAndBytesMatched": true,
+      "meanVolumeDb": -21.4,
+      "peakVolumeDb": -17.7,
+      "visuallyInspectedFrameIndices": [0, 28, 57],
+      "visibleSourceClocks": [2, 2.6, 3.8],
+      "nativeAndExtensionControlsAbsentInInspectedFrames": true
+    },
+    "preview": {
+      "method": "actual saved toast and cached B in AX plus read-only DOM and screenshot",
+      "savedToastVisible": true,
+      "cachedB": 12,
+      "pausedAt": 3.860525,
+      "captureLayerAndStyleRemoved": true,
+      "nativeControlsRestored": true
+    },
+    "acceptanceScope": "one first post-reload short manual stop without extension probes; same unchanged media gate passed",
+    "rootCauseConfirmed": false,
+    "limitations": [
+      "Does not establish exact source-frame timing or universal smoothness; maximum unchanged picture was 0.166667 seconds.",
+      "Viewport matched the prior passing candidate, not the failing 1699x828 run.",
+      "Previous instrumented success had zero JS input-frame callbacks; their delivery and Chromium internal cause remain unproved.",
+      "No claim of all sites, resolutions, background behavior, machines or repeated cold starts passing.",
+      "Original failed samples remain unchanged negative controls; historical incident is not closed as a proven root-cause fix."
+    ]
+  },
+  "ordinaryBuildRestored": {
+    "command": "npm run build with MOMENT_VAULT_OWNED_CAPTURE_LAB unset",
+    "buildAndGeneratedExtensionChecksPassed": true,
+    "fixtureOriginAbsentFromAllGeneratedJs": true,
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "contentSha256": "e6eee233b384d50e9d21a08e3763ccd6c91676a4fa893f3d043b4f2c20978318",
+    "offscreenIdenticalToActualNoProbeCapture": true,
+    "ownedTestTabClosed": true,
+    "ownedFixtureServerStopped": true,
+    "manualReload": "pending user reload to deactivate the fixture adapter; no repeated recording requested"
   }
 }
