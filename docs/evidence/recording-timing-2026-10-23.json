@@ -99,7 +99,11 @@
     "4dbbbe3141cadef3c6840887228f01e46508fcdd0f101071136f13744e50ccb4",
     "1c94c9e2355d9e9f3074137320b03a41cfb55ec1c05583a6bd2f6911cc009859"
   ],
-  "additionalCloseModeTimingSample": "Prepared but not started; explicitly deferred and not counted as passed",
+  "additionalCloseModeTimingSample": {
+    "initialAttempt": "Prepared but not started; deferred at initial timing commit",
+    "subsequentResult": "Actual mode-closed MP4 and exact observed viewing-position restoration verified; this sample passes the unchanged duration gate",
+    "details": "recording-timing-followup-2026-10-23.json"
+  },
   "limitations": [
     "This is a measured improvement on the same real YouTube interval, not a universal 120 ms guarantee",
     "Actual endpoint still differs from requested B; no frame-exact clipping claim",

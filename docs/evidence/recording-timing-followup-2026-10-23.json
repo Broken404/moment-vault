@@ -159,6 +159,58 @@
       },
       "completeDecodePassed": true,
       "audioOverallRmsDbfs": -24.166511
+    },
+    {
+      "sampleNumber": "008",
+      "materialId": "fa4b6107e3404c7fa10a57ef548c436b",
+      "attachmentId": "38c50f22ca254d0ba684e9498f3b4d4c",
+      "sha256": "b5f1485fa88798c4dfa68e8cc44f5ebf1e4dc6952a9e828d0c494064af376272",
+      "metadataHashMatches": true,
+      "bytes": 640281,
+      "range": {
+        "a": 2,
+        "b": 18,
+        "actualStart": 2,
+        "actualEnd": 3.216092,
+        "stopReason": "mode-closed",
+        "duration": 1.333333,
+        "capture": "tabCapture-to-canvas"
+      },
+      "actualSourceSeconds": 1.216092,
+      "containerSeconds": 1.333333,
+      "containerExcessSeconds": 0.117241,
+      "comparisonToleranceSeconds": 0.12,
+      "durationGatePassed": true,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1428,
+            "height": 1072,
+            "start_time": "0.000000",
+            "duration": "1.333333",
+            "nb_read_frames": "40"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "start_time": "0.033000",
+            "duration": "1.284333",
+            "nb_read_frames": "61"
+          }
+        ],
+        "format": {
+          "duration": "1.333333",
+          "size": "640281"
+        }
+      },
+      "completeDecodePassed": true,
+      "audioOverallRmsDbfs": -25.53336
     }
   ],
   "closeModeAttempt": {
@@ -172,7 +224,27 @@
       "modeRemoved": true,
       "scope": "Actual formal page outside recording; not a capture-close acceptance"
     },
-    "pendingProcedure": "User starts via actual shortcut then presses Escape; awaiting actual mode-closed file and restore check"
+    "completedProcedure": "User replied done after actual-shortcut then Escape instructions; no keyboard event trace collected",
+    "actualCloseResult": {
+      "materialId": "fa4b6107e3404c7fa10a57ef548c436b",
+      "stopReason": "mode-closed",
+      "visibleStatus": "已存入草稿箱",
+      "modePresent": false,
+      "playerRecordingMarkerPresent": false,
+      "beforeEntering": {
+        "time": 8.919699,
+        "paused": true
+      },
+      "afterClosing": {
+        "time": 8.919699,
+        "paused": true
+      },
+      "restoredExactObservedTimeAndPausedState": true,
+      "functionalCloseAndSavePassed": true,
+      "thisSampleDurationGatePassed": true,
+      "visualInspection": "Five spaced sampled pictures change; no pet, selection panel or native controls seen; webpage captions remain",
+      "scope": "Actual formal-extension close-mode file and restored visible page; not a claim that every timing sample passes or the original freeze is solved"
+    }
   },
   "comparisonToleranceSeconds": 0.12,
   "allDurationGatesPassed": false,
