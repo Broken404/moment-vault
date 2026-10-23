@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "status": "implemented-and-checked-awaiting-actual-extension-reload-and-user-merge",
+  "status": "actual-formal-extension-mixed-merge-accepted",
   "spec": "formal-plan.md section 4.3",
   "implementation": {
     "draftOnly": true,
@@ -15,8 +15,15 @@
     "noAutomaticPromotionOrMediaReencoding": true
   },
   "checks": {
-    "frontend": { "passed": 61, "files": 10, "newMergeWorkflowAndManagerChecks": 6 },
-    "native": { "passed": 22, "newMergeFileAndProtocolChecks": 7 },
+    "frontend": {
+      "passed": 61,
+      "files": 10,
+      "newMergeWorkflowAndManagerChecks": 6
+    },
+    "native": {
+      "passed": 22,
+      "newMergeFileAndProtocolChecks": 7
+    },
     "format": "passed",
     "typecheck": "passed",
     "ordinaryExtensionBuildAndGeneratedScriptChecks": "passed",
@@ -66,12 +73,95 @@
     "offscreenBundleUnchanged": true,
     "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
     "hostDllSha256": "5f406b980ec8f1bdcca2874538ee6a5023cb643d5aa2a05e831776b20b4d2c67",
-    "actualExtensionReload": "pending user action",
-    "actualExtensionMerge": "pending user operation and file verification"
+    "actualExtensionReload": "user confirmed reloading build 51e3d68 before the acceptance operation",
+    "actualExtensionMerge": "passed: user confirmed one merged material with three attachments; actual files and description independently checked"
   },
   "limitations": [
     "This is not acceptance of the complete v1 product or all merge failure conditions.",
-    "User-owned material was neither read nor merged for these checks.",
+    "Only generated acceptance fixtures were selected and changed; existing personal materials were not selected or changed.",
     "Recording freeze root-cause and broader video matrix conclusions are unchanged."
-  ]
+  ],
+  "actualExtensionAcceptance": {
+    "buildCommit": "51e3d68",
+    "actualUserOperationConfirmed": true,
+    "scope": "user performed the merge in the actual formal Edge extension; owned test media only",
+    "materialId": "8672f1755149452391c538f03b81a87b",
+    "sourceMaterialIds": ["d3d40a276a744b46b7333230f8476e1c", "f2ca281b586f41de9d3b1a83b6264979"],
+    "resultItems": 1,
+    "attachmentCount": 3,
+    "attachmentOrder": ["image", "video", "image"],
+    "draftOnly": true,
+    "originalIdsBytesHashesSourcesCollectionTimesNotesAndRangesPreserved": true,
+    "originalMaterialMetadataAndGroupNotesPreserved": true,
+    "filenameCollisionRenamedWithoutOverwrite": true,
+    "targetAndDescriptionMatchPersistedReceipt": true,
+    "originalTestFoldersCleaned": true,
+    "privateStagingCleaned": true,
+    "allAttachmentsDecodePassed": true,
+    "files": [
+      {
+        "id": "644f798662e643998562c48fa05bb3a8",
+        "kind": "image",
+        "fileName": "图片-001.png",
+        "originalFileName": "图片-001.png",
+        "bytes": 631,
+        "sha256": "b9c4fe4fe6aac599dcb81d93d2e2732fffe515c21fc322cafe2433eb6020699a",
+        "decodePassed": true,
+        "streams": [
+          {
+            "codec_name": "png",
+            "codec_type": "video",
+            "width": 320,
+            "height": 180
+          }
+        ]
+      },
+      {
+        "id": "7c84a9bee14a4acda543aef94ee161ea",
+        "kind": "video",
+        "fileName": "视频-002.mp4",
+        "originalFileName": "视频-002.mp4",
+        "bytes": 35697,
+        "sha256": "ef12aecc991c037130804ee87989cc78deba8506d3c6ab9e6fddfa5d0ea44249",
+        "decodePassed": true,
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 320,
+            "height": 180,
+            "duration": "0.800000"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "0.800000"
+          }
+        ]
+      },
+      {
+        "id": "d048428f40e245439a816ead459af0b9",
+        "kind": "image",
+        "fileName": "图片-001-002.png",
+        "originalFileName": "图片-001.png",
+        "bytes": 631,
+        "sha256": "42e7c71ad6b0afaff0a3de0f1624bf96f35bc467a8e4d32b401695ee97f68ce1",
+        "decodePassed": true,
+        "streams": [
+          {
+            "codec_name": "png",
+            "codec_type": "video",
+            "width": 320,
+            "height": 180
+          }
+        ]
+      }
+    ],
+    "uiEvidence": "user confirmed one merged material with 3 attachments; internal extension page not independently automated",
+    "clientPendingStorage": "not inspected; no browser private state was read",
+    "limitations": [
+      "One normal mixed image/video merge accepted; fault recovery and repeated nested merges are covered separately by automated checks, not this manual action."
+    ],
+    "videoRangeScope": "Imported acceptance fixtures had null ranges, which were preserved; non-null video ranges are covered by the separate native file checks."
+  }
 }
