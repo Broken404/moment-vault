@@ -1,0 +1,184 @@
+{
+  "date": "2026-10-23",
+  "scope": "Additional saved files observed while attempting close-mode timing follow-up; preserve actual stop reasons and precision failure",
+  "implementationCommit": "d8ad830",
+  "productionCodeChanged": false,
+  "samples": [
+    {
+      "sampleNumber": "005",
+      "materialId": "436f614691554cbe8275c29349bee5fd",
+      "attachmentId": "b2623366456745558aa13f8538657924",
+      "sha256": "c380032db48abdc3397775c891f6e1ae36986a85e7150647547aa03fe44de076",
+      "metadataHashMatches": true,
+      "bytes": 7523989,
+      "range": {
+        "a": 2,
+        "b": 18,
+        "actualStart": 2,
+        "actualEnd": 18.031102,
+        "stopReason": "selected-end",
+        "duration": 16.104333,
+        "capture": "tabCapture-to-canvas"
+      },
+      "actualSourceSeconds": 16.031102,
+      "containerSeconds": 16.123333,
+      "containerExcessSeconds": 0.092231,
+      "comparisonToleranceSeconds": 0.12,
+      "durationGatePassed": true,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1428,
+            "height": 1072,
+            "start_time": "0.000000",
+            "duration": "16.066667",
+            "nb_read_frames": "482"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "start_time": "0.019000",
+            "duration": "16.104333",
+            "nb_read_frames": "755"
+          }
+        ],
+        "format": {
+          "duration": "16.123333",
+          "size": "7523989"
+        }
+      },
+      "completeDecodePassed": true,
+      "audioOverallRmsDbfs": -24.150506
+    },
+    {
+      "sampleNumber": "006",
+      "materialId": "b3349dc71cfc4895bcd6d11c2c5c18e4",
+      "attachmentId": "06d80c355de34c6cb87fe82ffc7ac19f",
+      "sha256": "cc4e1e4f4e227465889bb0cbe31c4326faa45e28a3eda6dbdffbdbb21f2a9877",
+      "metadataHashMatches": true,
+      "bytes": 970313,
+      "range": {
+        "a": 2,
+        "b": 18,
+        "actualStart": 2,
+        "actualEnd": 4.120668,
+        "stopReason": "manual-button",
+        "duration": 2.185333,
+        "capture": "tabCapture-to-canvas"
+      },
+      "actualSourceSeconds": 2.120668,
+      "containerSeconds": 2.197333,
+      "containerExcessSeconds": 0.076665,
+      "comparisonToleranceSeconds": 0.12,
+      "durationGatePassed": true,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1326,
+            "height": 994,
+            "start_time": "0.000000",
+            "duration": "2.166667",
+            "nb_read_frames": "65"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "start_time": "0.012000",
+            "duration": "2.185333",
+            "nb_read_frames": "103"
+          }
+        ],
+        "format": {
+          "duration": "2.197333",
+          "size": "970313"
+        }
+      },
+      "completeDecodePassed": true,
+      "audioOverallRmsDbfs": -25.514237
+    },
+    {
+      "sampleNumber": "007",
+      "materialId": "3113c31e456e4f55a597e4867884a251",
+      "attachmentId": "90aede1fb7004d96abd6eaf53ecf5b71",
+      "sha256": "e22d3132ff0e2b982647028275c61ffb0e007297081db2d5190731bc01851240",
+      "metadataHashMatches": true,
+      "bytes": 6532839,
+      "range": {
+        "a": 2,
+        "b": 18,
+        "actualStart": 2,
+        "actualEnd": 18.034096,
+        "stopReason": "selected-end",
+        "duration": 16.160333,
+        "capture": "tabCapture-to-canvas"
+      },
+      "actualSourceSeconds": 16.034096,
+      "containerSeconds": 16.185333,
+      "containerExcessSeconds": 0.151237,
+      "comparisonToleranceSeconds": 0.12,
+      "durationGatePassed": false,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1326,
+            "height": 994,
+            "start_time": "0.000000",
+            "duration": "16.100000",
+            "nb_read_frames": "483"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "start_time": "0.025000",
+            "duration": "16.160333",
+            "nb_read_frames": "758"
+          }
+        ],
+        "format": {
+          "duration": "16.185333",
+          "size": "6532839"
+        }
+      },
+      "completeDecodePassed": true,
+      "audioOverallRmsDbfs": -24.166511
+    }
+  ],
+  "closeModeAttempt": {
+    "userReportedCloseButActualReason": "manual-button in sample 006; mode remained open at actualEnd 4.120668",
+    "agentWaitAttempt": "No close click was issued; sample 007 actually reached selected-end",
+    "ownedObserverFixture": "Original text matcher detected simulated status and the close button could be clicked; did not reproduce real-page miss",
+    "observerRootCauseEstablished": false,
+    "escapeExitCheck": {
+      "beforeReentryTime": 8.919699,
+      "paused": true,
+      "modeRemoved": true,
+      "scope": "Actual formal page outside recording; not a capture-close acceptance"
+    },
+    "pendingProcedure": "User starts via actual shortcut then presses Escape; awaiting actual mode-closed file and restore check"
+  },
+  "comparisonToleranceSeconds": 0.12,
+  "allDurationGatesPassed": false,
+  "limitations": [
+    "Sample 007 exceeds the unchanged 0.12 second comparison gate; do not silently raise it",
+    "No claim that the original short-clip freeze is fixed",
+    "Simulated UI checks do not establish a native capture-close pass"
+  ]
+}
