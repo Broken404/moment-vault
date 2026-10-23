@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-23",
+  "productionImplementationCommit": "c203f25",
+  "status": "prechecks-passed-awaiting-real-shortcut-capture",
+  "samplePage": "https://x.com/SpaceX/status/2110886603371536546",
+  "sampleTitle": "SpaceX: Falcon 9 first stage droneship landing",
+  "scope": "One X post video; shared production capture-to-MP4 flow",
+  "productionCodeChanged": false,
+  "extensionReloadRequired": false,
+  "contentSha256": "092ece7ffed7ae1fe7d8439a7e7f05b6fc56b5aab1717933ab125c64b04b726c",
+  "automatedChecks": {
+    "command": "node node_modules/vitest/vitest.mjs run tests/recording.test.ts tests/video-sites.test.ts tests/video-session.test.ts --pool=threads --maxWorkers=1",
+    "passed": 28,
+    "typecheckPassed": true,
+    "newCoverage": "Actual production X capture preparation on an English seek slider without role=group; scoped control hiding, video and another player preserved, unrelated volume area unmarked, release cleanup",
+    "simulationIsNotActualMediaAcceptance": true
+  },
+  "actualPagePrecheck": {
+    "visibleVideoCandidates": 2,
+    "explicitlySelected": "SpaceX main post video, not the reply video",
+    "nativeTimelineConnected": true,
+    "trialPlaybackReturnedToBoundary": true,
+    "busy": "false",
+    "caption": "画面 00:07.975 · 已缓存",
+    "nativePlayerHasRoleGroup": false,
+    "nativeRailLabel": "Seek slider",
+    "playerTestId": "videoComponent",
+    "range": [
+      {
+        "name": "起点 A",
+        "value": "2"
+      },
+      {
+        "name": "终点 B",
+        "value": "8"
+      }
+    ],
+    "source": {
+      "buffered": [[0, 20.053666]],
+      "duration": 20.053666,
+      "height": 720,
+      "muted": false,
+      "paused": true,
+      "ready": 4,
+      "rect": {
+        "bottom": 514.1277160644531,
+        "height": 319.3539733886719,
+        "left": 423.74700927734375,
+        "right": 992.1619873046876,
+        "top": 194.77374267578125,
+        "width": 568.4149780273438,
+        "x": 423.74700927734375,
+        "y": 194.77374267578125
+      },
+      "seekable": [[0, 20.053666]],
+      "time": 8.046675,
+      "width": 1280
+    },
+    "trialButton": "预览选区",
+    "viewport": {
+      "height": 706,
+      "width": 1545
+    },
+    "screenshot": ".local-data/x-recording-20261023/ready.png"
+  },
+  "plannedRecording": {
+    "a": 2,
+    "b": 8,
+    "durationSeconds": 6,
+    "stopReason": "selected-end"
+  },
+  "realCapture": "pending actual user shortcut; no simulated extension recording command used",
+  "acceptance": [
+    "New actual MP4 draft has the expected main-post source, A/B range and selected-end reason",
+    "Independent complete decode, metadata hash and size, non-silent audio inspection",
+    "First/middle/last source content, source bounds and control hiding checked independently",
+    "Saved page status, paused source, cleaned capture controls and restored boundary preview"
+  ],
+  "limitations": [
+    "Preview and automated checks do not establish real X media recording or MP4 saving",
+    "One ordinary X post cannot establish all layouts, other stop paths, portrait, weak-network or performance conditions",
+    "Frame-confirmed preview is not frame-exact export; source range and container duration remain separate",
+    "Previously retained short-clip freeze remains a separate open quality item",
+    "No original media, screenshots, personal directory configuration or account identifiers committed"
+  ]
+}

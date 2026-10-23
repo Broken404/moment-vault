@@ -308,6 +308,82 @@ describe('durable recording publication', () => {
   });
 });
 describe('capture geometry and status placement', () => {
+  it('prepares X capture from an English seek slider without hiding its video or another player and restores controls', async () => {
+    const player = document.createElement('div'),
+      otherPlayer = document.createElement('div'),
+      video = document.createElement('video'),
+      layer = document.createElement('div');
+    player.dataset.testid = otherPlayer.dataset.testid = 'videoComponent';
+    const controls = document.createElement('div');
+    let line = controls;
+    // Observed X: six nearby unlabeled ancestors, a 2px rail and a 62px control area.
+    for (let depth = 0; depth < 5; depth++) {
+      const child = document.createElement('div');
+      line.append(child);
+      line = child;
+    }
+    line.innerHTML = '<div role="slider" aria-label="Seek slider" aria-valuenow="2"></div>';
+    controls.append(document.createElement('button'));
+    player.append(video, controls);
+    const unrelatedVolume = document.createElement('div');
+    unrelatedVolume.innerHTML = '<div role="slider" aria-label="Volume slider"></div>';
+    player.append(unrelatedVolume);
+    otherPlayer.innerHTML = controls.outerHTML;
+    document.body.append(player, otherPlayer, layer);
+    vi.spyOn(player, 'getBoundingClientRect').mockReturnValue(new DOMRect(20, 40, 640, 360));
+    vi.spyOn(video, 'getBoundingClientRect').mockReturnValue(new DOMRect(20, 40, 640, 360));
+    for (const control of [controls, ...controls.querySelectorAll('div')])
+      vi.spyOn(control, 'getBoundingClientRect').mockReturnValue(new DOMRect(24, 330, 632, 62));
+    vi.spyOn(line, 'getBoundingClientRect').mockReturnValue(new DOMRect(24, 330, 632, 2));
+    vi.stubGlobal('innerWidth', 1000);
+    vi.stubGlobal('innerHeight', 800);
+    vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      queueMicrotask(() => callback(0));
+      return 1;
+    });
+    const releaseCapture = vi.fn();
+    video.currentTime = 2;
+    const hooks = videoCapture(
+      {
+        target: { video, player, site: 'x', key: sourceKey(video, 'x') },
+        validSource: () => true,
+        prepareCapture: async () => 2,
+        releaseCapture,
+        state: { selection: { a: 2, b: 8 } },
+      } as unknown as VideoSession,
+      layer,
+      () => {},
+    );
+    try {
+      await expect(hooks.prepare('owned-x')).resolves.toMatchObject({
+        a: 2,
+        b: 8,
+        actualStart: 2,
+        rect: { x: 20, y: 40, width: 640, height: 360 },
+      });
+      hooks.check('owned-x');
+      expect(controls.hasAttribute('data-mv-hidden-control')).toBe(true);
+      expect(getComputedStyle(controls).visibility).toBe('hidden');
+      expect(video.closest('[data-mv-hidden-control]')).toBeNull();
+      expect(unrelatedVolume.closest('[data-mv-hidden-control]')).toBeNull();
+      expect(otherPlayer.querySelector('[data-mv-hidden-control]')).toBeNull();
+      expect(getComputedStyle(otherPlayer.firstElementChild!).visibility).toBe('visible');
+      expect(layer.dataset.capture).toBe('true');
+      hooks.release();
+      expect(getComputedStyle(controls).visibility).toBe('visible');
+      expect(player.querySelector('[data-mv-hidden-control]')).toBeNull();
+      expect(player.hasAttribute('data-mv-recording')).toBe(false);
+      expect(layer.dataset.capture).toBeUndefined();
+      expect(releaseCapture).toHaveBeenCalledOnce();
+    } finally {
+      hooks.release();
+      player.remove();
+      otherPlayer.remove();
+      layer.remove();
+      vi.unstubAllGlobals();
+    }
+  });
   it('prepares Bilibili capture, hides only its native controls and restores selection controls on release', async () => {
     const player = document.createElement('div'),
       otherPlayer = document.createElement('div'),
