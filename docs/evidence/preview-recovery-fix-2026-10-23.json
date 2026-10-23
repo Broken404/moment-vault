@@ -1,7 +1,7 @@
 {
   "date": "2026-10-23",
   "baselineCommit": "34b539c",
-  "status": "fixed-in-build-awaiting-formal-extension-post-save-retest",
+  "status": "fixed-and-formal-post-save-retest-passed-for-this-sample",
   "problem": "Preparing capture cleared all confirmed boundary frames. Returning to active B after save then depended on another paused seek, which timed out if no new frame callback arrived.",
   "scopeOfRootCause": "Confirmed unnecessary cache invalidation and reproduced the resulting timeout under controlled missing-frame delivery. The original browser-internal reason for not delivering a new frame was not captured and is not asserted.",
   "change": "Forced positioning invalidates only the requested frame. Capture still really seeks A; confirmed B remains reusable while source/signature validity checks, frame confirmation, cache limits and cancellation remain in force.",
@@ -59,10 +59,71 @@
     "dependenciesChanged": false,
     "userConfigurationChanged": false
   },
-  "formalPostSaveRetest": "pending extension reload and targeted check",
+  "formalPostSaveRetest": {
+    "implementationCommit": "c203f25",
+    "extensionReloadConfirmedByUser": true,
+    "freshHttpTestPage": true,
+    "trigger": "After preparation of A=2/B=8, user followed the one-shortcut automatic-save instruction and replied 好了. No synthetic recording shortcut was sent by the agent.",
+    "earlierAbnormalReply": "User explicitly corrected the accidental 出现了异常 choice and said the test had not been run. It is not counted as a failed recording.",
+    "sample": {
+      "sampleNumber": "010",
+      "materialId": "09613589be0b4c31afa0661eaac5189c",
+      "attachmentId": "a86d4601b2af42d3a584ec364ed7d5be",
+      "sha256": "f74db4188701c1e61ea2e9f6c577d431f0a607a3c6594e2e1a6f1569bbae9afb",
+      "metadataHashMatches": true,
+      "bytes": 2911073,
+      "range": {
+        "a": 2,
+        "b": 8,
+        "actualStart": 2,
+        "actualEnd": 8.065308,
+        "stopReason": "selected-end",
+        "duration": 6.133333,
+        "capture": "tabCapture-to-canvas"
+      },
+      "actualSourceSeconds": 6.065308,
+      "containerSeconds": 6.133333,
+      "containerExcessSeconds": 0.068025,
+      "video": {
+        "codec": "h264",
+        "width": 1428,
+        "height": 1072,
+        "duration": 6.133333,
+        "frames": 184
+      },
+      "audio": {
+        "codec": "aac",
+        "startTime": 0.009,
+        "duration": 6.081333,
+        "frames": 286,
+        "overallRmsDbfs": -24.707191
+      },
+      "completeDecodePassed": true
+    },
+    "observedPage": {
+      "saveStatus": "已存入草稿箱",
+      "caption": "画面 00:08.000 · 已缓存",
+      "ariaBusy": "false",
+      "sourceTime": 8.065308,
+      "sourcePaused": true,
+      "recordingBarPresent": false,
+      "captureLayerPresent": false,
+      "recordingMarkerPresent": false,
+      "canvasWidth": 320,
+      "canvasHeight": 240,
+      "timeoutDisplayed": false,
+      "stableOnSecondRead": true
+    },
+    "visualReview": "Actual saved frames 0, 90 and 183 show progressing source content with no selection window, pet, native control bar or end-screen recommendation overlay. Webpage captions remain; their semantics and frame-exact alignment were not assessed.",
+    "screenshot": ".local-data/preview-recovery-fix-20261023/formal-saved.png",
+    "sampledFrames": ".local-data/preview-recovery-fix-20261023/formal-010-frames.jpg",
+    "result": "passed",
+    "scope": "One real YouTube automatic-stop MP4 save with an already confirmed B frame; confirms post-save preview recovery on the loaded fix. Earlier timing/close-mode checks were not repeated."
+  },
   "limitations": [
     "Controlled missing-frame delivery reproduces the failure mechanism, not the original browser-internal trigger",
     "A missing or invalid boundary cache still requires a genuinely confirmed new frame; network/media errors are not hidden",
+    "The formal post-save retest passes this specific YouTube sample and is not a complete multi-site quality matrix",
     "Existing recording-duration acceptance is preserved and was not repeated in this investigation",
     "Original short-clip freeze, full video quality matrix and installation acceptance are separate open work"
   ]
