@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "scope": "Remove redundant stop acknowledgement after a confirmed content pause; actual browser improvement not yet measured",
+  "scope": "Remove redundant stop acknowledgement after confirmed pause; one actual reloaded YouTube automatic-stop sample passes the unchanged timing gate",
   "baseCommit": "a8fb301",
   "originalFailingSample": {
     "sampleId": "3113c31e456e4f55a597e4867884a251",
@@ -77,11 +77,98 @@
     "workerJsSha256": "d57a65fdd0c1bba2669b386fed86b537533024d6b1481319ba06b765ce38e5d2",
     "offscreenJsSha256": "0bbb9e80a954fbd8b3739e1572ff82056fca9b96bb1633ac99b88dd2234dcce2"
   },
-  "realBrowserRetest": "Pending user reload and a new actual automatic-stop sample",
+  "realBrowserRetest": {
+    "trigger": "User confirmed formal-extension reload, page refreshed, A=2/B=18 set, user pressed actual Ctrl+Shift+9 once and confirmed automatic save",
+    "sample": {
+      "sampleNumber": "009",
+      "materialId": "8b6355ffcccc464f9ce8c5d2bd69caae",
+      "attachmentId": "392f013322d74b8e8ddf77187240e53c",
+      "sha256": "878492a2d9a419fa787f846e79669ae8b27536e7f9a4196f3dac60a8d9928790",
+      "metadataHashMatches": true,
+      "bytes": 7702011,
+      "range": {
+        "a": 2,
+        "b": 18,
+        "actualStart": 2,
+        "actualEnd": 18.026768,
+        "stopReason": "selected-end",
+        "duration": 16.066667,
+        "capture": "tabCapture-to-canvas"
+      },
+      "actualSourceSeconds": 16.026768,
+      "containerSeconds": 16.066667,
+      "containerExcessSeconds": 0.039899,
+      "comparisonToleranceSeconds": 0.12,
+      "durationGatePassed": true,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1428,
+            "height": 1072,
+            "start_time": "0.000000",
+            "duration": "16.066667",
+            "nb_read_frames": "482"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "start_time": "0.021000",
+            "duration": "16.039333",
+            "nb_read_frames": "752"
+          }
+        ],
+        "format": {
+          "duration": "16.066667",
+          "size": "7702011"
+        }
+      },
+      "completeDecodePassed": true,
+      "audioOverallRmsDbfs": -24.170406
+    },
+    "boundaryReview": {
+      "newVideoFrames": 482,
+      "newLastTimestamp": 16.033333,
+      "maximumVideoTimestampGap": 0.033334000000000086,
+      "firstLargePictureChange": 0.166667,
+      "comparison": [
+        {
+          "reference": "005",
+          "firstFrameMeanGrayDifference": 0.27989969135802467,
+          "lastFrameMeanGrayDifference": 11.476466049382717,
+          "closestLastHalfSecondFrameDifference": 11.476466049382717,
+          "closestReferenceFrameTimestamp": 16.033333,
+          "referenceLastTimestamp": 16.033333
+        },
+        {
+          "reference": "007",
+          "firstFrameMeanGrayDifference": 2.427276234567901,
+          "lastFrameMeanGrayDifference": 12.294945987654321,
+          "closestLastHalfSecondFrameDifference": 12.285300925925926,
+          "closestReferenceFrameTimestamp": 16.033333,
+          "referenceLastTimestamp": 16.066667
+        }
+      ],
+      "scope": "Approximate content boundary comparison, excluding captions; no frame-exact clipping claim"
+    },
+    "visualReview": "First picture corresponds to A-side reference, sampled pictures continue moving, last picture retains matching late-source content; no obvious segment loss observed. Not frame-exact alignment.",
+    "visibleSaveStatus": "已存入草稿箱",
+    "previewAfterSave": "Selection pane displayed a target-frame timeout while the source was paused at 18 seconds; recorded as a separate unresolved UI quality item",
+    "reductionFromPriorFailingContainerExcessSeconds": 0.111338,
+    "universalPrecisionGuarantee": false
+  },
   "limitations": [
-    "Do not mark the unchanged 0.12 second real-media gate passed before a fresh recording",
-    "Earlier 0.151237 second file remains a failed precision sample",
+    "This new sample passes the unchanged 0.12 second comparison gate; one sample does not prove a universal jitter bound",
+    "Earlier 0.151237 second file remains an unchanged historical failed precision sample",
     "Original short-clip freeze remains unresolved",
-    "A paused-frame/silence heuristic cannot establish frame-exact alignment or justify cutting static content"
-  ]
+    "The post-save selection-preview timeout was observed and remains a separate quality item",
+    "Webpage captions and pointer can be recorded; caption semantics and complete audio/video sync acceptance are not asserted",
+    "Approximate boundary comparisons do not establish frame-exact export"
+  ],
+  "implementationCommit": "e859141"
 }
