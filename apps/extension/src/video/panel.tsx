@@ -327,7 +327,10 @@ export function VideoMode({
           }}
         >
           <div>
-            <small>{{ youtube: 'YouTube', bilibili: 'B站', x: 'X' }[target.site]} · 选段</small>
+            <small>
+              {{ youtube: 'YouTube', bilibili: 'B站', x: 'X', owned: '自制测试' }[target.site]} ·
+              选段
+            </small>
             <strong>留住这一段</strong>
           </div>
           <GripHorizontal className="grip" />

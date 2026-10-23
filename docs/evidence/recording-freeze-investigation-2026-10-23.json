@@ -1,0 +1,428 @@
+{
+  "date": "2026-10-23",
+  "status": "unresolved-feedback-loop-confirmed-owned-tab-cold-short-stop-prepared",
+  "implementationBasis": "de24e6b",
+  "captureAlgorithmChanged": false,
+  "feedbackCommand": "python tools/check_recording.py .spike-data/draft/spike-native-8208b9defbe844dc8274e216fb0c82a6/material.webm",
+  "retainedFailure": {
+    "ok": false,
+    "sha256": "1ce0c0cde438ad139c16cf52613ef42b2415ad27af1887f2075f6f904a1e8b3c",
+    "videoFrames": 16,
+    "lastVideoTime": 0.528,
+    "lastAudioTime": 1.889,
+    "audioOnlyTailSeconds": 1.361,
+    "maximumVideoGapSeconds": 0.066,
+    "maximumUnchangedPictureSeconds": 0.066,
+    "visibleFirstSourceClock": 2.0,
+    "visibleLastSourceClock": 2.4,
+    "recordedActualSourceEnd": 3.918114,
+    "contactSheet": ".local-data/freeze-lab-20261023/original-bad-frames.jpg"
+  },
+  "retainedGoodControl": {
+    "ok": true,
+    "videoFrames": 59,
+    "lastVideoTime": 2.047,
+    "lastAudioTime": 2.018,
+    "maximumVideoGapSeconds": 0.067,
+    "maximumUnchangedPictureSeconds": 0.134
+  },
+  "clonedTailNegativeControl": {
+    "ok": false,
+    "videoFrames": 58,
+    "lastVideoTime": 1.9,
+    "lastAudioTime": 1.927,
+    "maximumUnchangedPictureSeconds": 1.366667,
+    "syntheticNotProposedFix": true
+  },
+  "unchangedChecker": {
+    "toleranceSeconds": 0.25,
+    "pictureChangeThresholdGrayLevels": 0.5,
+    "onlyForExplicitlyMovingOwnedSources": true
+  },
+  "ownedFileStreamHarness": {
+    "scope": "Actual production or original 0.0.4 offscreen module, real browser MediaRecorder and production IndexedDB store when applicable; getUserMedia/IPC supplied by owned file-stream adapters, speaker monitoring excluded",
+    "actualTabCapture": false,
+    "parallelDiagnosticEncoder": false,
+    "samples": [
+      {
+        "sample": "hidden-1-89bb93bb",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": true,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 62,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.012,
+          "lastAudioTime": 1.98,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.067,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.1,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "hidden-2-e34facc6",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": true,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 61,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.035,
+          "lastAudioTime": 1.963,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.067,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.187,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "hidden-3-ace632ba",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": true,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 61,
+          "firstVideoTime": 0.031,
+          "lastVideoTime": 2.008,
+          "lastAudioTime": 1.92,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.066,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.129,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "legacy-visible-1-3ab49bee",
+        "pipeline": "historical-0.0.4-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 48,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.107,
+          "lastAudioTime": 2.029,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.147,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.098,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "legacy-visible-2-a5e75a63",
+        "pipeline": "historical-0.0.4-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 64,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.106,
+          "lastAudioTime": 2.03,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.066,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.25,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "legacy-visible-3-fc6b98da",
+        "pipeline": "historical-0.0.4-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 60,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.006,
+          "lastAudioTime": 1.924,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.071,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.128,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "visible-1-794219a8",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 62,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.033,
+          "lastAudioTime": 1.966,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.066,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.218,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "visible-1-81504330",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 49,
+          "firstVideoTime": 0.006,
+          "lastVideoTime": 2.011,
+          "lastAudioTime": 1.92,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.175,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.088,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "visible-2-81845d7b",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 59,
+          "firstVideoTime": 0.035,
+          "lastVideoTime": 1.984,
+          "lastAudioTime": 1.919,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.066,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.1,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "visible-2-ace1a208",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 60,
+          "firstVideoTime": 0.02,
+          "lastVideoTime": 1.996,
+          "lastAudioTime": 1.919,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.068,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.128,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "visible-3-71e814ec",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 61,
+          "firstVideoTime": 0.028,
+          "lastVideoTime": 2.017,
+          "lastAudioTime": 1.921,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.066,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.076,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "visible-3-d5329043",
+        "pipeline": "production-offscreen-with-owned-file-stream",
+        "sourceDimensions": [960, 540],
+        "documentHidden": false,
+        "cssHiddenIframe": false,
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 61,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.031,
+          "lastAudioTime": 1.959,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.066,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.183,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      }
+    ],
+    "passed": 12,
+    "failed": 0,
+    "cssHiddenIframeIsNotAnOffscreenDocument": true,
+    "backgroundSwitchAttemptNotEstablished": "The page still reported document.hidden=false; no background-tab coverage claimed",
+    "highResolutionTrialsExcluded": {
+      "reason": "The cropped reference source itself fails the continuously-moving picture gate, so these are not valid capture-freeze reproductions",
+      "referenceUnchangedSeconds": 0.433333,
+      "samples": [
+        {
+          "sample": "legacy-visible-1-54785e02",
+          "pipeline": "historical-0.0.4-offscreen-with-owned-file-stream",
+          "sourceDimensions": [2560, 1440],
+          "documentHidden": false,
+          "cssHiddenIframe": false,
+          "report": {
+            "ok": false,
+            "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+            "videoFrames": 51,
+            "firstVideoTime": 0,
+            "lastVideoTime": 2.144,
+            "lastAudioTime": 2.04,
+            "audioOnlyTailSeconds": 0,
+            "maximumVideoGapSeconds": 0.153,
+            "toleranceSeconds": 0.25,
+            "pictureCheckOk": true,
+            "maximumUnchangedPictureSeconds": 0.672,
+            "pictureChangeThresholdGrayLevels": 0.5
+          }
+        },
+        {
+          "sample": "legacy-visible-2-6d7d7d96",
+          "pipeline": "historical-0.0.4-offscreen-with-owned-file-stream",
+          "sourceDimensions": [2560, 1440],
+          "documentHidden": false,
+          "cssHiddenIframe": false,
+          "report": {
+            "ok": false,
+            "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+            "videoFrames": 51,
+            "firstVideoTime": 0.072,
+            "lastVideoTime": 2.018,
+            "lastAudioTime": 1.92,
+            "audioOnlyTailSeconds": 0,
+            "maximumVideoGapSeconds": 0.147,
+            "toleranceSeconds": 0.25,
+            "pictureCheckOk": true,
+            "maximumUnchangedPictureSeconds": 0.462,
+            "pictureChangeThresholdGrayLevels": 0.5
+          }
+        },
+        {
+          "sample": "legacy-visible-3-bdc4c632",
+          "pipeline": "historical-0.0.4-offscreen-with-owned-file-stream",
+          "sourceDimensions": [2560, 1440],
+          "documentHidden": false,
+          "cssHiddenIframe": false,
+          "report": {
+            "ok": false,
+            "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+            "videoFrames": 61,
+            "firstVideoTime": 0.046,
+            "lastVideoTime": 2.013,
+            "lastAudioTime": 1.92,
+            "audioOnlyTailSeconds": 0,
+            "maximumVideoGapSeconds": 0.066,
+            "toleranceSeconds": 0.25,
+            "pictureCheckOk": true,
+            "maximumUnchangedPictureSeconds": 0.516,
+            "pictureChangeThresholdGrayLevels": 0.5
+          }
+        }
+      ]
+    }
+  },
+  "actualOwnedSource": {
+    "url": "http://127.0.0.1:43820/capture.html",
+    "tool": "tools/run-recording-freeze-fixture.mjs",
+    "dimensions": [640, 360],
+    "fps": 30,
+    "durationSeconds": 15,
+    "audioHz": 440,
+    "burnedClockAndFrameNumber": true,
+    "twoSecondSourceControlPassed": true,
+    "sourceControlMaximumUnchangedPictureSeconds": 0.033334,
+    "httpScope": "GET/HEAD only on loopback; two fixed files, no extension trigger/native helper/write API"
+  },
+  "fixtureGate": {
+    "flag": "MOMENT_VAULT_OWNED_CAPTURE_LAB=1",
+    "normalBuildDefault": false,
+    "exactOptInRouteOnly": true,
+    "extensionIdentityAndPermissionsUnchanged": true,
+    "ordinaryBuild": {
+      "mode": "normal",
+      "containsFixtureOrigin": false,
+      "contentSha256": "e6eee233b384d50e9d21a08e3763ccd6c91676a4fa893f3d043b4f2c20978318",
+      "gateCheckPassed": true
+    },
+    "preparedDevelopmentBuild": {
+      "mode": "owned",
+      "containsFixtureOrigin": true,
+      "contentSha256": "a0263f6f5fcfff188f16eb0fe826017e079b7285fd87dbb79c245400a54f5694",
+      "gateCheckPassed": true
+    }
+  },
+  "checks": {
+    "frontendPassed": 53,
+    "typecheckPassed": true,
+    "formatPassed": true,
+    "ordinaryAndDevelopmentBuildPassed": true,
+    "generatedExtensionChecksPassed": true,
+    "newFixtureGateRegressionInitiallyFailedThenPassed": true,
+    "fixtureGateRegressionIsNotFreezeFixEvidence": true
+  },
+  "pendingActualCapture": {
+    "actualShortcutRequired": true,
+    "source": "owned local fixture",
+    "selectedRange": [2, 12],
+    "stop": "second real shortcut around two seconds of 已录; use actual source interval, not perceived key interval",
+    "diagnosticObservers": false,
+    "parallelEncoder": false,
+    "coldStartViaExtensionReload": true,
+    "status": "not run; pending reload of prepared development build"
+  },
+  "limitations": [
+    "Retained artifact fails but the failure-producing browser capture has not been reproduced or causally fixed.",
+    "Passing file-stream cases do not establish genuine tabCapture, cold startup or full performance coverage.",
+    "No captured original file, personal path configuration or browser profile is committed."
+  ]
+}

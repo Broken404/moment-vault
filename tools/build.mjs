@@ -7,7 +7,10 @@ await build();
 await build({
   configFile: false,
   plugins: [react()],
-  define: { 'process.env.NODE_ENV': JSON.stringify('production') },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production'),
+    __MV_OWNED_CAPTURE_LAB__: JSON.stringify(process.env.MOMENT_VAULT_OWNED_CAPTURE_LAB === '1'),
+  },
   resolve: {
     alias: { '@shared': fileURLToPath(new URL('../packages/shared/src', import.meta.url)) },
   },
@@ -40,3 +43,7 @@ for (const name of ['react', 'react-dom', 'scheduler', 'lucide-react']) {
 }
 await writeFile('dist/extension/THIRD-PARTY-NOTICES.txt', licenses.join('\n\n---\n\n'));
 console.log(`Unpacked extension: dist/extension (${identity.id})`);
+if (process.env.MOMENT_VAULT_OWNED_CAPTURE_LAB === '1')
+  console.log(
+    'Development-only owned capture fixture enabled: http://127.0.0.1:43820/capture.html',
+  );

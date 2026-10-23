@@ -179,7 +179,9 @@ export function videoCapture(
                   '.bpx-player-control-bottom',
                   '.bpx-player-control-top',
                 ]
-              : [];
+              : target.site === 'owned'
+                ? ['[data-mv-owned-controls]']
+                : [];
         style.textContent =
           selectors.map((s) => `[data-mv-recording="${token}"] ${s}`).join(',') +
           (selectors.length ? '{opacity:0!important;visibility:hidden!important;}' : '');

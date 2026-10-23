@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   findRail,
   findVideoTargets,
   keepControls,
   sourceKey,
+  supportedSite,
   videoDomain,
 } from '../apps/extension/src/video/sites';
 
@@ -39,6 +40,34 @@ beforeEach(() => {
   document.body.innerHTML = '';
 });
 describe('owned native timeline DOM fixtures (not platform acceptance)', () => {
+  it('keeps the owned recording fixture gated off by default and limits the development entry to its exact loopback route', () => {
+    const url = 'http://127.0.0.1:43820/capture.html';
+    expect(supportedSite(url)).toBeNull();
+    vi.stubGlobal('__MV_OWNED_CAPTURE_LAB__', true);
+    try {
+      expect(supportedSite(url)).toBe('owned');
+      for (const other of [
+        'http://127.0.0.1:43820/other.html',
+        'http://localhost:43820/capture.html',
+        'http://127.0.0.1:43821/capture.html',
+        'https://example.com/capture.html',
+      ])
+        expect(supportedSite(other)).toBeNull();
+      fixture(
+        '<div id="moment-vault-owned-player"><video></video><div data-mv-owned-rail></div></div>',
+      );
+      const target = findVideoTargets(document, url)[0],
+        rail = document.querySelector<HTMLElement>('[data-mv-owned-rail]')!;
+      rail.getBoundingClientRect = () => rect(30, 350, 580, 6);
+      expect(target.site).toBe('owned');
+      expect(target.key).toBe('owned:' + url);
+      expect(findRail(target)).toBe(rail);
+      vi.stubGlobal('__MV_OWNED_CAPTURE_LAB__', false);
+      expect(findVideoTargets(document, url)).toHaveLength(0);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
   it.each([
     [
       'youtube',

@@ -1,6 +1,8 @@
 import type { TimeDomain } from '@shared/range';
 
-export type Site = 'youtube' | 'bilibili' | 'x';
+declare const __MV_OWNED_CAPTURE_LAB__: boolean;
+
+export type Site = 'youtube' | 'bilibili' | 'x' | 'owned';
 export interface VideoTarget {
   site: Site;
   key: string;
@@ -16,6 +18,14 @@ export interface RailRect {
 
 export function supportedSite(url = location.href): Site | null {
   const page = new URL(url);
+  // This route exists only in an explicitly opted-in development build.
+  if (
+    typeof __MV_OWNED_CAPTURE_LAB__ !== 'undefined' &&
+    __MV_OWNED_CAPTURE_LAB__ &&
+    page.origin === 'http://127.0.0.1:43820' &&
+    page.pathname === '/capture.html'
+  )
+    return 'owned';
   if (
     /(^|\.)youtube\.com$/.test(page.hostname) &&
     page.pathname === '/watch' &&
@@ -33,11 +43,13 @@ function playerFor(video: HTMLVideoElement, site: Site): HTMLElement | null {
     youtube: '#movie_player, .html5-video-player',
     bilibili: '.bpx-player-container, #bilibili-player, #playerWrap',
     x: '[data-testid="videoPlayer"], [data-testid="videoComponent"]',
+    owned: '#moment-vault-owned-player',
   };
   return video.closest<HTMLElement>(selectors[site]);
 }
 export function sourceKey(video: HTMLVideoElement, site: Site, url = location.href): string {
   const page = new URL(url);
+  if (site === 'owned') return 'owned:' + page.href;
   if (site === 'youtube') return 'youtube:' + (page.searchParams.get('v') ?? '');
   if (site === 'bilibili')
     return 'bilibili:' + page.pathname + ':' + (page.searchParams.get('p') ?? '1');
@@ -90,6 +102,7 @@ export function findRail(target: VideoTarget): HTMLElement | null {
     youtube: ['.ytp-progress-bar-container .ytp-progress-bar', '.ytp-progress-bar-container'],
     bilibili: ['.bpx-player-progress', '.bpx-player-progress-area'],
     x: [],
+    owned: ['[data-mv-owned-rail]'],
   };
   if (target.site === 'x') {
     for (const thumb of target.player.querySelectorAll<HTMLElement>(
@@ -147,7 +160,9 @@ export function keepControls(target: VideoTarget): () => void {
       ? ['.ytp-chrome-bottom', '.ytp-progress-bar-container']
       : target.site === 'bilibili'
         ? ['.bpx-player-control-wrap', '.bpx-player-control-bottom', '.bpx-player-progress-area']
-        : ['[role="group"]'];
+        : target.site === 'owned'
+          ? ['[data-mv-owned-controls]']
+          : ['[role="group"]'];
   style.textContent =
     selectors.map((selector) => `[data-mv-selection="${token}"] ${selector}`).join(',') +
     '{opacity:1!important;visibility:visible!important;transform:none!important;}';
