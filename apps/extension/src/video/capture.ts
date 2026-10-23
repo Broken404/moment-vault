@@ -54,8 +54,20 @@ export function videoCapture(
   const stop = (reason: string) => {
     if (ended) return;
     ended = true;
+    const pausedAt =
+      valid() && session.target.video.paused ? session.target.video.currentTime : undefined;
+    if (pausedAt !== undefined) {
+      clear();
+      playing = false;
+    }
     void chrome.runtime
-      .sendMessage({ target: 'background', type: 'capture-ended', id, reason })
+      .sendMessage({
+        target: 'background',
+        type: 'capture-ended',
+        id,
+        reason,
+        ...(pausedAt !== undefined ? { pausedAt } : {}),
+      })
       .catch(() => {});
   };
   const check = () => {

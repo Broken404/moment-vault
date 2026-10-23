@@ -58,6 +58,29 @@ function coordinator() {
   return { engine: new CaptureCoordinator(deps as unknown as CaptureDependencies), deps, events };
 }
 describe('recording coordination', () => {
+  it('stops without another page round trip after the content has already paused at a confirmed endpoint', async () => {
+    vi.useFakeTimers();
+    const { engine, deps } = coordinator();
+    try {
+      await engine.start(7);
+      deps.tell.mockClear();
+      deps.tell.mockImplementation(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 120));
+        return { ok: true, actualEnd: 4.02 };
+      });
+      const stopped = engine.stop('selected-end', 4.02);
+      await vi.advanceTimersByTimeAsync(0);
+      expect(deps.media).toHaveBeenCalledWith('stop', {
+        id: engine.current!.id,
+        end: { actualStart: 2, actualEnd: 4.02, stopReason: 'selected-end' },
+      });
+      expect(deps.tell).not.toHaveBeenCalled();
+      await stopped;
+    } finally {
+      await vi.runAllTimersAsync();
+      vi.useRealTimers();
+    }
+  });
   it('does not add encoder-start events or slow status writes to the captured source interval', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(0);
@@ -285,6 +308,73 @@ describe('durable recording publication', () => {
   });
 });
 describe('capture geometry and status placement', () => {
+  it('reports a paused endpoint and clears local capture polling before asking the background to stop', async () => {
+    vi.useFakeTimers();
+    const video = document.createElement('video'),
+      player = document.createElement('div'),
+      layer = document.createElement('div');
+    player.append(video);
+    document.body.append(player, layer);
+    let paused = true;
+    let frameCallback: VideoFrameRequestCallback | undefined;
+    const sendMessage = vi.fn(async () => ({ ok: true }));
+    vi.stubGlobal('chrome', { runtime: { sendMessage } });
+    vi.stubGlobal('innerWidth', 1000);
+    vi.stubGlobal('innerHeight', 800);
+    vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      callback(0);
+      return 1;
+    });
+    vi.spyOn(video, 'getBoundingClientRect').mockReturnValue(new DOMRect(20, 40, 640, 360));
+    vi.spyOn(video, 'paused', 'get').mockImplementation(() => paused);
+    vi.spyOn(video, 'play').mockImplementation(async () => {
+      paused = false;
+    });
+    vi.spyOn(video, 'pause').mockImplementation(() => {
+      paused = true;
+    });
+    video.requestVideoFrameCallback = (callback) => {
+      frameCallback = callback;
+      return 1;
+    };
+    video.cancelVideoFrameCallback = vi.fn();
+    video.currentTime = 2;
+    const hooks = videoCapture(
+      {
+        target: { video, player, site: 'youtube', key: sourceKey(video, 'youtube') },
+        validSource: () => true,
+        prepareCapture: async () => 2,
+        releaseCapture: () => {},
+        state: { selection: { a: 2, b: 4 } },
+      } as unknown as VideoSession,
+      layer,
+      () => {},
+    );
+    try {
+      await hooks.prepare('owned-endpoint');
+      await hooks.play('owned-endpoint');
+      video.currentTime = 4.02;
+      frameCallback!(0, {} as VideoFrameCallbackMetadata);
+      expect(video.paused).toBe(true);
+      expect(sendMessage).toHaveBeenCalledWith({
+        target: 'background',
+        type: 'capture-ended',
+        id: 'owned-endpoint',
+        reason: 'selected-end',
+        pausedAt: 4.02,
+      });
+      const calls = sendMessage.mock.calls.length;
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(sendMessage).toHaveBeenCalledTimes(calls);
+    } finally {
+      hooks.release();
+      player.remove();
+      layer.remove();
+      vi.unstubAllGlobals();
+      vi.useRealTimers();
+    }
+  });
   it('prepares recording when a two-line status bar needs more than its minimum height', async () => {
     const video = document.createElement('video'),
       player = document.createElement('div'),

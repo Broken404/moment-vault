@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-23",
+  "scope": "Remove redundant stop acknowledgement after a confirmed content pause; actual browser improvement not yet measured",
+  "baseCommit": "a8fb301",
+  "originalFailingSample": {
+    "sampleId": "3113c31e456e4f55a597e4867884a251",
+    "sourceSeconds": 16.034096,
+    "containerSeconds": 16.185333,
+    "excessSeconds": 0.151237,
+    "toleranceSeconds": 0.12,
+    "pass": false,
+    "streams": [
+      {
+        "codec_type": "video",
+        "start_time": "0.000000",
+        "duration": "16.100000"
+      },
+      {
+        "codec_type": "audio",
+        "start_time": "0.025000",
+        "duration": "16.160333"
+      }
+    ],
+    "sha256": "e22d3132ff0e2b982647028275c61ffb0e007297081db2d5190731bc01851240"
+  },
+  "diagnosticCommand": "python .local-data/recording-jitter-20261023/baseline.py",
+  "baselineExitCode": 1,
+  "conversionControl": {
+    "ownedWebm": {
+      "containerSeconds": 2.008,
+      "video": {
+        "firstPacket": 0.0,
+        "lastPacketEnd": 2.0
+      },
+      "audio": {
+        "firstPacket": -0.007,
+        "lastPacketEnd": 2.001
+      }
+    },
+    "currentConverterMp4": {
+      "containerSeconds": 2.0,
+      "video": {
+        "firstPacket": 0.0,
+        "lastPacketEnd": 2.0
+      },
+      "audio": {
+        "firstPacket": -0.021333,
+        "lastPacketEnd": 2.0
+      }
+    }
+  },
+  "conversionControlScope": "Self-made two-second WebM passed through the same FFmpeg arguments; no added duration. Not the deleted raw WebM of sample 007.",
+  "diagnosis": "Content already pauses at selected-end; coordinator previously waited for another capture-finish request/reply before stopping the recorder. This wait is removable, but its exact contribution to the retained file is not instrumented.",
+  "changes": [
+    "Source stop signal includes pausedAt only while source identity remains valid and video is paused",
+    "Local frame and progress polling stops before confirmed endpoint is sent",
+    "Background forwards endpoint only from the current source tab and matching task id",
+    "Coordinator uses a finite endpoint after actualStart, otherwise keeps existing finish handshake"
+  ],
+  "unchanged": [
+    "MediaRecorder and canvas capture route",
+    "Native converter and user media files",
+    "Manual shortcut, button and close-mode finish handshakes"
+  ],
+  "regressions": {
+    "redBeforeFix": 2,
+    "confirmedPauseTest": "Injected 120 ms capture-finish response delay: recorder did not stop at the immediate assertion before fix; stops without that request after fix",
+    "sourceTest": "Actual videoCapture frame-end path lacked pausedAt before fix; reports endpoint and clears polling after fix",
+    "allFrontendTestsPassed": 45,
+    "recordingTestsPassed": 15,
+    "invocation": "node node_modules/vitest/vitest.mjs run --pool=threads --maxWorkers=1",
+    "formatTypeProductionBuildAndGeneratedScriptChecks": "passed",
+    "nativeCodeChanged": false
+  },
+  "buildHashes": {
+    "contentJsSha256": "88d08b736249f06426fa43ab52a1cdefc240ba7d4b35c532d6a7d0bfecf23de3",
+    "workerJsSha256": "d57a65fdd0c1bba2669b386fed86b537533024d6b1481319ba06b765ce38e5d2",
+    "offscreenJsSha256": "0bbb9e80a954fbd8b3739e1572ff82056fca9b96bb1633ac99b88dd2234dcce2"
+  },
+  "realBrowserRetest": "Pending user reload and a new actual automatic-stop sample",
+  "limitations": [
+    "Do not mark the unchanged 0.12 second real-media gate passed before a fresh recording",
+    "Earlier 0.151237 second file remains a failed precision sample",
+    "Original short-clip freeze remains unresolved",
+    "A paused-frame/silence heuristic cannot establish frame-exact alignment or justify cutting static content"
+  ]
+}

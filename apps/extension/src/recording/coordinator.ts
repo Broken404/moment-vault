@@ -108,7 +108,7 @@ export class CaptureCoordinator {
       await this.update(task, 'failed', errorMessage(error));
     }
   }
-  async stop(reason: string) {
+  async stop(reason: string, pausedAt?: number) {
     const task = this.current;
     if (!task) return;
     if (this.stopping) return this.stopping;
@@ -121,16 +121,28 @@ export class CaptureCoordinator {
         this.update(task, 'stopping', cancelled ? '正在取消准备…' : '正在结束录制…'),
         (async () => {
           let actualEnd = task.lastTime;
-          try {
-            const result = await this.deps.tell<{ actualEnd?: number }>(
-              task.tabId,
-              'capture-finish',
-              {
-                id: task.id,
-              },
-            );
-            if (Number.isFinite(result.actualEnd)) actualEnd = result.actualEnd!;
-          } catch {}
+          // A source that already paused can provide its endpoint with the stop signal.
+          // Asking it to finish again would record the whole extra message round trip.
+          if (
+            !cancelled &&
+            typeof pausedAt === 'number' &&
+            Number.isFinite(pausedAt) &&
+            task.selection &&
+            pausedAt > task.selection.actualStart
+          ) {
+            actualEnd = pausedAt;
+          } else {
+            try {
+              const result = await this.deps.tell<{ actualEnd?: number }>(
+                task.tabId,
+                'capture-finish',
+                {
+                  id: task.id,
+                },
+              );
+              if (Number.isFinite(result.actualEnd)) actualEnd = result.actualEnd!;
+            } catch {}
+          }
           const end: CaptureEnd | undefined =
             !cancelled && task.selection && actualEnd > task.selection.actualStart
               ? { actualStart: task.selection.actualStart, actualEnd, stopReason: reason }

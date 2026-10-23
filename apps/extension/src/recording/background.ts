@@ -121,7 +121,12 @@ export function recordingBackground(
       if (!offscreen && sender.tab?.id !== coordinator.current?.tabId)
         throw new Error('无效的录制结束请求。');
       if (message.id === coordinator.current?.id)
-        await coordinator.stop(String(message.reason).slice(0, 80));
+        await coordinator.stop(
+          String(message.reason).slice(0, 80),
+          sender.tab?.id === coordinator.current?.tabId && typeof message.pausedAt === 'number'
+            ? message.pausedAt
+            : undefined,
+        );
       return { ok: true, stopped: true };
     }
     if (message.type === 'capture-close') {
