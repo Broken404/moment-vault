@@ -389,6 +389,7 @@
     "offscreenIdenticalToActualNoProbeCapture": true,
     "ownedTestTabClosed": true,
     "ownedFixtureServerStopped": true,
-    "manualReload": "pending user reload to deactivate the fixture adapter; no repeated recording requested"
+    "manualReload": "user confirmed reloading the ordinary build after dc2e1dc; no repeated recording requested",
+    "manualReloadEvidence": "user response to the exact Edge extension reload instruction; internal page action was not independently automated"
   }
 }
