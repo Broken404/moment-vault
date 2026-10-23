@@ -18,6 +18,15 @@ const imageExtensions: Record<string, string> = {
   'image/gif': 'gif',
 };
 
+export class HostError extends Error {
+  constructor(
+    message: string,
+    public readonly code?: string,
+  ) {
+    super(message);
+  }
+}
+
 export async function host<T>(
   op: HostOperation,
   payload: Record<string, unknown> = {},
@@ -45,7 +54,10 @@ export async function host<T>(
     });
   }
   if (!response?.ok)
-    throw new Error(response?.error?.message ?? '本地助手没有返回结果，请重新检测连接');
+    throw new HostError(
+      response?.error?.message ?? '本地助手没有返回结果，请重新检测连接',
+      response?.error?.code,
+    );
   return response.result!;
 }
 export async function preferences(): Promise<Preferences> {

@@ -77,5 +77,10 @@ public sealed class RecordingUpload
 }
 public sealed record RecordingProgress(string Phase, Material? Item = null, string? Error = null);
 public sealed record TransferResult(string Id, string Status, string? Error = null);
+public sealed record MergeSelection(string Id, string Revision);
+public sealed record MergeSource(string Id, string Revision, string Directory, Dictionary<string, string> Hashes);
+public sealed record MergeJournal(string Id, MergeSelection[] Selection, MergeSource[] Sources, string Target,
+    string Staging, Dictionary<string, string> TargetHashes);
+public sealed record MergeResult(string Status, Material Item, string[] RetainedSourceIds, string? Error = null);
 public sealed record TransferJournal(string Id, string Source, string Target, string Staging, Dictionary<string, string> SourceHashes,
     Dictionary<string, string> TargetHashes);

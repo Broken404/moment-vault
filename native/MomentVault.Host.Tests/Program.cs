@@ -175,6 +175,128 @@ var tests = new List<(string Name, Action Action)>
         var store = Store("initial-notes");
         Equal(Save(store).Note, "原有备注");
     }),
+    ("merge groups mixed attachments in request order and preserves identities, metadata and bytes", () =>
+    {
+        var store = Store("merge-mixed"); var a = Save(store);
+        var b = SaveFiles(store, "第二组", [(new(Guid.NewGuid().ToString("N"), "mp4", "video", "video/mp4", "https://example.com/video", "视频备注"), new byte[] { 1, 2, 3 }), (FileDescriptor(), ImageBytes())]);
+        var bPath = store.Find("draft", b.Id);
+        b.Note = "第二组共同说明\n保留换行";
+        b.Attachments[0].Range = JsonSerializer.SerializeToElement(new { a = 2, b = 8, actualStart = 2, actualEnd = 7.5 });
+        b.Attachments[0].Extra = new() { ["customAttachment"] = JsonSerializer.SerializeToElement("kept") };
+        b.Extra = new() { ["customMaterial"] = JsonSerializer.SerializeToElement("original") };
+        Description.Save(bPath, b); b = Description.Load(bPath);
+        var expected = b.Attachments.Concat(a.Attachments).ToArray();
+        var operation = Guid.NewGuid().ToString("N"); MergeSelection[] selection = [new(b.Id, b.Revision), new(a.Id, a.Revision)];
+        var result = store.Merge(operation, selection); var merged = result.Item;
+        Equal(result.Status, "merged"); Equal(merged.Id, operation); Equal(merged.ApprovedAt, null);
+        Equal(store.List("draft").Items.Count, 1); Equal(store.List("library").Items.Count, 0);
+        True(!Directory.Exists(bPath)); Equal(merged.Attachments.Count, 3);
+        True(merged.Attachments.Select(f => f.Id).SequenceEqual(expected.Select(f => f.Id)));
+        Equal(merged.Attachments.Select(f => f.FileName).Distinct(StringComparer.OrdinalIgnoreCase).Count(), 3);
+        foreach (var (actual, original) in merged.Attachments.Zip(expected))
+        {
+            Equal(actual.Source, original.Source); Equal(actual.Note, original.Note); Equal(actual.CollectedAt, original.CollectedAt);
+            Equal(actual.Sha256, original.Sha256); Equal(actual.Bytes, original.Bytes);
+            Equal(SafeFiles.Hash(Path.Combine(store.Find("draft", merged.Id), actual.FileName)), original.Sha256);
+        }
+        Equal(merged.Attachments[0].Range!.Value.GetProperty("actualEnd").GetDouble(), 7.5);
+        Equal(merged.Attachments[0].Extra!["customAttachment"].GetString(), "kept");
+        Equal(merged.MergedFrom![0].GetProperty("material").GetProperty("customMaterial").GetString(), "original");
+        Equal(merged.MergedFrom[0].GetProperty("note").GetString(), b.Note);
+        True(merged.Note.Contains("第二组共同说明\n保留换行") && merged.Note.Contains(a.Note));
+        using var restarted = new VaultStore(Path.Combine(testRoot, "merge-mixed", "state"));
+        Equal(restarted.Merge(operation, selection).Item.Id, merged.Id); Equal(restarted.List("draft").Items.Count, 1);
+        Throws(() => restarted.Merge(operation, selection.Reverse().ToArray()), "merge-conflict");
+        var third = Save(restarted);
+        var nested = restarted.Merge(Guid.NewGuid().ToString("N"), [new(merged.Id, merged.Revision), new(third.Id, third.Revision)]).Item;
+        Equal(nested.Attachments.Count, 4);
+        True(nested.Attachments.Take(3).Select(f => f.Id).SequenceEqual(expected.Select(f => f.Id)));
+        Equal(nested.MergedFrom![0].GetProperty("material").GetProperty("mergedFrom").GetArrayLength(), 2);
+    }),
+    ("merge rejects stale descriptions, changed bytes and unregistered files before removing sources", () =>
+    {
+        var store = Store("merge-validation"); var a = Save(store); var b = Save(store);
+        var path = store.Find("draft", a.Id); var original = File.ReadAllText(Path.Combine(path, Description.FileName));
+        MergeSelection[] selection = [new(a.Id, a.Revision), new(b.Id, b.Revision)];
+        File.AppendAllText(Path.Combine(path, Description.FileName), "\nexternal edit");
+        Throws(() => store.Merge(Guid.NewGuid().ToString("N"), selection), "merge-not-created");
+        True(File.ReadAllText(Path.Combine(path, Description.FileName)).Contains("external edit"));
+        File.WriteAllText(Path.Combine(path, Description.FileName), original);
+        File.WriteAllText(Path.Combine(path, "unregistered.txt"), "must not be lost");
+        Throws(() => store.Merge(Guid.NewGuid().ToString("N"), selection), "merge-not-created");
+        True(File.Exists(Path.Combine(path, "unregistered.txt"))); File.Delete(Path.Combine(path, "unregistered.txt"));
+        File.AppendAllText(Path.Combine(path, a.Attachments[0].FileName), "modified");
+        Throws(() => store.Merge(Guid.NewGuid().ToString("N"), selection), "merge-not-created");
+        Equal(store.List("draft").Items.Count, 2); Equal(store.List("library").Items.Count, 0);
+    }),
+    ("merge rejects duplicate attachment identities and library sources", () =>
+    {
+        var store = Store("merge-identities"); var a = Save(store); var b = Save(store);
+        var path = store.Find("draft", b.Id); b.Attachments[0].Id = a.Attachments[0].Id;
+        Description.Save(path, b); b = Description.Load(path);
+        Throws(() => store.Merge(Guid.NewGuid().ToString("N"), [new(a.Id, a.Revision), new(b.Id, b.Revision)]), "merge-not-created");
+        Equal(store.List("draft").Items.Count, 2);
+        store.Transfer(b.Id, "draft", "library");
+        Throws(() => store.Merge(Guid.NewGuid().ToString("N"), [new(a.Id, a.Revision), new(b.Id, b.Revision)]), "merge-not-created");
+        Equal(store.List("draft").Items.Count, 1); Equal(store.List("library").Items.Count, 1);
+    }),
+    ("merge cleanup can resume after restart and partial source cleanup without duplicating the result", () =>
+    {
+        var store = Store("merge-cleanup"); var a = Save(store); var b = Save(store);
+        var source = store.Find("draft", a.Id); var media = Path.Combine(source, a.Attachments[0].FileName);
+        File.SetAttributes(media, FileAttributes.ReadOnly);
+        var operation = Guid.NewGuid().ToString("N"); MergeSelection[] selection = [new(a.Id, a.Revision), new(b.Id, b.Revision)];
+        var first = store.Merge(operation, selection); Equal(first.Status, "source-retained");
+        True(first.RetainedSourceIds.SequenceEqual(new[] { a.Id })); True(Directory.Exists(source));
+        File.SetAttributes(media, FileAttributes.Normal); File.Delete(Path.Combine(source, Description.FileName));
+        using var restarted = new VaultStore(Path.Combine(testRoot, "merge-cleanup", "state"));
+        Equal(restarted.Merge(operation, selection).Status, "merged");
+        True(!Directory.Exists(source)); Equal(restarted.List("draft").Items.Count, 1);
+    }),
+    ("changed merged target prevents original cleanup on retry", () =>
+    {
+        var store = Store("merge-target-changed"); var a = Save(store); var b = Save(store);
+        var source = store.Find("draft", a.Id); var media = Path.Combine(source, a.Attachments[0].FileName);
+        File.SetAttributes(media, FileAttributes.ReadOnly);
+        var operation = Guid.NewGuid().ToString("N"); MergeSelection[] selection = [new(a.Id, a.Revision), new(b.Id, b.Revision)];
+        var first = store.Merge(operation, selection); File.SetAttributes(media, FileAttributes.Normal);
+        var target = Path.Combine(store.Find("draft", first.Item.Id), first.Item.Attachments[0].FileName);
+        File.SetAttributes(target, FileAttributes.Normal); File.AppendAllText(target, "corrupted");
+        Throws(() => store.Merge(operation, selection), "merge-target-changed"); True(File.Exists(media));
+    }),
+    ("merge journal resumes publication and rejects an unrelated cleanup path", () =>
+    {
+        var store = Store("merge-publication"); var a = Save(store); var b = Save(store);
+        var source = store.Find("draft", a.Id); var media = Path.Combine(source, a.Attachments[0].FileName);
+        File.SetAttributes(media, FileAttributes.ReadOnly);
+        var operation = Guid.NewGuid().ToString("N"); MergeSelection[] selection = [new(a.Id, a.Revision), new(b.Id, b.Revision)];
+        store.Merge(operation, selection);
+        var journalPath = Path.Combine(store.Config.DraftRoot, ".moment-vault", "merges", operation + ".json");
+        var journal = MomentVault.Host.Json.Read<MergeJournal>(File.ReadAllText(journalPath));
+        // Recreate the before-publication interruption while keeping both sources.
+        var other = journal.Sources[1]; Directory.CreateDirectory(other.Directory);
+        foreach (var file in b.Attachments) File.Copy(Path.Combine(journal.Target, Description.Load(journal.Target).Attachments.Single(a => a.Id == file.Id).FileName), Path.Combine(other.Directory, file.FileName));
+        Description.Save(other.Directory, b);
+        Directory.Move(journal.Target, journal.Staging); File.SetAttributes(media, FileAttributes.Normal);
+        Equal(store.Merge(operation, selection).Status, "merged"); Equal(store.List("draft").Items.Count, 1);
+        var outside = Path.Combine(testRoot, "must-keep"); Directory.CreateDirectory(outside); File.WriteAllText(Path.Combine(outside, "important.txt"), "keep");
+        var invalid = journal with { Sources = [journal.Sources[0] with { Directory = outside }, journal.Sources[1]] };
+        File.WriteAllText(journalPath, MomentVault.Host.Json.Write(invalid));
+        Throws(() => store.Merge(operation, selection), "invalid-journal"); True(File.Exists(Path.Combine(outside, "important.txt")));
+    }),
+    ("framed merge protocol returns one material and keeps a lost-response retry idempotent", () =>
+    {
+        var store = Store("merge-protocol"); var a = Save(store); var b = Save(store);
+        using var input = new MemoryStream(); using var output = new MemoryStream();
+        var payload = new { operationId = Guid.NewGuid().ToString("N"), draftRoot = store.Config.DraftRoot, selection = new[] { new MergeSelection(a.Id, a.Revision), new MergeSelection(b.Id, b.Revision) } };
+        Frame(input, "merge", "items.merge", payload); Frame(input, "retry", "items.merge", payload);
+        input.Position = 0; Protocol.Run(input, output, store); output.Position = 0;
+        using var first = ReadFrame(output); using var second = ReadFrame(output);
+        True(first.RootElement.GetProperty("ok").GetBoolean()); True(second.RootElement.GetProperty("ok").GetBoolean());
+        Equal(first.RootElement.GetProperty("result").GetProperty("status").GetString(), "merged");
+        Equal(second.RootElement.GetProperty("result").GetProperty("item").GetProperty("id").GetString(), payload.operationId);
+        Equal(store.List("draft").Items.Count, 1);
+    }),
     ("framed protocol handles multiple messages and keeps stdout structured", () =>
     {
         var store = Store("protocol");
@@ -228,6 +350,16 @@ static Material Save(VaultStore store)
     var file = FileDescriptor(); var bytes = ImageBytes(); var upload = store.Begin("测试图片", [file], "原有备注");
     store.Append(upload.Material.Id, file.Id, 0, Convert.ToBase64String(bytes));
     store.FinishFile(upload.Material.Id, file.Id, 1, bytes.Length); return store.Commit(upload.Material.Id);
+}
+static Material SaveFiles(VaultStore store, string name, (FileUpload File, byte[] Bytes)[] files)
+{
+    var upload = store.Begin(name, files.Select(f => f.File).ToArray());
+    foreach (var file in files)
+    {
+        store.Append(upload.Material.Id, file.File.Id, 0, Convert.ToBase64String(file.Bytes));
+        store.FinishFile(upload.Material.Id, file.File.Id, 1, file.Bytes.Length);
+    }
+    return store.Commit(upload.Material.Id);
 }
 static void True(bool value) { if (!value) throw new Exception("Assertion failed"); }
 static void Equal<T>(T a, T b) { if (!EqualityComparer<T>.Default.Equals(a, b)) throw new Exception($"Expected {b}; actual {a}"); }

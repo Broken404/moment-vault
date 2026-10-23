@@ -89,6 +89,12 @@ nav a[aria-current='page'] {
 .list-panel {
   min-width: 0;
 }
+.detail-form {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
 .batch-bar {
   min-height: 64px;
   display: flex;

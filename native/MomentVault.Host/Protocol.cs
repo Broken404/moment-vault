@@ -72,6 +72,7 @@ public static class Protocol
             Json.Read<RecordingEnd>(p.GetProperty("end").GetRawText()))),
         "recordings.status" => RecordingView(store.RecordingStatus(Text(p, "uploadId"))),
         "items.update" => Update(store, p),
+        "items.merge" => Merge(store, p),
         "items.promote" => Transfer(store, p, "draft", "library"),
         "items.recycle" => Transfer(store, p, "draft", "trash"),
         "items.restore" => Transfer(store, p, "trash", "draft"),
@@ -155,6 +156,13 @@ public static class Protocol
         if (p.TryGetProperty("attachments", out var values))
             foreach (var a in values.EnumerateArray()) edits[Text(a, "id")] = (Text(a, "source"), Text(a, "note"));
         return View(store.Update(Text(p, "id"), Text(p, "revision"), Text(p, "name"), Text(p, "note"), edits), "draft");
+    }
+    private static object Merge(VaultStore store, JsonElement p)
+    {
+        if (!string.Equals(Text(p, "draftRoot"), store.Config.DraftRoot, StringComparison.OrdinalIgnoreCase))
+            throw new VaultException("merge-not-created", "草稿目录已改变，请刷新后重新选择");
+        var result = store.Merge(Text(p, "operationId"), Json.Read<MergeSelection[]>(p.GetProperty("selection").GetRawText()));
+        return new { result.Status, item = View(result.Item, "draft"), result.RetainedSourceIds, result.Error };
     }
     private static object Transfer(VaultStore store, JsonElement p, string from, string to)
     {

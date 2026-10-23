@@ -37,6 +37,7 @@ import { Pet, themeName } from './ui';
 import './theme.css';
 import './manage.css';
 import { RecordingRecovery } from './recording/recovery';
+import { pendingMerge, prepareMerge, submitMerge, type PendingMerge } from './merge';
 
 const names: Record<string, string> = {
   draft: '草稿箱',
@@ -313,11 +314,15 @@ function Detail({
   bucket,
   updated,
   show,
+  disabled,
+  dirtyChanged,
 }: {
   item: Material;
   bucket: Bucket;
   updated: () => void;
   show: (text: string) => void;
+  disabled: boolean;
+  dirtyChanged: (dirty: boolean) => void;
 }) {
   const [name, setName] = useState(item.name),
     [note, setNote] = useState(item.note);
@@ -325,6 +330,17 @@ function Detail({
   const [preview, setPreview] = useState(''),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
+  useEffect(() => {
+    dirtyChanged(
+      name !== item.name ||
+        note !== item.note ||
+        attachments.some(
+          (a, i) =>
+            a.source !== item.attachments[i]?.source || a.note !== item.attachments[i]?.note,
+        ),
+    );
+    return () => dirtyChanged(false);
+  }, [item, name, note, attachments, dirtyChanged]);
   useEffect(() => {
     let active = true,
       url = '';
@@ -367,87 +383,89 @@ function Detail({
   }
   return (
     <aside className="detail stack" aria-label="素材说明">
-      {preview ? (
-        <img className="detail-preview" src={preview} alt="素材图片预览" />
-      ) : (
-        <div className="file-placeholder">
-          {item.attachments[0]?.kind === 'video' ? <FileVideo size={44} /> : <Image size={44} />}
-        </div>
-      )}
-      <label className="field">
-        素材名称
-        <input
-          value={name}
-          readOnly={bucket !== 'draft'}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-      <small className="muted">
-        {new Date(item.createdAt).toLocaleString()} · {item.attachments.length} 个附件
-      </small>
-      <button
-        className="button"
-        onClick={() =>
-          void host('items.open', {
-            bucket,
-            id: item.id,
-            ...(item.attachments.length === 1 ? { attachmentId: item.attachments[0].id } : {}),
-          }).catch((failure) => setError(errorMessage(failure)))
-        }
-      >
-        <FolderOpen />
-        本地打开
-      </button>
-      {attachments.map((file, index) => (
-        <div className="attachment-fields stack" key={file.id}>
-          <b>{file.fileName}</b>
-          <label className="field">
-            来源
-            <input
-              value={file.source}
-              readOnly={bucket !== 'draft'}
-              onChange={(e) =>
-                setAttachments((values) =>
-                  values.map((a, i) => (i === index ? { ...a, source: e.target.value } : a)),
-                )
-              }
-            />
-          </label>
-          <label className="field">
-            附件备注
-            <textarea
-              rows={2}
-              value={file.note}
-              readOnly={bucket !== 'draft'}
-              onChange={(e) =>
-                setAttachments((values) =>
-                  values.map((a, i) => (i === index ? { ...a, note: e.target.value } : a)),
-                )
-              }
-            />
-          </label>
-        </div>
-      ))}
-      <label className="field">
-        整组备注
-        <textarea
-          rows={4}
-          value={note}
-          readOnly={bucket !== 'draft'}
-          onChange={(e) => setNote(e.target.value)}
-        />
-      </label>
-      {bucket === 'draft' && (
-        <button className="button primary" disabled={busy} onClick={() => void save()}>
-          <Check />
-          保存修改
+      <fieldset className="detail-form stack" disabled={disabled || busy}>
+        {preview ? (
+          <img className="detail-preview" src={preview} alt="素材图片预览" />
+        ) : (
+          <div className="file-placeholder">
+            {item.attachments[0]?.kind === 'video' ? <FileVideo size={44} /> : <Image size={44} />}
+          </div>
+        )}
+        <label className="field">
+          素材名称
+          <input
+            value={name}
+            readOnly={bucket !== 'draft'}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
+        <small className="muted">
+          {new Date(item.createdAt).toLocaleString()} · {item.attachments.length} 个附件
+        </small>
+        <button
+          className="button"
+          onClick={() =>
+            void host('items.open', {
+              bucket,
+              id: item.id,
+              ...(item.attachments.length === 1 ? { attachmentId: item.attachments[0].id } : {}),
+            }).catch((failure) => setError(errorMessage(failure)))
+          }
+        >
+          <FolderOpen />
+          本地打开
         </button>
-      )}
-      {!!error && (
-        <div className="error" role="alert">
-          {error}
-        </div>
-      )}
+        {attachments.map((file, index) => (
+          <div className="attachment-fields stack" key={file.id}>
+            <b>{file.fileName}</b>
+            <label className="field">
+              来源
+              <input
+                value={file.source}
+                readOnly={bucket !== 'draft'}
+                onChange={(e) =>
+                  setAttachments((values) =>
+                    values.map((a, i) => (i === index ? { ...a, source: e.target.value } : a)),
+                  )
+                }
+              />
+            </label>
+            <label className="field">
+              附件备注
+              <textarea
+                rows={2}
+                value={file.note}
+                readOnly={bucket !== 'draft'}
+                onChange={(e) =>
+                  setAttachments((values) =>
+                    values.map((a, i) => (i === index ? { ...a, note: e.target.value } : a)),
+                  )
+                }
+              />
+            </label>
+          </div>
+        ))}
+        <label className="field">
+          整组备注
+          <textarea
+            rows={4}
+            value={note}
+            readOnly={bucket !== 'draft'}
+            onChange={(e) => setNote(e.target.value)}
+          />
+        </label>
+        {bucket === 'draft' && (
+          <button className="button primary" disabled={busy} onClick={() => void save()}>
+            <Check />
+            保存修改
+          </button>
+        )}
+        {!!error && (
+          <div className="error" role="alert">
+            {error}
+          </div>
+        )}
+      </fieldset>
     </aside>
   );
 }
@@ -464,11 +482,28 @@ function Manager() {
     [warnings, setWarnings] = useState<string[]>([]),
     [confirm, setConfirm] = useState(false);
   const [total, setTotal] = useState(0);
+  const [detailDirty, setDetailDirty] = useState(false);
+  const [mergePending, setMergePending] = useState<PendingMerge | null>(null);
+  const merging = useRef(false);
   const input = useRef<HTMLInputElement>(null);
   const pending = useRef<{ files: File[]; batch: UploadBatch | null } | null>(null);
   const show = useCallback((text: string) => setToast(text), []);
   const changed = useCallback((next: HostStatus) => setStatus(next), []);
   const bucket = (['draft', 'library', 'trash'].includes(page) ? page : 'draft') as Bucket;
+  useEffect(() => {
+    let current = true;
+    const root = status?.config.draftRoot;
+    setMergePending(null);
+    if (root)
+      void pendingMerge(root)
+        .then((request) => {
+          if (current) setMergePending(request);
+        })
+        .catch((failure) => setError(errorMessage(failure)));
+    return () => {
+      current = false;
+    };
+  }, [status?.config.draftRoot]);
   useEffect(() => {
     const hash = () => {
       setPage(location.hash.slice(1) || 'draft');
@@ -575,6 +610,37 @@ function Manager() {
       setBusy(false);
     }
   }
+  async function merge() {
+    if (busy || merging.current || !status?.configured) return;
+    merging.current = true;
+    setBusy(true);
+    setError('');
+    const root = status.config.draftRoot;
+    let request = mergePending;
+    try {
+      request = (await pendingMerge(root)) ?? request;
+      request ??= prepareMerge(items, selected, root);
+      setMergePending(request);
+      show(mergePending ? '正在确认合并结果…' : '正在合并，原文件会在校验后清理…');
+      const result = await submitMerge(request);
+      setMergePending(result.status === 'merged' ? null : request);
+      await refresh();
+      setActive(result.item.id);
+      show(
+        result.status === 'merged'
+          ? `已将 ${request.selection.length} 条草稿合并为一条 · ${result.item.attachments.length} 个附件`
+          : '合并副本已保存，原条目清理尚未完成',
+      );
+      if (result.error) setError(result.error);
+    } catch (failure) {
+      setMergePending(await pendingMerge(root).catch(() => request));
+      setError(errorMessage(failure));
+      show('合并尚未完成');
+    } finally {
+      merging.current = false;
+      setBusy(false);
+    }
+  }
   const item = items.find((i) => i.id === active);
   return (
     <div className="manager-shell">
@@ -592,7 +658,15 @@ function Manager() {
             trash: Trash2,
             settings: Settings,
           }).map(([key, Icon]) => (
-            <a key={key} href={`#${key}`} aria-current={page === key ? 'page' : undefined}>
+            <a
+              key={key}
+              href={`#${key}`}
+              aria-current={page === key ? 'page' : undefined}
+              aria-disabled={busy}
+              onClick={(event) => {
+                if (busy) event.preventDefault();
+              }}
+            >
               <Icon size={18} />
               {names[key]}
             </a>
@@ -630,7 +704,7 @@ function Manager() {
               {bucket === 'draft' && (
                 <button
                   className="button primary"
-                  disabled={!status?.configured || busy || !!pending.current}
+                  disabled={!status?.configured || busy || !!pending.current || !!mergePending}
                   onClick={() => input.current?.click()}
                 >
                   <Plus />
@@ -671,6 +745,18 @@ function Manager() {
             )}
             {!!warnings.length && <div className="status">{warnings.join('；')}</div>}
             {bucket === 'draft' && <RecordingRecovery changed={() => void refresh(false)} />}
+            {bucket === 'draft' && mergePending && !busy && (
+              <div className="status" role="status">
+                上次合并尚未确认完成，可继续检查并清理原条目。
+                <button
+                  className="button"
+                  disabled={busy || detailDirty}
+                  onClick={() => void merge()}
+                >
+                  继续合并
+                </button>
+              </div>
+            )}
             <div className="collection">
               <section className="list-panel" aria-label="素材列表">
                 <div className="batch-bar">
@@ -687,15 +773,25 @@ function Manager() {
                     {bucket === 'draft' && (
                       <>
                         <button
+                          className="button"
+                          disabled={selected.length < 2 || busy || detailDirty || !!mergePending}
+                          title={
+                            detailDirty ? '请先保存右侧修改' : '按列表顺序归组，保留各附件与说明'
+                          }
+                          onClick={() => void merge()}
+                        >
+                          合并为一条
+                        </button>
+                        <button
                           className="button primary"
-                          disabled={!selected.length || busy}
+                          disabled={!selected.length || busy || !!mergePending}
                           onClick={() => void transfer('items.promote')}
                         >
                           入库
                         </button>
                         <button
                           className="button"
-                          disabled={!selected.length || busy}
+                          disabled={!selected.length || busy || !!mergePending}
                           onClick={() => void transfer('items.recycle')}
                         >
                           移到回收区
@@ -730,6 +826,9 @@ function Manager() {
                     </button>
                   </div>
                 </div>
+                {bucket === 'draft' && detailDirty && selected.length >= 2 && (
+                  <div className="status">请先保存右侧修改，再合并草稿。</div>
+                )}
                 {items.map((material) => (
                   <div
                     key={material.id}
@@ -748,7 +847,11 @@ function Manager() {
                         )
                       }
                     />
-                    <button className="material-open" onClick={() => setActive(material.id)}>
+                    <button
+                      className="material-open"
+                      disabled={busy}
+                      onClick={() => setActive(material.id)}
+                    >
                       <span className="type-thumb">
                         {material.attachments[0]?.kind === 'video' ? <FileVideo /> : <Image />}
                       </span>
@@ -781,7 +884,14 @@ function Manager() {
                 </footer>
               </section>
               {item ? (
-                <Detail item={item} bucket={bucket} updated={() => void refresh()} show={show} />
+                <Detail
+                  item={item}
+                  bucket={bucket}
+                  updated={() => void refresh()}
+                  show={show}
+                  disabled={busy || !!mergePending}
+                  dirtyChanged={setDetailDirty}
+                />
               ) : (
                 <aside className="detail empty muted">选择一条素材，查看对应说明。</aside>
               )}

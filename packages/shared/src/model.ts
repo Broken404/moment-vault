@@ -119,6 +119,12 @@ export interface TransferResult {
   status: string;
   error?: string;
 }
+export interface MergeResult {
+  status: 'merged' | 'source-retained';
+  item: Material;
+  retainedSourceIds: string[];
+  error?: string;
+}
 
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);

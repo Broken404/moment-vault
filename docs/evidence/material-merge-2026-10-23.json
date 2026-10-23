@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-23",
+  "status": "implemented-and-checked-awaiting-actual-extension-reload-and-user-merge",
+  "spec": "formal-plan.md section 4.3",
+  "implementation": {
+    "draftOnly": true,
+    "visibleListOrderRatherThanClickOrder": true,
+    "originalAttachmentIdsBytesAndMetadataPreserved": true,
+    "filenameCollisionsRenamedWithoutOverwrite": true,
+    "originalGroupNotesAndNestedProvenancePreserved": true,
+    "copyAndVerifyBeforePublishingAndSourceCleanup": true,
+    "fixedOperationIdAndDurableRetry": true,
+    "sourceCleanupFailuresExplicitlyRetained": true,
+    "unsavedDetailEditsBlockMerge": true,
+    "noAutomaticPromotionOrMediaReencoding": true
+  },
+  "checks": {
+    "frontend": { "passed": 61, "files": 10, "newMergeWorkflowAndManagerChecks": 6 },
+    "native": { "passed": 22, "newMergeFileAndProtocolChecks": 7 },
+    "format": "passed",
+    "typecheck": "passed",
+    "ordinaryExtensionBuildAndGeneratedScriptChecks": "passed",
+    "nativeSelfContainedBuild": "passed",
+    "actualProcess": {
+      "command": "node tools/check-merge.mjs with explicit new helper and bundled FFmpeg paths",
+      "scope": "actual native process and self-made PNG/MP4; not Edge UI acceptance",
+      "sourceItems": 2,
+      "resultItems": 1,
+      "attachmentKinds": ["image", "video", "image"],
+      "attachmentBytesAndHashesUnchanged": true,
+      "originsNotesAndCollectionTimesPreserved": true,
+      "visibleListOrderPreserved": true,
+      "renamedCollisions": true,
+      "mp4FullDecodePassed": true,
+      "restartAndLostAcknowledgementIdempotent": true,
+      "libraryItems": 0,
+      "userMaterialsNotUsed": true
+    },
+    "edgeLayout": {
+      "scope": "actual generated manager script served locally with mocked native IPC and sample data",
+      "disabledUntilTwoSelected": true,
+      "twoItemsBecomeOneWithThreeAttachments": true,
+      "mergedItemSelectedAndNotesDisplayed": true,
+      "screenshotVisuallyInspected": true,
+      "nativeMessagingNotExercisedByThisLayoutFixture": true,
+      "ownedTabAndServerClosed": true
+    },
+    "failureCoverage": [
+      "changed description or attachment and unregistered files preserve original sources",
+      "duplicate attachment identities and library sources rejected",
+      "source cleanup after restart and partial deletion keeps one target",
+      "changed target prevents source deletion",
+      "publication interruption resumes from verified private staging",
+      "journal outside current draft root cannot remove unrelated files",
+      "lost acknowledgement reuses the exact request after native restart",
+      "client persistence failure prevents submission"
+    ]
+  },
+  "deployment": {
+    "helperDirectory": "dist/host-merge",
+    "existingMediaToolsAndNoticesCopied": true,
+    "currentUserRegistrationUpdated": true,
+    "registeredHelperActualOriginFramedPingPassed": true,
+    "existingUserDirectoryConfigurationUnchanged": true,
+    "extensionIdentityAndPermissionsUnchanged": true,
+    "offscreenBundleUnchanged": true,
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "hostDllSha256": "5f406b980ec8f1bdcca2874538ee6a5023cb643d5aa2a05e831776b20b4d2c67",
+    "actualExtensionReload": "pending user action",
+    "actualExtensionMerge": "pending user operation and file verification"
+  },
+  "limitations": [
+    "This is not acceptance of the complete v1 product or all merge failure conditions.",
+    "User-owned material was neither read nor merged for these checks.",
+    "Recording freeze root-cause and broader video matrix conclusions are unchanged."
+  ]
+}
