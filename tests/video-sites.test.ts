@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ownedProbe, ownedProbeEnabled } from '../apps/extension/src/recording/owned-probe';
 import {
   findRail,
   findVideoTargets,
@@ -43,16 +44,22 @@ describe('owned native timeline DOM fixtures (not platform acceptance)', () => {
   it('keeps the owned recording fixture gated off by default and limits the development entry to its exact loopback route', () => {
     const url = 'http://127.0.0.1:43820/capture.html';
     expect(supportedSite(url)).toBeNull();
+    expect(ownedProbeEnabled(url)).toBe(false);
     vi.stubGlobal('__MV_OWNED_CAPTURE_LAB__', true);
     try {
       expect(supportedSite(url)).toBe('owned');
+      expect(ownedProbeEnabled(url)).toBe(true);
+      expect(ownedProbe(url, '../invalid', 'input')).toBeUndefined();
       for (const other of [
         'http://127.0.0.1:43820/other.html',
         'http://localhost:43820/capture.html',
         'http://127.0.0.1:43821/capture.html',
         'https://example.com/capture.html',
-      ])
+      ]) {
         expect(supportedSite(other)).toBeNull();
+        expect(ownedProbeEnabled(other)).toBe(false);
+        expect(ownedProbe(other, 'a'.repeat(32), 'input')).toBeUndefined();
+      }
       fixture(
         '<div id="moment-vault-owned-player"><video></video><div data-mv-owned-rail></div></div>',
       );
@@ -64,6 +71,7 @@ describe('owned native timeline DOM fixtures (not platform acceptance)', () => {
       expect(findRail(target)).toBe(rail);
       vi.stubGlobal('__MV_OWNED_CAPTURE_LAB__', false);
       expect(findVideoTargets(document, url)).toHaveLength(0);
+      expect(ownedProbe(url, 'a'.repeat(32), 'input')).toBeUndefined();
     } finally {
       vi.unstubAllGlobals();
     }

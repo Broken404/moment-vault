@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "status": "unresolved-feedback-loop-confirmed-owned-tab-cold-short-stop-prepared",
+  "status": "unresolved-actual-owned-cold-picture-stall-confirmed-instrumented-run-prepared",
   "implementationBasis": "de24e6b",
   "captureAlgorithmChanged": false,
   "feedbackCommand": "python tools/check_recording.py .spike-data/draft/spike-native-8208b9defbe844dc8274e216fb0c82a6/material.webm",
@@ -418,11 +418,79 @@
     "diagnosticObservers": false,
     "parallelEncoder": false,
     "coldStartViaExtensionReload": true,
-    "status": "not run; pending reload of prepared development build"
+    "status": "completed; see firstActualCapture, actual source interval was 5.607844 seconds"
   },
   "limitations": [
     "Retained artifact fails but the failure-producing browser capture has not been reproduced or causally fixed.",
     "Passing file-stream cases do not establish genuine tabCapture, cold startup or full performance coverage.",
-    "No captured original file, personal path configuration or browser profile is committed."
-  ]
+    "No captured original file, personal path configuration or browser profile is committed.",
+    "A real cold owned capture now fails picture continuity; it does not establish the cause of the original retained audio-only tail."
+  ],
+  "firstActualCapture": {
+    "implementation": "40244d6",
+    "id": "51b480d06a2a4ac8b5279ef7f759a06b",
+    "source": "http://127.0.0.1:43820/capture.html",
+    "sha256": "8224edd9c43d96a2ff4aa0a5b23d2c32de7a75488ae91d234f3831d011ca1172",
+    "bytes": 282939,
+    "selectedRange": [2, 12],
+    "actualRange": [2, 7.607844],
+    "stopReason": "manual-shortcut",
+    "videoDuration": 5.666667,
+    "diagnosticObservers": false,
+    "parallelEncoder": false,
+    "coldStartAfterReload": true,
+    "report": {
+      "ok": false,
+      "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+      "videoFrames": 170,
+      "firstVideoTime": 0.0,
+      "lastVideoTime": 5.633333,
+      "lastAudioTime": 5.663333,
+      "audioOnlyTailSeconds": 0.03,
+      "maximumVideoGapSeconds": 0.033334,
+      "toleranceSeconds": 0.25,
+      "pictureCheckOk": true,
+      "maximumUnchangedPictureSeconds": 0.533333,
+      "pictureChangeThresholdGrayLevels": 0.5
+    },
+    "matchingSourceControl": {
+      "ok": true,
+      "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+      "videoFrames": 169,
+      "firstVideoTime": 0.0,
+      "lastVideoTime": 5.6,
+      "lastAudioTime": 5.589333,
+      "audioOnlyTailSeconds": 0,
+      "maximumVideoGapSeconds": 0.033334,
+      "toleranceSeconds": 0.25,
+      "pictureCheckOk": true,
+      "maximumUnchangedPictureSeconds": 0.033334,
+      "pictureChangeThresholdGrayLevels": 0.5
+    },
+    "fullDecodePassed": true,
+    "hashAndBytesMatched": true,
+    "savedAndCachedBPreviewRestored": true,
+    "notThePlannedTwoSecondStop": true,
+    "rawWebmAvailable": false,
+    "visibleOutputAndSourceTimes": [
+      [0, 2],
+      [0.533, 2.4],
+      [2.5, 2.867],
+      [4, 5.933],
+      [5.5, 7.433]
+    ],
+    "classification": "Actual picture continuity failure; different signature from retained long audio-only tail, causal identity not established",
+    "contactSheet": ".local-data/freeze-lab-20261023/real-cold-short-contact.jpg"
+  },
+  "nextInstrumentedCapture": {
+    "status": "prepared, not run",
+    "selectedRange": [2, 12],
+    "changes": "Bounded in-memory source/draw/chunk counters and stopped original WebM export on exact owned source only",
+    "additionalVideoFrameCallbacks": false,
+    "parallelEncoder": false,
+    "networkDuringRecording": false,
+    "normalBuildProbeEndpointRemoved": true,
+    "diagnosticMayAffectScheduling": true,
+    "exportRoot": ".local-data/recording-freeze-fixture/probes/<id>/"
+  }
 }

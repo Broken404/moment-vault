@@ -2,6 +2,7 @@ import { errorMessage } from '@shared/model';
 import { recordingStore as store } from './store';
 import { publishRecording } from './publish';
 import { startRecorder } from './recorder';
+import { ownedProbe } from './owned-probe';
 import {
   captureGeometry,
   publicStatus,
@@ -25,6 +26,7 @@ interface Live {
   stopped?: Promise<void>;
   ended?: Promise<void>;
   started?: boolean;
+  probe?: ReturnType<typeof ownedProbe>;
 }
 let live: Live | undefined;
 async function bounded<T>(promise: Promise<T>, milliseconds: number): Promise<T> {
@@ -109,6 +111,7 @@ function stopSignal(value: Live, reason: string) {
 async function prepare(job: RecordingJob, streamId: string) {
   if (live || publishing.size) throw new Error('上次录制仍在处理，请稍候。');
   const value: Live = { job, aborted: false, persisted: Promise.resolve(), backlog: 0 };
+  value.probe = ownedProbe(job.selection.source, job.id, 'input');
   live = value;
   await store.put(job);
   try {
@@ -139,6 +142,7 @@ async function prepare(job: RecordingJob, streamId: string) {
     video.muted = true;
     video.srcObject = media;
     await bounded(video.play(), 8000);
+    value.probe?.mark('input-ready', video);
     if (value.aborted || live !== value) throw new Error('录制准备已取消。');
     if (video.readyState < 2 || !video.videoWidth || !media.getAudioTracks().length)
       throw new Error('当前标签没有就绪的音视频录制流。');
@@ -168,6 +172,7 @@ async function prepare(job: RecordingJob, streamId: string) {
           canvas.width,
           canvas.height,
         );
+        value.probe?.mark('draw', video);
       } catch {
         stopSignal(value, 'capture-frame-error');
       }
@@ -190,6 +195,7 @@ async function prepare(job: RecordingJob, streamId: string) {
     });
     recorder.ondataavailable = (event) => {
       if (!event.data.size) return;
+      if (value.video) value.probe?.mark('recorder-chunk', value.video);
       value.backlog += event.data.size;
       value.persisted = value.persisted.then(async () => {
         await store.part(job.id, job.parts, event.data);
@@ -231,6 +237,7 @@ async function start(id: string) {
   await store.put(value.job);
   if (value.aborted || live !== value) throw new Error('录制准备已取消。');
   startRecorder(recorder);
+  if (value.video) value.probe?.mark('recorder-start', value.video);
   value.started = true;
   // Keep the failure watchdog without holding source playback for this event.
   value.startupTimer = setTimeout(() => {
@@ -242,6 +249,7 @@ async function stop(id: string, end?: CaptureEnd) {
   const value = live;
   if (!value || value.job.id !== id) return { ok: true };
   value.stopped ??= (async () => {
+    if (value.video) value.probe?.mark('recorder-stop', value.video);
     value.aborted = true;
     try {
       if (value.recorder?.state === 'recording') value.recorder.stop();
@@ -251,6 +259,10 @@ async function stop(id: string, end?: CaptureEnd) {
       if (live === value) live = undefined;
     }
     await value.persisted;
+    if (value.probe) {
+      await value.probe.save({ selection: value.job.selection, end, parts: value.job.parts });
+      await value.probe.saveRaw(value.job, store);
+    }
     if (!value.started || !end || end.actualEnd <= end.actualStart) {
       if (!value.job.parts) await store.remove(id);
       else {
