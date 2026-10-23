@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-23",
+  "implementationCommit": "e859141",
+  "status": "not-reproduced-in-this-investigation",
+  "originalObservation": {
+    "source": "recording-jitter-2026-10-23.json",
+    "sample": "009",
+    "savedStatus": "已存入草稿箱",
+    "previewMessage": "还没等到目标画面，请检查网络后重试。",
+    "remainsOpen": true
+  },
+  "rankedHypotheses": [
+    "A paused seek within the same presented frame does not deliver another frame callback",
+    "Capture release or repeated terminal status cancels or supersedes the boundary request",
+    "A source, player or resolution update invalidates the pending preview request"
+  ],
+  "browserChecks": [
+    {
+      "fixture": "owned 15-second 30-fps clock video, production seekFrame",
+      "action": "seek paused source to 8.010, then to 8.000 seconds",
+      "result": "passed",
+      "presentedSeconds": 8,
+      "observedTimeout": false
+    },
+    {
+      "fixture": "owned video, production seekFrame",
+      "action": "seek to 7.500, play until source currentTime reaches 8, pause, wait one second, request 8.000",
+      "result": "passed",
+      "presentedSeconds": 8,
+      "observedTimeout": false
+    },
+    {
+      "fixture": "owned video, production VideoMode, VideoSession and capture hooks",
+      "action": "A=2/B=8 with B active; prepare capture, finish preparation without media capture, play to B with fixture driver, pause, wait one second, release capture hooks",
+      "result": "passed",
+      "requestedSeconds": 8,
+      "presentedSeconds": 8,
+      "loading": false,
+      "cacheEntries": 2,
+      "cacheBytes": 1843200,
+      "message": "",
+      "scope": "Exercises preview restoration after capture preparation; no tabCapture, encoding, upload or real terminal-status transport"
+    },
+    {
+      "fixture": "actual YouTube Me at the zoo page, existing formal extension",
+      "action": "adjust B to 18.027, then 18.000 using fine time input",
+      "result": "passed",
+      "presentedSeconds": 18,
+      "sourceCurrentTimeSeconds": 18,
+      "sourcePaused": true,
+      "scope": "Normal endpoint adjustment; does not reproduce the original post-save lifecycle"
+    }
+  ],
+  "changes": {
+    "productionCodeChanged": false,
+    "dependenciesChanged": false,
+    "extensionReloadRequired": false,
+    "newUserRecordingRequired": false,
+    "temporaryProbeSourceRetainedLocally": ".local-data/preview-recovery-20261023/lab-investigation.tsx",
+    "localScreenshot": ".local-data/preview-recovery-20261023/session-release.png"
+  },
+  "conclusion": "No stable red reproduction or root cause was established. Preserve the original post-save preview timeout as unresolved; these passing controls do not establish a fix or universal preview reliability.",
+  "nextDiagnosticBoundary": "Capture release plus actual terminal-status delivery and visibility/source changes, without repeating the already accepted recording-duration test",
+  "releaseGate": "Engineering may continue; complete video quality and installation acceptance before declaring the first release delivered"
+}
