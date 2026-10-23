@@ -4,7 +4,7 @@ import { createServer } from 'node:http';
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
-// Owned source and bounded test reports only. No recording trigger, extension or helper API.
+// Owned moving source only. No recording trigger, extension API, helper API or write endpoint.
 const output = resolve('.local-data/recording-freeze-fixture');
 const encoder = process.env.MOMENT_VAULT_TEST_FFMPEG;
 if (!encoder) throw new Error('Set MOMENT_VAULT_TEST_FFMPEG to the installed FFmpeg executable.');
@@ -63,57 +63,6 @@ if (process.argv.includes('--build-only')) process.exit(0);
 const server = createServer(async (request, response) => {
   try {
     const name = new URL(request.url, 'http://127.0.0.1:43820').pathname;
-    const probe = /^\/probe\/([a-f0-9]{32})\/(source\.json|input\.json|capture\.webm)$/.exec(name);
-    if (probe) {
-      const origin = request.headers.origin;
-      if (
-        !['http://127.0.0.1:43820', 'chrome-extension://hpchplafhkkndbocdiopnbmkkhbjokii'].includes(
-          origin,
-        )
-      ) {
-        response.writeHead(403).end();
-        return;
-      }
-      response.setHeader('Access-Control-Allow-Origin', origin);
-      if (request.method === 'OPTIONS') {
-        response
-          .writeHead(204, {
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'X-Moment-Vault-Owned-Probe, Content-Type',
-          })
-          .end();
-        return;
-      }
-      if (request.method !== 'POST' || request.headers['x-moment-vault-owned-probe'] !== '1') {
-        response.writeHead(403).end();
-        return;
-      }
-      const chunks = [];
-      let bytes = 0;
-      const maximum = probe[2] === 'capture.webm' ? 32 * 1024 * 1024 : 256 * 1024;
-      for await (const chunk of request) {
-        bytes += chunk.length;
-        if (bytes > maximum) {
-          response.writeHead(413).end();
-          return;
-        }
-        chunks.push(chunk);
-      }
-      const data = Buffer.concat(chunks);
-      if (probe[2].endsWith('.json')) {
-        const report = JSON.parse(data.toString('utf8'));
-        if (report.id !== probe[1] || !['source', 'input'].includes(report.side)) {
-          response.writeHead(400).end();
-          return;
-        }
-      }
-      const directory = resolve(output, 'probes', probe[1]);
-      await mkdir(directory, { recursive: true });
-      await writeFile(resolve(directory, probe[2]), data, { flag: 'wx' });
-      console.log(`Owned probe: ${probe[1]}/${probe[2]} (${bytes} bytes)`);
-      response.writeHead(201).end();
-      return;
-    }
     if (
       !['GET', 'HEAD'].includes(request.method) ||
       !['/capture.html', '/owned-source.mp4'].includes(name)

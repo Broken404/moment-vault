@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "status": "candidate-input-frame-subscription-prepared-actual-validation-pending",
+  "status": "instrumented-short-stop-passed-uninstrumented-cold-validation-pending",
   "baselineImplementation": "e80cbc8",
   "freezeFixed": false,
   "reproducedOriginalClass": {
@@ -426,7 +426,7 @@
     "candidateOffscreenBundleSha256": "7f9c1c76bd16a3f59828b5a8a5f0006bbdf5ad8587a5cefe5eec5c4757c1fb7b"
   },
   "actualAcceptance": {
-    "status": "not run; requires extension reload and actual shortcut on owned source",
+    "status": "instrumented sample passed; see followUpEvidence; uninstrumented cold validation pending",
     "selectedRange": [2, 12],
     "stopReason": "manual-shortcut",
     "targetSourceDurationSeconds": "about 2; evaluate actual recorded interval",
@@ -434,5 +434,6 @@
     "pictureChangeThresholdGrayLevels": 0.5,
     "rawMustPassBeforeMp4CanEstablishSuccess": true,
     "uninstrumentedColdCaptureStillRequiredBeforeClosure": true
-  }
+  },
+  "followUpEvidence": "recording-frame-consumer-validation-2026-10-23.json"
 }

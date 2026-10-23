@@ -1,7 +1,6 @@
 import { sourceKey } from './sites';
 import type { VideoSession } from './session';
 import type { CaptureSelection } from '../recording/types';
-import { ownedProbe } from '../recording/owned-probe';
 
 export interface CaptureHooks {
   prepare(id: string): Promise<CaptureSelection>;
@@ -45,7 +44,6 @@ export function videoCapture(
     playing = false,
     ended = false,
     frame: number | undefined;
-  let probe: ReturnType<typeof ownedProbe>;
   const valid = () =>
     session.validSource() &&
     sourceKey(session.target.video, session.target.site) === session.target.key;
@@ -107,7 +105,6 @@ export function videoCapture(
       check();
       if (!playing) return;
       const video = session.target.video;
-      probe?.mark('source-tick', video);
       lastTime = video.currentTime;
       void chrome.runtime
         .sendMessage({ target: 'background', type: 'capture-progress', id, time: lastTime })
@@ -134,11 +131,6 @@ export function videoCapture(
     delete layer.dataset.capture;
     onLayout(null);
     session.releaseCapture();
-    if (probe) {
-      probe.mark('source-release', session.target.video);
-      void probe.save({ selection, lastTime });
-      probe = undefined;
-    }
     selection = undefined;
   };
   return {
@@ -167,8 +159,6 @@ export function videoCapture(
           rect: bounds,
           viewport,
         };
-        probe = ownedProbe(selection.source, id, 'source');
-        probe?.mark('source-ready', session.target.video);
         lastTime = actualStart;
         const target = session.target,
           token = crypto.randomUUID(),
@@ -258,7 +248,6 @@ export function videoCapture(
       check();
       session.target.video.playbackRate = 1;
       playing = true;
-      probe?.mark('source-play', session.target.video);
       const watch: VideoFrameRequestCallback = () => {
         if (!playing || ended) return;
         const video = session.target.video;
@@ -281,7 +270,6 @@ export function videoCapture(
       if (valid()) {
         session.target.video.pause();
         lastTime = session.target.video.currentTime;
-        probe?.mark('source-stop', session.target.video);
       }
       return lastTime;
     },

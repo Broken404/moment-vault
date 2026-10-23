@@ -6,9 +6,6 @@ export default defineConfig({
   root: 'apps/extension',
   base: './',
   plugins: [react()],
-  define: {
-    __MV_OWNED_CAPTURE_LAB__: JSON.stringify(process.env.MOMENT_VAULT_OWNED_CAPTURE_LAB === '1'),
-  },
   resolve: {
     alias: { '@shared': fileURLToPath(new URL('./packages/shared/src', import.meta.url)) },
   },
