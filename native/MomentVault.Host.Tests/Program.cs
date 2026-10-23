@@ -297,6 +297,24 @@ var tests = new List<(string Name, Action Action)>
         Equal(second.RootElement.GetProperty("result").GetProperty("item").GetProperty("id").GetString(), payload.operationId);
         Equal(store.List("draft").Items.Count, 1);
     }),
+    ("thumbnail work reports missing tools without altering sources or blocking protocol calls", () =>
+    {
+        using var store = Store("thumbnail-missing-tools", new RecordingMedia(Path.Combine(testRoot, "missing-ffmpeg.exe"), Path.Combine(testRoot, "missing-ffprobe.exe")));
+        var item = Save(store); var directory = store.Find("draft", item.Id); var before = SafeFiles.Snapshot(directory);
+        Equal(store.Thumbnail("draft", item.Id, item.Attachments[0].Id).Phase, "loading");
+        _ = store.Status();
+        True(SpinWait.SpinUntil(() => store.Thumbnail("draft", item.Id, item.Attachments[0].Id).Phase == "unavailable", 5000));
+        True(SafeFiles.Same(before, SafeFiles.Snapshot(directory)));
+        Equal(store.Thumbnail("draft", item.Id, item.Attachments[0].Id).Phase, "unavailable");
+    }),
+    ("thumbnail requests cannot choose paths or read another bucket attachment", () =>
+    {
+        using var store = Store("thumbnail-scope"); var item = Save(store);
+        Throws(() => store.Thumbnail("draft", item.Id, "../escape"), "invalid-id");
+        Throws(() => store.Thumbnail("draft", item.Id, Guid.NewGuid().ToString("N")), "missing-attachment");
+        Throws(() => store.Thumbnail("library", item.Id, item.Attachments[0].Id), "missing-item");
+        Equal(store.List("draft").Items.Count, 1);
+    }),
     ("framed protocol handles multiple messages and keeps stdout structured", () =>
     {
         var store = Store("protocol");

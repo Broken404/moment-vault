@@ -38,6 +38,8 @@ import './theme.css';
 import './manage.css';
 import { RecordingRecovery } from './recording/recovery';
 import { pendingMerge, prepareMerge, submitMerge, type PendingMerge } from './merge';
+import { Thumbnail } from './thumbnail';
+import { attachmentCounts, thumbnails } from './thumbnails';
 
 const names: Record<string, string> = {
   draft: '草稿箱',
@@ -482,6 +484,7 @@ function Manager() {
     [warnings, setWarnings] = useState<string[]>([]),
     [confirm, setConfirm] = useState(false);
   const [total, setTotal] = useState(0);
+  const [thumbnailRefresh, setThumbnailRefresh] = useState(0);
   const [detailDirty, setDetailDirty] = useState(false);
   const [mergePending, setMergePending] = useState<PendingMerge | null>(null);
   const merging = useRef(false);
@@ -542,6 +545,10 @@ function Manager() {
           'items.list',
           { bucket, offset: append ? items.length : 0 },
         );
+        if (!append) {
+          thumbnails.clear();
+          setThumbnailRefresh((value) => value + 1);
+        }
         setItems((values) => (append ? [...values, ...result.items] : result.items));
         setTotal(result.total);
         setWarnings(result.warnings);
@@ -852,13 +859,21 @@ function Manager() {
                       disabled={busy}
                       onClick={() => setActive(material.id)}
                     >
-                      <span className="type-thumb">
-                        {material.attachments[0]?.kind === 'video' ? <FileVideo /> : <Image />}
-                      </span>
+                      <Thumbnail
+                        scope={
+                          bucket === 'library'
+                            ? (status?.config.libraryRoot ?? '')
+                            : (status?.config.draftRoot ?? '')
+                        }
+                        bucket={bucket}
+                        item={material}
+                        refresh={thumbnailRefresh}
+                      />
                       <span>
                         <b>{material.name}</b>
                         <small>
                           {material.attachments.length} 个附件 ·{' '}
+                          {attachmentCounts(material.attachments)} ·{' '}
                           {new Date(material.createdAt).toLocaleDateString()}
                         </small>
                       </span>

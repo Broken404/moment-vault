@@ -78,6 +78,7 @@ public static class Protocol
         "items.restore" => Transfer(store, p, "trash", "draft"),
         "items.delete" => Delete(store, p),
         "items.open" => Open(store, p),
+        "items.thumbnail" => store.Thumbnail(Text(p, "bucket"), Text(p, "id"), Text(p, "attachmentId")),
         "items.readFile" => store.ReadFile(Text(p, "bucket"), Text(p, "id"), Text(p, "attachmentId"), p.GetProperty("offset").GetInt64()),
         _ => throw new VaultException("unsupported-operation", "当前版本尚未实现这项操作")
     };

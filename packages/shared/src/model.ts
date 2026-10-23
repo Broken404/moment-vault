@@ -100,6 +100,7 @@ export type HostOperation =
   | 'items.restore'
   | 'items.delete'
   | 'items.merge'
+  | 'items.thumbnail'
   | 'items.readFile';
 
 export interface HostRequest {

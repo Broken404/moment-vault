@@ -115,8 +115,9 @@ public sealed partial class VaultStore
     public void Dispose()
     {
         recordingLifetime.Cancel();
-        try { Task.WhenAll(recordingJobs.Values).GetAwaiter().GetResult(); }
+        try { Task.WhenAll(recordingJobs.Values.Cast<Task>().Concat(thumbnailJobs.Values)).GetAwaiter().GetResult(); }
         catch (Exception) { /* Failed or cancelled tasks leave their original pending files for retry. */ }
         recordingLifetime.Dispose();
+        thumbnailWorker.Dispose();
     }
 }

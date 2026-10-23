@@ -112,6 +112,99 @@ using (var store = Store("import-original", tools))
     Equal(item.Attachments.Single().Sha256, SafeFiles.Hash(portrait));
     checks.Add(new { name = "imported-webm-keeps-original-format-and-bytes", passed = true });
 }
+// Real thumbnail decoding uses the same installed tools and isolated roots.
+var imageFixture = Path.Combine(root, "thumbnail.png");
+using (var image = new Bitmap(320, 180))
+{
+    using var graphics = Graphics.FromImage(image); graphics.Clear(Color.Goldenrod);
+    image.Save(imageFixture, System.Drawing.Imaging.ImageFormat.Png);
+    image.Save(Path.Combine(root, "thumbnail.jpg"), System.Drawing.Imaging.ImageFormat.Jpeg);
+    image.Save(Path.Combine(root, "thumbnail.gif"), System.Drawing.Imaging.ImageFormat.Gif);
+}
+var transparent = Path.Combine(root, "transparent.png");
+using (var image = new Bitmap(40, 40))
+{
+    using var graphics = Graphics.FromImage(image); graphics.Clear(Color.Transparent);
+    graphics.FillRectangle(Brushes.Blue, 10, 10, 20, 20);
+    image.Save(transparent, System.Drawing.Imaging.ImageFormat.Png);
+}
+await Generate(["-i", imageFixture, Path.Combine(root, "thumbnail.webp")]);
+var shortVideo = Path.Combine(root, "short.mp4");
+await Generate(["-f", "lavfi", "-i", "testsrc2=size=320x180:rate=30", "-t", "0.4", "-c:v", "libx264", shortVideo]);
+await Generate(["-i", shortVideo, "-c", "copy", Path.Combine(root, "short.mov")]);
+string cachedItemId, cachedAttachmentId, cacheKey, originalHash;
+using (var store = Store("thumbnail-formats", tools))
+{
+    foreach (var file in new[] { imageFixture, Path.Combine(root, "thumbnail.jpg"), Path.Combine(root, "thumbnail.gif"), Path.Combine(root, "thumbnail.webp"), transparent, valid, shortVideo, Path.Combine(root, "short.mov"), portrait })
+    {
+        var kind = new[] { ".png", ".jpg", ".gif", ".webp" }.Contains(Path.GetExtension(file)) ? "image" : "video";
+        var item = Import(store, file, kind); var source = store.Find("draft", item.Id);
+        var before = SafeFiles.Snapshot(source);
+        var result = await AwaitThumbnail(store, item);
+        using var stream = new MemoryStream(Convert.FromBase64String(result.Base64!));
+        using var decoded = new Bitmap(stream);
+        if (decoded.Width > 192 || decoded.Height > 144 || decoded.Width < 1 || decoded.Height < 1) throw new Exception("Thumbnail dimensions exceed bounds");
+        if (file == transparent) Equal(decoded.GetPixel(0, 0).A, (byte)0);
+        if (file == portrait && decoded.Height <= decoded.Width) throw new Exception("Portrait aspect ratio was not retained");
+        if (!SafeFiles.Same(before, SafeFiles.Snapshot(source))) throw new Exception("Thumbnail changed original files or description");
+    }
+    checks.Add(new { name = "thumbnail-real-png-jpeg-gif-webp-alpha-webm-short-mp4-mov-and-portrait", passed = true, formats = 9 });
+    var cached = Import(store, imageFixture, "image");
+    var resultCached = await AwaitThumbnail(store, cached);
+    Equal(store.Thumbnail("draft", cached.Id, cached.Attachments[0].Id).Phase, "ready");
+    cachedItemId = cached.Id; cachedAttachmentId = cached.Attachments[0].Id;
+    cacheKey = resultCached.CacheKey!; originalHash = SafeFiles.Hash(Path.Combine(store.Find("draft", cached.Id), cached.Attachments[0].FileName));
+}
+using (var store = new VaultStore(Path.Combine(root, "thumbnail-formats", "state"), tools))
+{
+    var cached = Description.Load(store.Find("draft", cachedItemId));
+    var hit = store.Thumbnail("draft", cachedItemId, cachedAttachmentId);
+    Equal(hit.Phase, "ready"); Equal(hit.CacheKey, cacheKey);
+    checks.Add(new { name = "thumbnail-disk-cache-survives-native-restart", passed = true });
+    var source = Path.Combine(store.Find("draft", cachedItemId), cached.Attachments[0].FileName);
+    using (var replacement = new Bitmap(320, 180))
+    {
+        using var graphics = Graphics.FromImage(replacement); graphics.Clear(Color.Blue);
+        replacement.Save(source, System.Drawing.Imaging.ImageFormat.Png);
+    }
+    File.SetLastWriteTimeUtc(source, DateTime.UtcNow.AddSeconds(1));
+    var changed = await AwaitThumbnail(store, cached);
+    if (changed.CacheKey == cacheKey || changed.Base64 == hit.Base64) throw new Exception("Stale thumbnail after an external media change");
+    checks.Add(new { name = "thumbnail-invalidates-on-external-source-change", passed = true });
+    File.Copy(imageFixture, source, true); Equal(SafeFiles.Hash(source), originalHash);
+    var renamed = store.Update(cached.Id, cached.Revision, "缩略图改名", cached.Note, []);
+    _ = await AwaitThumbnail(store, renamed);
+    store.Transfer(renamed.Id, "draft", "trash");
+    _ = await AwaitThumbnail(store, renamed, "trash");
+    store.Transfer(renamed.Id, "trash", "draft");
+    store.Transfer(renamed.Id, "draft", "library");
+    _ = await AwaitThumbnail(store, renamed, "library");
+    checks.Add(new { name = "thumbnail-follows-rename-recycle-restore-and-promotion", passed = true });
+    store.Delete("library", renamed.Id, true);
+    Equal(Directory.GetFiles(Path.Combine(root, "thumbnail-formats", "state", "thumbnails-v1"), cachedAttachmentId + "-*.png").Length, 0);
+    checks.Add(new { name = "thumbnail-derived-cache-removed-with-permanent-delete", passed = true });
+}
+using (var store = Store("thumbnail-budget", tools))
+{
+    var cache = Path.Combine(root, "thumbnail-budget", "state", "thumbnails-v1"); Directory.CreateDirectory(cache);
+    var oversized = Path.Combine(cache, "owned-budget-counterexample.png");
+    using (var stream = File.Create(oversized)) stream.SetLength(65L * 1024 * 1024);
+    File.SetLastWriteTimeUtc(oversized, DateTime.UtcNow.AddDays(-2));
+    for (var i = 0; i < 520; i++)
+    {
+        var path = Path.Combine(cache, $"owned-count-{i:000}.png"); File.WriteAllBytes(path, [1]);
+        File.SetLastWriteTimeUtc(path, DateTime.UtcNow.AddDays(-1));
+    }
+    var item = Import(store, imageFixture, "image");
+    var watch = Stopwatch.StartNew();
+    var pending = Request(store, "items.thumbnail", new { bucket = "draft", id = item.Id, attachmentId = item.Attachments[0].Id });
+    Equal(pending.GetProperty("phase").GetString(), "loading");
+    _ = Request(store, "ping", new { }); watch.Stop();
+    _ = await AwaitThumbnail(store, item);
+    var files = new DirectoryInfo(cache).GetFiles("*.png");
+    if (files.Length > 512 || files.Sum(f => f.Length) > 64L * 1024 * 1024) throw new Exception("Thumbnail disk cache exceeds budget");
+    checks.Add(new { name = "thumbnail-async-protocol-and-disk-budget", passed = true, pendingAndPingReturnedMs = watch.ElapsedMilliseconds, cacheEntries = files.Length, cacheBytes = files.Sum(f => f.Length) });
+}
 Console.WriteLine(MomentVault.Host.Json.Write(new { passed = checks.Count, checks, artifacts = root }));
 return 0;
 
@@ -169,6 +262,32 @@ async Task GeneratePortrait(string output)
         "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=2", "-c:v", "libvpx-vp9", "-c:a", "libopus", "-shortest", output })
         start.ArgumentList.Add(argument);
     using var process = Process.Start(start)!; await process.WaitForExitAsync(); Equal(process.ExitCode, 0);
+}
+async Task Generate(string[] arguments)
+{
+    var start = new ProcessStartInfo(ffmpeg) { UseShellExecute = false, CreateNoWindow = true };
+    foreach (var argument in new[] { "-nostdin", "-v", "error", "-n" }.Concat(arguments)) start.ArgumentList.Add(argument);
+    using var process = Process.Start(start)!; await process.WaitForExitAsync(); Equal(process.ExitCode, 0);
+}
+static Material Import(VaultStore store, string path, string kind)
+{
+    var id = Guid.NewGuid().ToString("N"); var bytes = File.ReadAllBytes(path);
+    var upload = store.Begin(Path.GetFileName(path), [new(id, Path.GetExtension(path)[1..], kind, kind == "image" ? "image/png" : "video/webm")]);
+    for (var offset = 0; offset < bytes.Length; offset += 192 * 1024)
+        store.Append(upload.Material.Id, id, offset / (192 * 1024), Convert.ToBase64String(bytes, offset, Math.Min(192 * 1024, bytes.Length - offset)));
+    store.FinishFile(upload.Material.Id, id, (bytes.Length + 192 * 1024 - 1) / (192 * 1024), bytes.Length);
+    return store.Commit(upload.Material.Id);
+}
+static async Task<ThumbnailResult> AwaitThumbnail(VaultStore store, Material item, string bucket = "draft")
+{
+    var clock = Stopwatch.StartNew();
+    while (clock.Elapsed < TimeSpan.FromSeconds(15))
+    {
+        var result = store.Thumbnail(bucket, item.Id, item.Attachments[0].Id);
+        if (result.Phase != "loading") { Equal(result.Phase, "ready"); return result; }
+        await Task.Delay(25);
+    }
+    throw new Exception("Thumbnail check timed out");
 }
 static void Equal<T>(T actual, T expected)
 { if (!EqualityComparer<T>.Default.Equals(actual, expected)) throw new Exception($"Expected {expected}; actual {actual}"); }

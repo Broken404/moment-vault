@@ -110,7 +110,9 @@ public sealed partial class VaultStore : IDisposable
             warnings.Add("发现重复素材标识，相关文件夹保留，请先移出重复副本");
             items.RemoveAll(i => i.Id == duplicate.Key);
         }
-        return (items.OrderByDescending(i => i.CreatedAt).ToList(), warnings);
+        var sorted = items.OrderByDescending(i => i.CreatedAt).ToList();
+        RememberThumbnailPaths(bucket, sorted);
+        return (sorted, warnings);
     }
 
     public string Find(string bucket, string id)
@@ -372,8 +374,11 @@ public sealed partial class VaultStore : IDisposable
     {
         if (!confirmed || bucket is not ("library" or "trash")) throw new VaultException("confirmation-required", "请先确认删除后不可恢复");
         var directory = Find(bucket, id);
+        var item = Description.Load(directory);
         _ = SafeFiles.Snapshot(directory);
         Directory.Delete(directory, true);
+        try { ForgetThumbnails(item); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or VaultException) { /* Disposable cache cleanup must not turn a completed deletion into a failed result. */ }
     }
 
     public object ReadFile(string bucket, string id, string attachmentId, long offset)

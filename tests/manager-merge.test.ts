@@ -25,6 +25,13 @@ it('wires the real manager selection, dirty-edit guard, single submission and me
     addEventListener() {},
     removeEventListener() {},
   }));
+  vi.stubGlobal(
+    'IntersectionObserver',
+    class {
+      observe() {}
+      disconnect() {}
+    },
+  );
   vi.stubGlobal('chrome', {
     storage: {
       local: { get: async () => ({}), set: async () => {}, remove: async () => {} },

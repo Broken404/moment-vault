@@ -1,0 +1,156 @@
+{
+  "date": "2026-10-23",
+  "status": "implemented-and-checked-awaiting-formal-extension-display",
+  "scope": "material list thumbnails; no change to recording capture or original media",
+  "implementation": {
+    "nearViewportMarginPx": 160,
+    "frontendConcurrency": 2,
+    "frontendCacheApproximateBytes": 16777216,
+    "frontendCacheEntries": 150,
+    "nativeGenerationConcurrency": 1,
+    "nativeJobsLimit": 16,
+    "nativeJobTimeoutSeconds": 8,
+    "frontendWaitLimitSeconds": 35,
+    "maximumPngDimensions": [192, 144],
+    "maximumPngBytes": 163840,
+    "nativeDiskCacheTargetBytes": 67108864,
+    "nativeDiskCacheTargetEntries": 512,
+    "firstAvailableAttachmentInOriginalOrder": true,
+    "videoFirstSecondThenFirstFrame": true,
+    "scopeAndRevisionAndSourceFingerprintGuards": true,
+    "offscreenRowsReleaseDisplayedPreview": true,
+    "originalsAndDescriptionsNotModifiedByThumbnailGeneration": true,
+    "ordinaryPagesCannotInvokeThumbnailApi": true,
+    "usesExistingBundledFfmpeg": true,
+    "noNewDependencies": true
+  },
+  "checks": {
+    "frontendPassed": 71,
+    "frontendFiles": 12,
+    "newThumbnailChecks": 10,
+    "nativeFileAndProtocolPassed": 24,
+    "realMediaChecksPassed": 12,
+    "newRealThumbnailGroups": 6,
+    "formatAndTypecheckAndBuildPassed": true,
+    "actualNativeProcess": {
+      "actualNativeProcess": true,
+      "isolatedSelfMadeFixtures": true,
+      "items": 4,
+      "pngAndMp4AndWebmAndAlpha": true,
+      "sourcesAndDescriptionsUnchanged": true,
+      "allGeneratedPngsDecode": true,
+      "diskCacheReadyAfterRestart": true,
+      "samples": [
+        {
+          "kind": "image",
+          "firstResponseMs": 8.439,
+          "pingWhilePendingMs": 3.812,
+          "bytes": 470,
+          "width": 192,
+          "height": 108,
+          "decodePassed": true
+        },
+        {
+          "kind": "video",
+          "firstResponseMs": 6.273,
+          "pingWhilePendingMs": 18.439,
+          "bytes": 13448,
+          "width": 192,
+          "height": 108,
+          "decodePassed": true
+        },
+        {
+          "kind": "video",
+          "firstResponseMs": 8.831,
+          "pingWhilePendingMs": 19.578,
+          "bytes": 415,
+          "width": 81,
+          "height": 144,
+          "decodePassed": true
+        },
+        {
+          "kind": "image",
+          "firstResponseMs": 5.862,
+          "pingWhilePendingMs": 18.858,
+          "bytes": 1049,
+          "width": 144,
+          "height": 144,
+          "decodePassed": true
+        }
+      ]
+    },
+    "realMediaCoverage": [
+      "PNG/JPEG/GIF/WebP and alpha PNG decode",
+      "WebM/0.4 second MP4/MOV/portrait video decode",
+      "original media and descriptions unchanged",
+      "native restart disk cache hit",
+      "external file change invalidates preview",
+      "rename/recycle/restore/promote keep preview available",
+      "permanent delete clears derived cache",
+      "512 entries and 64 MiB disk target exercised"
+    ],
+    "recordingProcessingChecksStillPassed": 6,
+    "layout": {
+      "scope": "actual generated manager script and real native PNG outputs; browser native IPC mocked",
+      "lightAndDarkInspected": true,
+      "fourPreviewImagesDecoded": true,
+      "typeAndCountBadgesVisible": true,
+      "portraitBeforeFix": {
+        "frameHeight": 52,
+        "imageElementHeight": 111.40625
+      },
+      "afterFixAllFour": {
+        "frame": [64, 52],
+        "imageElement": [62.666668, 50.666668],
+        "objectFit": "contain"
+      },
+      "preservedSourcePngDimensions": [
+        [144, 144],
+        [81, 144],
+        [192, 108],
+        [192, 108]
+      ],
+      "ownedTabAndServerClosed": true,
+      "actualFormalExtensionAcceptance": false
+    }
+  },
+  "deployment": {
+    "helperDirectory": "dist/host-thumbnails",
+    "bundledToolsAndNoticesPreserved": true,
+    "currentUserRegistrationAndActualOriginFramedPingPassed": true,
+    "existingDirectorySettingsUnchanged": true,
+    "identityAndPermissionsUnchanged": true,
+    "offscreenBundleUnchanged": true,
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "hostDllSha256": "07f013b923d9cfec63c1796496ee23d756178129c695096bef4825bb5ea37a9a",
+    "formalExtensionReload": "pending user action",
+    "formalExtensionDisplay": "pending user confirmation and cache/file checks",
+    "preparedSelfMadeDrafts": [
+      {
+        "id": "9b176f16e5c949eebeb538e1712df87c",
+        "name": "缩略图验收 A-图片",
+        "attachmentCount": 1,
+        "thumbnailCacheFilesBeforeManualReload": 0
+      },
+      {
+        "id": "52bf0db7dfea453f8d68f7487c603ac4",
+        "name": "缩略图验收 B-视频",
+        "attachmentCount": 1,
+        "thumbnailCacheFilesBeforeManualReload": 0
+      },
+      {
+        "id": "41e0b47fc78f4635bc5e732e84d93cd0",
+        "name": "缩略图验收 C-混合组",
+        "attachmentCount": 3,
+        "thumbnailCacheFilesBeforeManualReload": 0
+      }
+    ]
+  },
+  "limitations": [
+    "Timing is a measurement of four local owned samples, not a universal latency or smoothness guarantee.",
+    "Disk eviction is best effort when files are occupied; 16 MiB describes the front preview cache, not the whole browser process.",
+    "Original full-resolution image behavior in the detail panel remains unchanged.",
+    "Full narrow-window, large-library and unusual-media performance matrices are not complete.",
+    "Video capture freeze root-cause conclusions and overall v1 completion status are unchanged."
+  ]
+}

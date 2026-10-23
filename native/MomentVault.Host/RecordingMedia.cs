@@ -13,6 +13,37 @@ public sealed class RecordingMedia(string ffmpeg, string ffprobe)
         Path.Combine(AppContext.BaseDirectory, "media", "ffprobe.exe"));
     public bool Available => File.Exists(ffmpeg) && File.Exists(ffprobe);
 
+    public async Task CreateThumbnailAsync(string input, string output, string kind, CancellationToken cancellation)
+    {
+        var extension = Path.GetExtension(input).ToLowerInvariant();
+        var format = (kind, extension) switch
+        {
+            ("image", ".png") => "png_pipe", ("image", ".jpg" or ".jpeg") => "jpeg_pipe",
+            ("image", ".webp") => "webp_pipe", ("image", ".gif") => "gif",
+            ("video", ".mp4" or ".mov") => "mov", ("video", ".webm") => "matroska",
+            _ => throw new VaultException("thumbnail-unavailable", "这个附件暂时无法生成缩略图")
+        };
+        SafeFiles.RejectLinks(input); SafeFiles.RejectLinks(output);
+        if (!Path.IsPathFullyQualified(input) || !Path.IsPathFullyQualified(output) || File.Exists(output) || input == output)
+            throw new VaultException("invalid-media-path", "缩略图路径无效");
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+        timeout.CancelAfter(TimeSpan.FromSeconds(8));
+        // A short video may have no frame at one second; then use its first frame.
+        foreach (var seek in kind == "video" ? new[] { "1", "0" } : new[] { "0" })
+        {
+            var arguments = new List<string> { "-nostdin", "-hide_banner", "-v", "error", "-n",
+                "-protocol_whitelist", "file,pipe", "-threads", "1", "-filter_threads", "1" };
+            if (kind == "video") arguments.AddRange(["-ss", seek]);
+            arguments.AddRange(["-f", format, "-i", input, "-map", "0:v:0", "-frames:v", "1", "-an", "-sn", "-dn",
+                "-vf", "scale=192:144:force_original_aspect_ratio=decrease,setsar=1", "-pix_fmt", "rgba",
+                "-c:v", "png", "-threads", "1", "-f", "image2", "-update", "1", output]);
+            await Run(ffmpeg, arguments.ToArray(), timeout.Token);
+            if (File.Exists(output) && new FileInfo(output).Length > 0) return;
+            if (File.Exists(output)) File.Delete(output);
+        }
+        throw new VaultException("thumbnail-unavailable", "没有可用的缩略图画面");
+    }
+
     public async Task<RecordingMediaInfo> ConvertAsync(string input, string output, CancellationToken cancellation)
     {
         if (!Available) throw new VaultException("media-tools-missing", "本地助手缺少配套视频处理组件，原片已保留");
