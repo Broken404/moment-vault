@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "status": "implemented-and-checked-awaiting-formal-extension-display",
+  "status": "formal-extension-thumbnail-display-accepted",
   "scope": "material list thumbnails; no change to recording capture or original media",
   "implementation": {
     "nearViewportMarginPx": 160,
@@ -123,8 +123,8 @@
     "offscreenBundleUnchanged": true,
     "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
     "hostDllSha256": "07f013b923d9cfec63c1796496ee23d756178129c695096bef4825bb5ea37a9a",
-    "formalExtensionReload": "pending user action",
-    "formalExtensionDisplay": "pending user confirmation and cache/file checks",
+    "formalExtensionReload": "user confirmed display after requested reload",
+    "formalExtensionDisplay": "passed: user confirmation and supplied screenshot, existing cache and source-file checks",
     "preparedSelfMadeDrafts": [
       {
         "id": "9b176f16e5c949eebeb538e1712df87c",
@@ -152,5 +152,91 @@
     "Original full-resolution image behavior in the detail panel remains unchanged.",
     "Full narrow-window, large-library and unusual-media performance matrices are not complete.",
     "Video capture freeze root-cause conclusions and overall v1 completion status are unchanged."
-  ]
+  ],
+  "actualExtensionAcceptance": {
+    "checkedAtUtc": "2026-10-23T14:35:44.162210+00:00",
+    "scope": "three prepared self-made drafts in the actual configured draft directory",
+    "nativeThumbnailRequestsDuringVerification": 0,
+    "userConfirmedAllThreePreviews": true,
+    "userScreenshotInspected": true,
+    "screenshotShowsImageAndVideoAndMixedCountThree": true,
+    "browserPrivateStorageRead": false,
+    "fixturesDeleted": false,
+    "items": [
+      {
+        "id": "9b176f16e5c949eebeb538e1712df87c",
+        "name": "缩略图验收 A-图片",
+        "attachmentCount": 1,
+        "imageCount": 1,
+        "videoCount": 0,
+        "thumbnailAttachmentId": "e9382840704f4976b2e9f6733dc0b9dc",
+        "sourceAndDescriptionHashesUnchanged": true,
+        "sourceAndDescriptionFileCount": 2,
+        "caches": [
+          {
+            "file": "e9382840704f4976b2e9f6733dc0b9dc-f3d126c87accf36df1def389ace14067de21b9e245871ba2e1fdebfb434c105f.png",
+            "sha256": "a491d5e02f38b7d946a382d14d5ae53c5e015ae31ecb8a27da13edc6509e4a0f",
+            "width": 192,
+            "height": 108,
+            "bytes": 397,
+            "existedBeforeVerification": true,
+            "decodePassed": true
+          }
+        ]
+      },
+      {
+        "id": "52bf0db7dfea453f8d68f7487c603ac4",
+        "name": "缩略图验收 B-视频",
+        "attachmentCount": 1,
+        "imageCount": 0,
+        "videoCount": 1,
+        "thumbnailAttachmentId": "04b66c233c094f869c76470a70ee2d97",
+        "sourceAndDescriptionHashesUnchanged": true,
+        "sourceAndDescriptionFileCount": 2,
+        "caches": [
+          {
+            "file": "04b66c233c094f869c76470a70ee2d97-072e7f625e77f25be08a44beb6bbd5dc989296e5dfbd1729ea1ae48d27989718.png",
+            "sha256": "69a0dc75a59ae69db54c5110a9af6b687a892f5f6a464807ad785fbde3eb5ccf",
+            "width": 192,
+            "height": 108,
+            "bytes": 13624,
+            "existedBeforeVerification": true,
+            "decodePassed": true
+          }
+        ]
+      },
+      {
+        "id": "41e0b47fc78f4635bc5e732e84d93cd0",
+        "name": "缩略图验收 C-混合组",
+        "attachmentCount": 3,
+        "imageCount": 2,
+        "videoCount": 1,
+        "thumbnailAttachmentId": "51831fe4a25d416b80c79a3f498f8594",
+        "sourceAndDescriptionHashesUnchanged": true,
+        "sourceAndDescriptionFileCount": 4,
+        "caches": [
+          {
+            "file": "51831fe4a25d416b80c79a3f498f8594-76f69d03a9b4a2353826fd70b017fc8fe054288dd3ec27d1aeecbd28a898819f.png",
+            "sha256": "a401f08e4ab695a6f6af1475affc0698cbb4b047488ca6310d18895cc2f2b663",
+            "width": 192,
+            "height": 108,
+            "bytes": 397,
+            "existedBeforeVerification": true,
+            "decodePassed": true
+          }
+        ]
+      }
+    ],
+    "existingDirectorySettingsUnchanged": true,
+    "allExpectedThumbnailCachesPreexistedAndDecode": true,
+    "allSourceMediaAndDescriptionsUnchanged": true,
+    "status": "passed",
+    "implementationCommit": "ccb5a26",
+    "acceptanceBasis": [
+      "user confirmation of all three previews",
+      "user-supplied screenshot of actual formal manager list",
+      "preexisting thumbnail cache verified without generating new thumbnails",
+      "independent source, description and configuration hash comparison"
+    ]
+  }
 }
