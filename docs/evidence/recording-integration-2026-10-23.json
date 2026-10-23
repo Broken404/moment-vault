@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "scope": "Formal shortcut capture and durable MP4 publication implementation; corrected browser capture acceptance pending",
+  "scope": "Formal shortcut capture to MP4 validated on three actual YouTube files; precision and original freeze quality gates remain open",
   "baseCommit": "693b168",
   "implementationCommit": "c9d52df",
   "buildHashes": {
@@ -10,8 +10,13 @@
     "nativeExecutableSha256": "ae38193af1857a5a261e4bd3470d1d31f9d8199792c9cff3386ca48218e871f2"
   },
   "checks": {
-    "frontEndUnitTests": { "passed": 42, "recordingTests": 12 },
-    "nativeFileAndProtocolTests": { "passed": 15 },
+    "frontEndUnitTests": {
+      "passed": 42,
+      "recordingTests": 12
+    },
+    "nativeFileAndProtocolTests": {
+      "passed": 15
+    },
     "formatAndTypes": "passed",
     "aggregateCheck": "unit checks passed; build process ran out of memory",
     "subsequentProductionBuildAndGeneratedScriptCheck": "passed",
@@ -24,8 +29,18 @@
     "actualFfmpegAndIndependentDecode": true,
     "lostAcknowledgementReplay": true,
     "materialCount": 1,
-    "video": { "codec": "h264", "width": 640, "height": 360, "duration": 2, "frames": 60 },
-    "audio": { "codec": "aac", "duration": 2, "frames": 94 },
+    "video": {
+      "codec": "h264",
+      "width": 640,
+      "height": 360,
+      "duration": 2,
+      "frames": 60
+    },
+    "audio": {
+      "codec": "aac",
+      "duration": 2,
+      "frames": 94
+    },
     "bytes": 291669,
     "sha256": "7e79a6aed01d4c02709bab506eeb011fc6037b47a7753b875ea619228a1babcd",
     "browserCaptureProven": false
@@ -46,7 +61,13 @@
     "fix": "Measure rendered status bar and reposition before capture checks; prevent text wrapping",
     "productionPrepareFunctionGreenAfterFix": true,
     "browserFixtureGreenAfterFix": true,
-    "observedBar": { "x": 162, "top": 6, "width": 310, "height": 54, "bottom": 60 },
+    "observedBar": {
+      "x": 162,
+      "top": 6,
+      "width": 310,
+      "height": 54,
+      "bottom": 60
+    },
     "observedVideoTop": 68,
     "gapPixels": 8,
     "realCaptureProvenByLayoutFixture": false
@@ -59,9 +80,164 @@
     "finalRedistributionPackage": false
   },
   "remaining": [
-    "User reload of corrected formal extension and actual shortcut capture to a verified MP4",
-    "Close-mode capture stop and background-save browser validation",
+    "Timing precision: encoded track duration exceeds actual source interval by approximately 0.497, 0.158 and 0.538 seconds in these files; not frame-accurate export acceptance",
     "Old short-capture freeze root cause and owned-clock cold/repeated quality gate",
     "Full supported-platform capture matrix and release installer"
-  ]
+  ],
+  "realBrowserValidation": {
+    "date": "2026-10-23",
+    "implementationCommit": "c9d52df",
+    "page": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    "browserStartTrigger": "Actual user extension shortcut; no simulated command or page capture API",
+    "automaticStop": {
+      "phase": "saved",
+      "sourcePausedAfterStop": true,
+      "status": "已存入草稿箱"
+    },
+    "closeDuringRecording": {
+      "observedBar": "已录 00:02.855",
+      "closeAction": "Agent clicked the visible close-mode button while the actual user-started capture was recording",
+      "watchingBeforeEntry": {
+        "time": 2.371041,
+        "paused": true
+      },
+      "watchingAfterClose": {
+        "time": 2.371041,
+        "paused": true
+      },
+      "modeRemoved": true,
+      "playerCaptureMarkerRemoved": true,
+      "finalStatus": "已存入草稿箱"
+    },
+    "shortcutEarlyStop": "Additional file discovered and inspected; stopReason is manual-shortcut. This is not a controlled two-second key interval measurement.",
+    "distinctItems": 3,
+    "oneMp4PerItem": true,
+    "originalAutomaticSampleHashUnchanged": true,
+    "allMetadataHashesMatch": true,
+    "allCompleteDecode": true,
+    "frameInspection": "Four spaced decoded frames per file visibly change; no pet, selection panel or native player control bar in those frames; visible webpage subtitles and a pointer can remain.",
+    "semanticAudioListeningClaimed": false,
+    "samples": [
+      {
+        "sample": 1,
+        "itemId": "231f112c73b34bd8b811cd5402815253",
+        "range": {
+          "a": 2,
+          "b": 4,
+          "actualStart": 2,
+          "actualEnd": 4.046655,
+          "stopReason": "selected-end",
+          "duration": 2.543333,
+          "capture": "tabCapture-to-canvas"
+        },
+        "bytes": 1204488,
+        "sha256": "50cb3fa5ef9189761c42e2b8c7ae7190cfeb42b0c222502da0bda34db559d8c3",
+        "metadataHashMatches": true,
+        "completeDecode": true,
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1428,
+            "height": 1072,
+            "start_time": "0.000000",
+            "duration": "2.533333",
+            "nb_read_frames": "76"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "start_time": "0.011000",
+            "duration": "2.543333",
+            "nb_read_frames": "120"
+          }
+        ],
+        "formatDuration": 2.554333,
+        "videoEnd": 2.5,
+        "audioEnd": 2.551667,
+        "maximumVideoGap": 0.033334,
+        "audioRmsDb": -26.300929
+      },
+      {
+        "sample": 2,
+        "itemId": "a37bd3684fb24d6b8cdfe4c54807451d",
+        "range": {
+          "a": 2,
+          "b": 18,
+          "actualStart": 2,
+          "actualEnd": 6.57558,
+          "stopReason": "manual-shortcut",
+          "duration": 4.733333,
+          "capture": "tabCapture-to-canvas"
+        },
+        "bytes": 1975261,
+        "sha256": "4dbbbe3141cadef3c6840887228f01e46508fcdd0f101071136f13744e50ccb4",
+        "metadataHashMatches": true,
+        "completeDecode": true,
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1326,
+            "height": 994,
+            "start_time": "0.000000",
+            "duration": "4.733333",
+            "nb_read_frames": "142"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "start_time": "0.012000",
+            "duration": "4.703333",
+            "nb_read_frames": "221"
+          }
+        ],
+        "formatDuration": 4.733333,
+        "videoEnd": 4.7,
+        "audioEnd": 4.707333,
+        "maximumVideoGap": 0.033334,
+        "audioRmsDb": -24.791903
+      },
+      {
+        "sample": 3,
+        "itemId": "905349f858b9440892ff37a74a6fd716",
+        "range": {
+          "a": 2,
+          "b": 18,
+          "actualStart": 2,
+          "actualEnd": 5.295774,
+          "stopReason": "mode-closed",
+          "duration": 3.833333,
+          "capture": "tabCapture-to-canvas"
+        },
+        "bytes": 1548955,
+        "sha256": "1c94c9e2355d9e9f3074137320b03a41cfb55ec1c05583a6bd2f6911cc009859",
+        "metadataHashMatches": true,
+        "completeDecode": true,
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1326,
+            "height": 994,
+            "start_time": "0.000000",
+            "duration": "3.833333",
+            "nb_read_frames": "115"
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "start_time": "0.014000",
+            "duration": "3.802333",
+            "nb_read_frames": "179"
+          }
+        ],
+        "formatDuration": 3.833333,
+        "videoEnd": 3.8,
+        "audioEnd": 3.812333,
+        "maximumVideoGap": 0.033334,
+        "audioRmsDb": -25.92572
+      }
+    ]
+  }
 }
