@@ -1,13 +1,13 @@
 {
   "date": "2026-10-23",
-  "productionImplementationCommit": "c203f25",
-  "status": "actual-mp4-and-preview-passed-mute-badge-fix-built-awaiting-reload",
+  "productionImplementationCommit": "908c261",
+  "status": "passed-one-real-x-selected-end-mp4-and-mute-badge-fix-after-computer-restart",
   "samplePage": "https://x.com/SpaceX/status/2110886603371536546",
   "sampleTitle": "SpaceX: Falcon 9 first stage droneship landing",
   "scope": "One X post video; shared production capture-to-MP4 flow",
   "productionCodeChanged": true,
-  "extensionReloadRequired": true,
-  "contentSha256": "092ece7ffed7ae1fe7d8439a7e7f05b6fc56b5aab1717933ab125c64b04b726c",
+  "extensionReloadRequired": false,
+  "contentSha256": "1718d359d8bb86f74b7ae3249ee7cd9eb3c690c30ca302e3421b8dc85ff2bc02",
   "automatedChecks": {
     "command": "node node_modules/vitest/vitest.mjs run tests/recording.test.ts tests/video-sites.test.ts tests/video-session.test.ts --pool=threads --maxWorkers=1",
     "passed": 28,
@@ -199,8 +199,9 @@
     "Saved page status, paused source, cleaned capture controls and restored boundary preview"
   ],
   "limitations": [
-    "The first actual MP4 saved and preview recovered, but its visible native mute badge fails control-hiding acceptance; sample and hash retained",
+    "Original mute-badge failure remains recorded with its media/hash unchanged; one follow-up actual X sample passed after the fix",
     "One ordinary X post cannot establish all layouts, other stop paths, portrait, weak-network or performance conditions",
+    "The post-restart sample confirms this recording/save path only, not full crash recovery or every startup condition",
     "Audio RMS establishes non-silence, not comprehensive semantic audio/video synchronization",
     "The unchanged 0.12-second container-to-source duration comparison is not a universal accuracy guarantee or frame-exact export",
     "Previously retained short-clip freeze remains a separate open quality item",
@@ -227,7 +228,11 @@
       "passed": 2,
       "failed": 0
     },
-    "actualFixedRecording": "pending updated extension reload and actual capture",
+    "actualFixedRecording": {
+      "passed": true,
+      "materialId": "1c991b74d08e4be3b4b899ac6167e605",
+      "evidenceField": "verificationCapture"
+    },
     "fixBuild": {
       "basisCommit": "37b184a",
       "contentSha256": "1718d359d8bb86f74b7ae3249ee7cd9eb3c690c30ca302e3421b8dc85ff2bc02",
@@ -239,7 +244,175 @@
       "productionBuildPassed": true,
       "generatedExtensionCheckPassed": true,
       "nativeCodeChanged": false,
-      "realFixedMedia": "pending extension reload and targeted actual recording"
+      "realFixedMedia": "passed actual selected-end recording after reload and user-reported computer restart; see verificationCapture",
+      "sourceCommit": "908c261"
     }
+  },
+  "verificationCapture": {
+    "recordedImplementationCommit": "908c261",
+    "restartContext": "User confirmed extension reload, then reported a computer restart; actual capture used a newly opened Edge tab after that restart",
+    "trigger": "User ran the requested actual Ctrl+Shift+9 selected-end capture and replied 我已经运行好了; no synthetic extension recording command",
+    "materialId": "1c991b74d08e4be3b4b899ac6167e605",
+    "attachmentId": "992a71a3bd5d407e832fa90cbd42ff3d",
+    "canonicalSource": "https://x.com/SpaceX/status/2110886603371536546",
+    "sha256": "24d170292fcae645cd48e1d1930e84d6eb5a3c923f9f2fd4674589c91c46adc1",
+    "metadataHashMatches": true,
+    "metadataSizeMatches": true,
+    "bytes": 1777434,
+    "range": {
+      "a": 2,
+      "b": 8,
+      "actualStart": 2,
+      "actualEnd": 8.022544,
+      "stopReason": "selected-end",
+      "duration": 6.1,
+      "capture": "tabCapture-to-canvas"
+    },
+    "actualSourceSeconds": 6.022544,
+    "containerSeconds": 6.1,
+    "containerExcessSeconds": 0.077456,
+    "comparisonToleranceSeconds": 0.12,
+    "durationGatePassed": true,
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 940,
+          "height": 528,
+          "start_time": "0.000000",
+          "duration": "6.100000",
+          "nb_read_frames": "183"
+        },
+        {
+          "index": 1,
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "start_time": "0.009000",
+          "duration": "6.081333",
+          "nb_read_frames": "286"
+        }
+      ],
+      "format": {
+        "duration": "6.100000",
+        "size": "1777434"
+      }
+    },
+    "completeDecodePassed": true,
+    "audioOverallRmsDbfs": -36.405516,
+    "precheckAfterRestart": {
+      "busy": "false",
+      "caption": "画面 00:07.975",
+      "range": [
+        {
+          "name": "起点 A",
+          "value": "2"
+        },
+        {
+          "name": "终点 B",
+          "value": "8"
+        }
+      ],
+      "source": {
+        "buffered": [[0, 17.984333]],
+        "duration": 20.036,
+        "height": 720,
+        "muted": false,
+        "paused": true,
+        "ready": 4,
+        "rect": {
+          "bottom": 513.5216674804688,
+          "height": 319.3539733886719,
+          "left": 423.74700927734375,
+          "right": 992.1619873046876,
+          "top": 194.16769409179688,
+          "width": 568.4149780273438,
+          "x": 423.74700927734375,
+          "y": 194.16769409179688
+        },
+        "time": 8,
+        "width": 1280
+      },
+      "viewport": {
+        "height": 710,
+        "width": 1545
+      },
+      "screenshot": ".local-data/x-recording-20261023/restart-ready.png"
+    },
+    "postSavePage": {
+      "busy": "false",
+      "caption": "画面 00:07.975 · 已缓存",
+      "captureLayer": false,
+      "hiddenControlMarkers": 0,
+      "nativeButtons": [
+        {
+          "label": "Play",
+          "opacity": "1",
+          "visibility": "visible"
+        },
+        {
+          "label": "Mute",
+          "opacity": "1",
+          "visibility": "visible"
+        },
+        {
+          "label": "Video Settings",
+          "opacity": "1",
+          "visibility": "visible"
+        },
+        {
+          "label": "Picture-in-Picture",
+          "opacity": "1",
+          "visibility": "visible"
+        },
+        {
+          "label": "Full screen",
+          "opacity": "1",
+          "visibility": "visible"
+        }
+      ],
+      "range": [
+        {
+          "name": "起点 A",
+          "value": "2"
+        },
+        {
+          "name": "终点 B",
+          "value": "8"
+        }
+      ],
+      "recordingBar": false,
+      "recordingMarker": false,
+      "source": {
+        "duration": 20.036,
+        "height": 720,
+        "muted": false,
+        "paused": true,
+        "ready": 4,
+        "time": 8.022544,
+        "width": 1280
+      },
+      "status": "已存入草稿箱",
+      "screenshot": ".local-data/x-recording-20261023/saved-fixed.png"
+    },
+    "pictureInspection": {
+      "firstMiddleLastFrames": [0, 91, 182],
+      "observedContent": "Approaching droneship to landing burn; source telemetry progresses T+00:08:19 / 22 / 25",
+      "sourceBoundsAndAspectMatched": true,
+      "extensionPetAndPanelAbsent": true,
+      "nativePlaybackControlsAbsentInInspectedFrames": true,
+      "previousMuteBadgeAbsentInInspectedFrames": true,
+      "contactSheet": ".local-data/x-recording-20261023/frames-fixed.jpg",
+      "comparedAgainstOriginalFailedContactSheet": ".local-data/x-recording-20261023/frames.jpg"
+    },
+    "originalFailedSampleUnmodified": {
+      "materialId": "8d2435828f0643c2841fea0d10478050",
+      "sha256": "bcf4dc55e293a3f0887600eb6b2488e51e769610c3b73f9ce6aff07297e7c8a1",
+      "matchesRetainedHash": true
+    },
+    "listedSingleSampleAcceptancePassed": true
   }
 }
