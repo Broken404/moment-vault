@@ -9,6 +9,7 @@ import type { CaptureHooks } from './capture';
 import type { CaptureStatus } from '../recording/types';
 import { Pet } from '../ui';
 import themeCss from '../theme.css?inline';
+import { checkSavedPreview } from './lab-recovery';
 
 function Lab() {
   const [site, setSite] = useState<Site>('youtube'),
@@ -25,6 +26,8 @@ function Lab() {
   const capture = useRef<CaptureHooks | null>(null);
   const [recording, setRecording] = useState<CaptureStatus | null>(null);
   const [layoutResult, setLayoutResult] = useState('');
+  const [recoveryResult, setRecoveryResult] = useState('');
+  const observed = useRef<SelectionState | null>(null);
   const video = useRef<HTMLVideoElement>(null);
   const url =
     site === 'youtube'
@@ -202,6 +205,30 @@ function Lab() {
         >
           结束布局检查
         </button>
+        <button
+          className="button"
+          disabled={!target || !!recording}
+          onClick={() => {
+            const source = video.current,
+              hooks = capture.current;
+            if (!source || !hooks) return;
+            setRecoveryResult('正在检查保存后预览恢复（自制故障注入，不捕获或保存媒体）…');
+            setRecording({
+              id: 'owned-preview-recovery',
+              phase: 'preparing',
+              name: '自制预览恢复检查',
+              message: '自制预览恢复检查',
+            });
+            void checkSavedPreview(source, hooks, () => observed.current, setRecoveryResult)
+              .then(setRecoveryResult)
+              .catch((failure) => setRecoveryResult(`恢复失败：${String(failure)}`))
+              .finally(() => {
+                setRecording(null);
+              });
+          }}
+        >
+          检查保存后预览恢复
+        </button>
       </div>
       <div className="fixture-layout">
         <div>
@@ -259,6 +286,7 @@ function Lab() {
           </p>
           {error && <p role="alert">{error}</p>}
           <p data-testid="recording-layout-result">{layoutResult}</p>
+          <p data-testid="preview-recovery-result">{recoveryResult}</p>
         </div>
         <aside className="fixture-proof">
           <h2>联调读数</h2>
@@ -294,7 +322,10 @@ function Lab() {
           onClose={close}
           onError={setError}
           environment={environment}
-          onState={setSnapshot}
+          onState={(value) => {
+            observed.current = value;
+            setSnapshot(value);
+          }}
           onCaptureHooks={(hooks) => {
             capture.current = hooks;
           }}

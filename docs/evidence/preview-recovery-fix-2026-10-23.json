@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-23",
+  "baselineCommit": "34b539c",
+  "status": "fixed-in-build-awaiting-formal-extension-post-save-retest",
+  "problem": "Preparing capture cleared all confirmed boundary frames. Returning to active B after save then depended on another paused seek, which timed out if no new frame callback arrived.",
+  "scopeOfRootCause": "Confirmed unnecessary cache invalidation and reproduced the resulting timeout under controlled missing-frame delivery. The original browser-internal reason for not delivering a new frame was not captured and is not asserted.",
+  "change": "Forced positioning invalidates only the requested frame. Capture still really seeks A; confirmed B remains reusable while source/signature validity checks, frame confirmation, cache limits and cancellation remain in force.",
+  "regression": {
+    "command": "node node_modules/vitest/vitest.mjs run tests/video-session.test.ts --pool=threads --maxWorkers=1",
+    "baseline": {
+      "failed": 2,
+      "passed": 2,
+      "exactTimeout": "还没等到目标画面，请检查网络后重试。",
+      "otherFailure": "Repeated terminal notifications required a fresh boundary decode rather than reusing the confirmed frame"
+    },
+    "fixed": {
+      "passed": 4,
+      "covers": [
+        "Confirmed B restores without another seek when no new decoder frame arrives",
+        "Repeated release notifications do not start a new boundary decode",
+        "A cached A frame cannot bypass the actual seek back to the capture start",
+        "Source identity change prevents restoration from the old source",
+        "Resolution change invalidates cached frames and requires a new confirmed frame"
+      ]
+    },
+    "previewAndSessionTestsPassed": 15,
+    "fullFrontendTestsPassed": 49,
+    "formatPassed": true,
+    "typecheckPassed": true,
+    "productionBuildAndGeneratedScriptChecksPassed": true
+  },
+  "ownedEdgeControl": {
+    "media": "Owned 15-second 30-fps clock video",
+    "range": { "a": 2, "b": 8, "active": "b" },
+    "scenario": "Confirm B, execute production capture preparation, drive owned playback to B, pause, wait one second, suppress new frame callbacks during production capture-hook release",
+    "baselineResult": "恢复失败：Error: 还没等到目标画面，请检查网络后重试。",
+    "fixedResult": "恢复通过：B=8.000 秒，画面 8.000 秒，复用缓存，新增取帧请求 0 次",
+    "fixedState": {
+      "connection": "connected",
+      "requested": 8,
+      "actual": 8,
+      "loading": false,
+      "cached": true,
+      "cacheEntries": 3,
+      "cacheBytes": 2764800,
+      "message": "",
+      "sourcePaused": true,
+      "sourceCurrentTime": 8.048
+    },
+    "replay": "Run tools/run-video-preview-lab.mjs with the documented FFmpeg environment; enter selection, set A=2/B=8, confirm B, then click 检查保存后预览恢复",
+    "scope": "Real browser decoding and production selection/capture-release code with explicit missing-frame fault injection; no actual tabCapture, encode, upload or native save",
+    "probeLocation": "apps/extension/src/video/lab-recovery.ts (lab import only, not included in formal content script)",
+    "screenshot": ".local-data/preview-recovery-fix-20261023/fixed.png"
+  },
+  "build": {
+    "contentJsSha256": "092ece7ffed7ae1fe7d8439a7e7f05b6fc56b5aab1717933ab125c64b04b726c",
+    "helperChanged": false,
+    "recordingOrConverterChanged": false,
+    "dependenciesChanged": false,
+    "userConfigurationChanged": false
+  },
+  "formalPostSaveRetest": "pending extension reload and targeted check",
+  "limitations": [
+    "Controlled missing-frame delivery reproduces the failure mechanism, not the original browser-internal trigger",
+    "A missing or invalid boundary cache still requires a genuinely confirmed new frame; network/media errors are not hidden",
+    "Existing recording-duration acceptance is preserved and was not repeated in this investigation",
+    "Original short-clip freeze, full video quality matrix and installation acceptance are separate open work"
+  ]
+}

@@ -396,12 +396,14 @@ export class VideoSession {
       this.cache.clear();
       this.signature = this.frameSignature();
     }
+    // Capture/preview must seek A again, but the already confirmed B frame is still valid.
+    // Keeping other frames lets capture release restore the preview without another paused seek.
+    if (force) this.cache.delete(frameKey(time));
     this.state.requested = time;
     this.state.loading = true;
     this.state.message = '';
     this.state.cached = false;
     this.publish();
-    if (force) this.cache.clear();
     return this.queue.request(time);
   }
   buffered(time: number) {

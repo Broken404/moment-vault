@@ -24,17 +24,17 @@ export class FrameCache {
     return frame;
   }
   set(key: string, frame: Frame) {
-    this.remove(key);
+    this.delete(key);
     this.entries.set(key, frame);
     this.bytes += frame.bytes;
     while (this.bytes > this.maximumBytes || this.entries.size > this.maximumEntries) {
       const oldest =
         [...this.entries.keys()].find((k) => !this.pins.has(k)) ?? this.entries.keys().next().value;
       if (oldest === undefined) break;
-      this.remove(oldest);
+      this.delete(oldest);
     }
   }
-  private remove(key: string) {
+  delete(key: string) {
     const frame = this.entries.get(key);
     if (!frame) return;
     this.bytes -= frame.bytes;
@@ -42,7 +42,7 @@ export class FrameCache {
     frame.canvas.width = frame.canvas.height = 0;
   }
   clear() {
-    for (const key of this.entries.keys()) this.remove(key);
+    for (const key of this.entries.keys()) this.delete(key);
   }
   get size() {
     return this.entries.size;
