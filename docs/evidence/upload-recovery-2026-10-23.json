@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "status": "implemented-and-checked-awaiting-formal-extension-acceptance",
+  "status": "formal-extension-all-received-recovery-accepted",
   "scope": "interrupted local file uploads; recording recovery and overall v1 delivery remain separately tracked",
   "implementation": {
     "localDiskPendingRecordsSurvivePageMemoryLoss": true,
@@ -80,7 +80,7 @@
     "registrationAndOriginPingPassed": true
   },
   "actualFormalExtensionAcceptance": {
-    "status": "pending user reload and one continue-save action",
+    "status": "passed for all-received continue-save path",
     "preparedSelfMadeUpload": {
       "id": "3f6772481e0b4c829ebe712459d23557",
       "name": "恢复验收-已收齐的图片与视频",
@@ -89,10 +89,56 @@
       "committed": false
     },
     "noExistingPersonalMediaReadOrChangedDuringPreparation": true,
-    "noManualRecordingRequired": true
+    "noManualRecordingRequired": true,
+    "acceptedOn": "2026-10-24",
+    "timeZone": "Asia/Shanghai",
+    "verification": {
+      "status": "passed",
+      "checkedAtUtc": "2026-10-23T16:01:11.330450+00:00",
+      "scope": "actual formal-extension all-received continue-save action confirmed by user, independently checked on disk",
+      "implementationCommit": "c0638e7",
+      "userConfirmedReloadAndOneSavedItemWithTwoAttachments": true,
+      "uploadId": "3f6772481e0b4c829ebe712459d23557",
+      "name": "恢复验收-已收齐的图片与视频",
+      "savedItemCountForFixture": 1,
+      "attachmentCount": 2,
+      "sameUploadAndAttachmentIds": true,
+      "originalNameNoteSourceAndCreationTimePreserved": true,
+      "descriptionRevisionMatchesDisk": true,
+      "files": [
+        {
+          "id": "e8718c85b22b44af9f46a10f1bc19f57",
+          "fileName": "图片-001.png",
+          "kind": "image",
+          "bytes": 631,
+          "sha256": "42e7c71ad6b0afaff0a3de0f1624bf96f35bc467a8e4d32b401695ee97f68ce1",
+          "originalAndSavedBytesMatch": true,
+          "metadataPreserved": true,
+          "decodePassed": true
+        },
+        {
+          "id": "8dda0c353d7a4072a419502ccbd1c230",
+          "fileName": "视频-002.mp4",
+          "kind": "video",
+          "bytes": 35697,
+          "sha256": "ef12aecc991c037130804ee87989cc78deba8506d3c6ab9e6fddfa5d0ea44249",
+          "originalAndSavedBytesMatch": true,
+          "metadataPreserved": true,
+          "decodePassed": true
+        }
+      ],
+      "ownedPendingDirectoryRemoved": true,
+      "noUploadBookkeepingInVisibleMaterial": true,
+      "existingDirectorySettingsUnchanged": true,
+      "sourceOriginalsUnchanged": true,
+      "verificationHostOperations": ["items.list", "ping", "uploads.get"],
+      "noRecoveryOrCommitReplayedDuringVerification": true,
+      "browserPrivateStorageRead": false,
+      "partialReselectionFormalExtensionAcceptance": false
+    }
   },
   "limitations": [
-    "Browser recovery paths used the production UI and actual native helper through a loopback adapter; this is distinct from formal-extension Native Messaging acceptance.",
+    "Partial-reselection browser checks used the production UI and actual native helper through a loopback adapter; the formal-extension all-received path is separately user-confirmed and independently verified.",
     "Missing original bytes that never reached the helper cannot be reconstructed if the original file is lost.",
     "Original metadata and received prefixes are checked; an unreceived tail has no independent original hash to compare.",
     "Real power loss, a physically full disk, multiple extension instances and large pending queues are not a completed matrix.",
