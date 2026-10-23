@@ -1,7 +1,7 @@
 {
   "date": "2026-10-23",
   "productionImplementationCommit": "c203f25",
-  "status": "prechecks-passed-awaiting-real-shortcut-capture",
+  "status": "passed-one-real-bilibili-selected-end-mp4-and-preview-recovery",
   "samplePage": "https://www.bilibili.com/video/BV1Sqpy6NEJC/",
   "sampleTitle": "AI · 高质量 Blender 场景创建",
   "scope": "Bilibili native timeline and existing shared capture-to-MP4 flow; no separate recording engine",
@@ -25,14 +25,20 @@
     "sourcePaused": true,
     "sourceCurrentTime": 71.248157,
     "sourceMuted": false,
-    "sourceDimensions": { "width": 1920, "height": 1080 },
+    "sourceDimensions": {
+      "width": 1920,
+      "height": 1080
+    },
     "sourceRect": {
       "x": 226.56251525878903,
       "y": 171.99075317382812,
       "width": 976.9907836914062,
       "height": 550
     },
-    "viewport": { "width": 1888, "height": 868 },
+    "viewport": {
+      "width": 1888,
+      "height": 868
+    },
     "bufferedSeconds": [55, 144.999999],
     "observedNativeControls": [
       "bpx-player-control-wrap",
@@ -51,7 +57,94 @@
     "caption": "画面 02:06.000",
     "screenshot": ".local-data/bilibili-recording-20261023/recording-ready.png"
   },
-  "realCapture": "pending actual user shortcut; no simulated recording command used",
+  "realCapture": {
+    "trigger": "User actual Ctrl+Shift+9 on the prepared Bilibili tab; user replied 好了 after automatic stop; no simulated extension command",
+    "materialId": "1d7881c2b4e440ff9d828eb8984b0df4",
+    "attachmentId": "14a425278fb8474f99823f2179089ce7",
+    "canonicalSource": "https://www.bilibili.com/video/BV1Sqpy6NEJC/",
+    "sha256": "f2a35261c9501bc80d6ed0bf0cb4f355f2a86d5d3aaca55d82c6cbf86f6a3799",
+    "metadataHashMatches": true,
+    "metadataSizeMatches": true,
+    "bytes": 814475,
+    "range": {
+      "a": 120,
+      "b": 126,
+      "actualStart": 120,
+      "actualEnd": 126.036986,
+      "stopReason": "selected-end",
+      "duration": 6.1,
+      "capture": "tabCapture-to-canvas"
+    },
+    "actualSourceSeconds": 6.036986,
+    "containerSeconds": 6.1,
+    "containerExcessSeconds": 0.063014,
+    "comparisonToleranceSeconds": 0.12,
+    "durationGatePassed": true,
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 1314,
+          "height": 740,
+          "start_time": "0.000000",
+          "duration": "6.100000",
+          "nb_read_frames": "183"
+        },
+        {
+          "index": 1,
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "start_time": "0.006000",
+          "duration": "6.080333",
+          "nb_read_frames": "286"
+        }
+      ],
+      "format": {
+        "duration": "6.100000",
+        "size": "814475"
+      }
+    },
+    "completeDecodePassed": true,
+    "audioOverallRmsDbfs": -27.904149,
+    "postSavePage": {
+      "status": "已存入草稿箱",
+      "caption": "画面 02:06.000 · 已缓存",
+      "ariaBusy": "false",
+      "sourceCurrentTime": 126.036986,
+      "sourcePaused": true,
+      "sourceReadyState": 4,
+      "recordingBarPresent": false,
+      "captureLayerPresent": false,
+      "recordingMarkerPresent": false,
+      "nativeBottomControlsRestoredVisible": true,
+      "nativeTopControlsRetainSiteHiddenState": true,
+      "screenshot": ".local-data/bilibili-recording-20261023/saved.png"
+    },
+    "pictureInspection": {
+      "firstMiddleLastFrames": [0, 91, 182],
+      "observedTransition": "AI-Authored Lighting to AI-Authored Atmosphere; legitimate static source sections retained",
+      "sourceBoundsAndAspectMatched": true,
+      "extensionAndNativeControlsAbsent": true,
+      "sourceNearEndComparison": {
+        "requestedSourceSeconds": 125.9,
+        "confirmedFrameCaption": "画面 02:05.875",
+        "observedTitle": "AI-Authored Atmosphere",
+        "matchesCapturedEndingContent": true,
+        "subsequentBoundaryTitle": "AI-Authored Night Lighting at B=126",
+        "originalSelectionRestored": {
+          "a": 120,
+          "b": 126
+        },
+        "screenshot": ".local-data/bilibili-recording-20261023/source-125900.png"
+      },
+      "contactSheet": ".local-data/bilibili-recording-20261023/frames.jpg",
+      "doesNotEstablishFrameExactExport": true
+    }
+  },
   "acceptance": [
     "New actual MP4 draft with the expected source, selection and selected-end reason",
     "Independent complete decode, metadata hash and audio inspection",
@@ -59,8 +152,10 @@
     "Saved status, paused source, cleared capture controls and restored boundary preview"
   ],
   "limitations": [
-    "Prechecks do not establish a real Bilibili recording or MP4 save",
-    "One sample cannot establish all Bilibili layouts, parts, portrait, weak-network or performance conditions",
-    "Previously retained short-clip freeze remains a separate open quality item"
+    "One ordinary Bilibili automatic selected-end recording passed; other stop paths, parts, portrait, weak-network and performance conditions are not covered",
+    "Non-silent audio energy is not a full semantic audio/video synchronization evaluation",
+    "Container-to-source duration comparison uses the unchanged 0.12-second reference, not a universal precision guarantee or frame-exact boundary export",
+    "Previously retained short-clip freeze remains a separate open quality item",
+    "Raw media, screenshots, personal paths/configuration and source tracking query are not committed"
   ]
 }
