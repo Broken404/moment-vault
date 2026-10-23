@@ -14,7 +14,7 @@ import {
   type CaptureSelection,
 } from '../apps/extension/src/recording/types';
 import { statusPosition, videoCapture } from '../apps/extension/src/video/capture';
-import { sourceKey } from '../apps/extension/src/video/sites';
+import { keepControls, sourceKey } from '../apps/extension/src/video/sites';
 import type { VideoSession } from '../apps/extension/src/video/session';
 
 const selection: CaptureSelection = {
@@ -308,6 +308,76 @@ describe('durable recording publication', () => {
   });
 });
 describe('capture geometry and status placement', () => {
+  it('prepares Bilibili capture, hides only its native controls and restores selection controls on release', async () => {
+    const player = document.createElement('div'),
+      otherPlayer = document.createElement('div'),
+      video = document.createElement('video'),
+      layer = document.createElement('div');
+    player.className = otherPlayer.className = 'bpx-player-container';
+    const controls =
+      '<div class="bpx-player-control-wrap"><div class="bpx-player-control-top"></div><div class="bpx-player-control-bottom"></div></div>';
+    player.innerHTML = otherPlayer.innerHTML = controls;
+    player.prepend(video);
+    player.setAttribute('data-mv-recording', 'prior-marker');
+    document.body.append(player, otherPlayer, layer);
+    const target = {
+      video,
+      player,
+      site: 'bilibili' as const,
+      key: sourceKey(video, 'bilibili'),
+    };
+    const restoreControls = keepControls(target),
+      releaseCapture = vi.fn();
+    vi.spyOn(video, 'getBoundingClientRect').mockReturnValue(new DOMRect(20, 40, 640, 360));
+    vi.stubGlobal('innerWidth', 1000);
+    vi.stubGlobal('innerHeight', 800);
+    vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      queueMicrotask(() => callback(0));
+      return 1;
+    });
+    video.currentTime = 2;
+    const hooks = videoCapture(
+      {
+        target,
+        validSource: () => true,
+        prepareCapture: async () => 2,
+        releaseCapture,
+        state: { selection: { a: 2, b: 8 } },
+      } as unknown as VideoSession,
+      layer,
+      () => {},
+    );
+    try {
+      const bottom = player.querySelector<HTMLElement>('.bpx-player-control-bottom')!;
+      expect(getComputedStyle(bottom).visibility).toBe('visible');
+      await expect(hooks.prepare('owned-bilibili')).resolves.toMatchObject({
+        a: 2,
+        b: 8,
+        actualStart: 2,
+        rect: { x: 20, y: 40, width: 640, height: 360 },
+      });
+      hooks.check('owned-bilibili');
+      for (const control of player.querySelectorAll('[class^="bpx-player-control-"]'))
+        expect(getComputedStyle(control).visibility).toBe('hidden');
+      expect(
+        getComputedStyle(otherPlayer.querySelector('.bpx-player-control-bottom')!).visibility,
+      ).toBe('visible');
+      expect(layer.dataset.capture).toBe('true');
+      hooks.release();
+      expect(getComputedStyle(bottom).visibility).toBe('visible');
+      expect(player.getAttribute('data-mv-recording')).toBe('prior-marker');
+      expect(layer.dataset.capture).toBeUndefined();
+      expect(releaseCapture).toHaveBeenCalledOnce();
+    } finally {
+      hooks.release();
+      restoreControls();
+      player.remove();
+      otherPlayer.remove();
+      layer.remove();
+      vi.unstubAllGlobals();
+    }
+  });
   it('reports a paused endpoint and clears local capture polling before asking the background to stop', async () => {
     vi.useFakeTimers();
     const video = document.createElement('video'),

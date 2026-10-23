@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-23",
+  "productionImplementationCommit": "c203f25",
+  "status": "prechecks-passed-awaiting-real-shortcut-capture",
+  "samplePage": "https://www.bilibili.com/video/BV1Sqpy6NEJC/",
+  "sampleTitle": "AI · 高质量 Blender 场景创建",
+  "scope": "Bilibili native timeline and existing shared capture-to-MP4 flow; no separate recording engine",
+  "productionCodeChanged": false,
+  "extensionReloadRequired": false,
+  "automatedChecks": {
+    "command": "node node_modules/vitest/vitest.mjs run tests/recording.test.ts tests/video-sites.test.ts tests/video-session.test.ts --pool=threads --maxWorkers=1",
+    "passed": 27,
+    "newCoverage": "Production Bilibili capture preparation: native controls override selection visibility only within the selected player; release restores controls and the previous marker; another player remains visible",
+    "typecheckPassed": true,
+    "simulationIsNotActualMediaAcceptance": true
+  },
+  "actualPagePrecheck": {
+    "a": 65,
+    "b": 71,
+    "active": "b",
+    "nativeTimelineConnected": true,
+    "caption": "画面 01:11.000 · 已缓存",
+    "ariaBusy": "false",
+    "trialPlaybackReturnedToBoundary": true,
+    "sourcePaused": true,
+    "sourceCurrentTime": 71.248157,
+    "sourceMuted": false,
+    "sourceDimensions": { "width": 1920, "height": 1080 },
+    "sourceRect": {
+      "x": 226.56251525878903,
+      "y": 171.99075317382812,
+      "width": 976.9907836914062,
+      "height": 550
+    },
+    "viewport": { "width": 1888, "height": 868 },
+    "bufferedSeconds": [55, 144.999999],
+    "observedNativeControls": [
+      "bpx-player-control-wrap",
+      "bpx-player-control-top",
+      "bpx-player-control-bottom"
+    ],
+    "screenshot": ".local-data/bilibili-recording-20261023/ready.png"
+  },
+  "plannedRecording": {
+    "a": 120,
+    "b": 126,
+    "durationSeconds": 6,
+    "purpose": "Use the daylight/night-lighting transition as a source-picture comparison instead of the earlier asset overview slide",
+    "boundariesConfirmed": true,
+    "active": "b",
+    "caption": "画面 02:06.000",
+    "screenshot": ".local-data/bilibili-recording-20261023/recording-ready.png"
+  },
+  "realCapture": "pending actual user shortcut; no simulated recording command used",
+  "acceptance": [
+    "New actual MP4 draft with the expected source, selection and selected-end reason",
+    "Independent complete decode, metadata hash and audio inspection",
+    "Captured pictures match the source lighting transition, bounds and aspect are correct, extension controls are not recorded; legitimate static source frames are not classified as a capture freeze",
+    "Saved status, paused source, cleared capture controls and restored boundary preview"
+  ],
+  "limitations": [
+    "Prechecks do not establish a real Bilibili recording or MP4 save",
+    "One sample cannot establish all Bilibili layouts, parts, portrait, weak-network or performance conditions",
+    "Previously retained short-clip freeze remains a separate open quality item"
+  ]
+}
