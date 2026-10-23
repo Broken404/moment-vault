@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react';
+import { t, numberText } from '../i18n';
+import { languageSnapshot, subscribeLanguage } from '../i18n/state';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type PointerEvent,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { Play, Square, X, ChevronDown, RotateCcw, GripHorizontal, Minus, Plus } from 'lucide-react';
 import { formatTime, moveEndpoint, parseTime, type Endpoint } from '@shared/range';
@@ -37,6 +46,7 @@ export function VideoMode({
   shortcut?: string;
   onStop?: () => void;
 }) {
+  const { locale } = useSyncExternalStore(subscribeLanguage, languageSnapshot);
   const controller = useRef<VideoSession | null>(null);
   const [mount, setMount] = useState<HTMLElement | null>(null);
   const [snapshot, setSnapshot] = useState<SelectionState | null>(null);
@@ -161,8 +171,11 @@ export function VideoMode({
     // Target identity creates the session; preference/theme changes do not reopen it.
   }, [target]);
   useEffect(() => {
-    if (mount) mount.dataset.theme = theme;
-  }, [mount, theme]);
+    if (mount) {
+      mount.dataset.theme = theme;
+      mount.lang = locale;
+    }
+  }, [mount, theme, locale]);
   useEffect(() => {
     if (mount) mount.style.visibility = closing ? 'hidden' : '';
   }, [mount, closing]);
@@ -211,31 +224,34 @@ export function VideoMode({
   return createPortal(
     <>
       {recordPosition && (
-        <section className="recording-bar" style={recordPosition} aria-label="录制状态">
+        <section className="recording-bar" style={recordPosition} aria-label={t('录制状态')}>
           <div>
-            <b>{recording?.message ?? '正在准备录制…'}</b>
+            <b>{t(recording?.message ?? '正在准备录制…')}</b>
             <small
               title={
                 recording?.phase === 'recording'
-                  ? `${shortcut || '录制快捷键'} 提前结束`
-                  : '关闭后继续完成必要保存'
+                  ? t('{0} 提前结束', [shortcut || t('录制快捷键')])
+                  : t('关闭后继续完成必要保存')
               }
             >
               {recording?.phase === 'recording'
-                ? `已录 ${formatTime(recording.elapsed ?? 0)} · ${shortcut || '录制快捷键'} 提前结束`
-                : '关闭后继续完成必要保存'}
+                ? t('已录 {0} · {1} 提前结束', [
+                    formatTime(recording.elapsed ?? 0),
+                    shortcut || t('录制快捷键'),
+                  ])
+                : t('关闭后继续完成必要保存')}
             </small>
           </div>
           <button className="button" onClick={onStop} disabled={recording?.phase !== 'recording'}>
-            结束并保存
+            {t('结束并保存')}
           </button>
-          <button className="icon-button" onClick={onClose} aria-label="关闭录制模式">
+          <button className="icon-button" onClick={onClose} aria-label={t('关闭录制模式')}>
             <X />
           </button>
         </section>
       )}
       {snapshot.rail && snapshot.connection === 'connected' && (
-        <div className="native-selection" style={snapshot.rail} aria-label="原进度条选区">
+        <div className="native-selection" style={snapshot.rail} aria-label={t('原进度条选区')}>
           <div
             className="native-highlight"
             style={{
@@ -248,7 +264,7 @@ export function VideoMode({
               key={endpoint}
               role="slider"
               className={`endpoint ${endpoint} ${snapshot.active === endpoint ? 'selected' : ''}`}
-              aria-label={endpoint === 'a' ? '起点 A' : '终点 B'}
+              aria-label={endpoint === 'a' ? t('起点 A') : t('终点 B')}
               aria-orientation="horizontal"
               aria-valuemin={endpoint === 'a' ? snapshot.domain.start : snapshot.selection.a}
               aria-valuemax={endpoint === 'a' ? snapshot.selection.b : snapshot.domain.end}
@@ -287,7 +303,7 @@ export function VideoMode({
         ref={panel}
         className="video-panel"
         style={{ left: position.x, top: position.y }}
-        aria-label="视频选段与独立预览"
+        aria-label={t('视频选段与独立预览')}
       >
         <header
           className="video-heading"
@@ -328,31 +344,38 @@ export function VideoMode({
         >
           <div>
             <small>
-              {{ youtube: 'YouTube', bilibili: 'B站', x: 'X', owned: '自制测试' }[target.site]} ·
-              选段
+              {
+                { youtube: 'YouTube', bilibili: t('B站'), x: 'X', owned: t('自制测试') }[
+                  target.site
+                ]
+              }{' '}
+              {t('· 选段')}
             </small>
-            <strong>留住这一段</strong>
+            <strong>{t('留住这一段')}</strong>
           </div>
           <GripHorizontal className="grip" />
-          <button className="icon-button" onClick={onClose} aria-label="关闭选段并恢复观看">
+          <button className="icon-button" onClick={onClose} aria-label={t('关闭选段并恢复观看')}>
             <X />
           </button>
         </header>
         <div className="boundary-preview" aria-busy={snapshot.loading}>
-          <canvas ref={setCanvas} aria-label="原视频边界画面" />
+          <canvas ref={setCanvas} aria-label={t('原视频边界画面')} />
           {(!snapshot.hasFrame || snapshot.loading) && (
             <div className="preview-pending">
-              {snapshot.hasFrame ? '上一预览 · ' : ''}正在定位 {formatTime(snapshot.requested)}
+              {snapshot.hasFrame ? t('上一预览 · ') : ''}
+              {t('正在定位 {0}', [formatTime(snapshot.requested)])}
             </div>
           )}
         </div>
         <p className="preview-caption" role="status">
-          {snapshot.message ||
+          {(snapshot.message && t(snapshot.message)) ||
             (snapshot.playing
-              ? `选区试播 · ${formatTime(snapshot.actual ?? snapshot.requested)}`
+              ? t(`选区试播 · ${formatTime(snapshot.actual ?? snapshot.requested)}`)
               : snapshot.loading
-                ? '等待目标画面，仍可继续调整端点'
-                : `画面 ${formatTime(snapshot.actual ?? snapshot.requested)}${snapshot.cached ? ' · 已缓存' : ''}`)}
+                ? t('等待目标画面，仍可继续调整端点')
+                : t(snapshot.cached ? '画面 {0} · 已缓存' : '画面 {0}', [
+                    formatTime(snapshot.actual ?? snapshot.requested),
+                  ]))}
         </p>
         <div className="endpoint-cards">
           {(['a', 'b'] as const).map((endpoint) => (
@@ -363,26 +386,27 @@ export function VideoMode({
               onClick={() => session.select(endpoint)}
               aria-pressed={snapshot.active === endpoint}
             >
-              <small>{endpoint === 'a' ? '起点 A' : '终点 B'}</small>
+              <small>{endpoint === 'a' ? t('起点 A') : t('终点 B')}</small>
               <strong>{formatTime(snapshot.selection[endpoint])}</strong>
             </button>
           ))}
         </div>
         <div className="selection-duration">
-          选区时长 <b>{formatTime(snapshot.selection.b - snapshot.selection.a)}</b>
+          {t('选区时长')}
+          <b>{formatTime(snapshot.selection.b - snapshot.selection.a)}</b>
         </div>
         {snapshot.connection !== 'connected' && (
           <div className="connection-note" role="status">
-            <p>{snapshot.connectionMessage}</p>
+            <p>{t(snapshot.connectionMessage)}</p>
             {!disabled && (
               <div className="row">
                 <button className="button" onClick={() => session.reconnect()}>
                   <RotateCcw />
-                  重新连接
+                  {t('重新连接')}
                 </button>
                 {snapshot.connection === 'unavailable' && !fine && (
                   <button className="button" onClick={openFine}>
-                    临时使用精调
+                    {t('临时使用精调')}
                   </button>
                 )}
               </div>
@@ -395,7 +419,7 @@ export function VideoMode({
           onClick={() => void session.preview()}
         >
           {snapshot.playing ? <Square /> : <Play />}
-          {snapshot.playing ? '停止预览' : '预览选区'}
+          {snapshot.playing ? t('停止预览') : t('预览选区')}
         </button>
         <button
           className="fine-toggle"
@@ -403,7 +427,7 @@ export function VideoMode({
           onClick={() => (fine ? setFine(false) : openFine())}
         >
           <ChevronDown />
-          精细调整
+          {t('精细调整')}
         </button>
         {fine && (
           <div className="fine-controls">
@@ -422,10 +446,10 @@ export function VideoMode({
               ))}
             </div>
             <label>
-              {snapshot.active === 'a' ? '调整起点 A' : '调整终点 B'}
+              {snapshot.active === 'a' ? t('调整起点 A') : t('调整终点 B')}
               <input
                 type="range"
-                aria-label="局部精调端点"
+                aria-label={t('局部精调端点')}
                 min={fineWindow.start}
                 max={fineWindow.end}
                 step="0.001"
@@ -444,17 +468,21 @@ export function VideoMode({
               <button
                 className="button"
                 onClick={() => zoom(1, -0.5)}
-                aria-label="向前平移精调范围"
+                aria-label={t('向前平移精调范围')}
               >
                 ←
               </button>
-              <button className="button" onClick={() => zoom(0.5)} aria-label="缩小精调范围">
+              <button className="button" onClick={() => zoom(0.5)} aria-label={t('缩小精调范围')}>
                 <Minus />
               </button>
-              <button className="button" onClick={() => zoom(2)} aria-label="扩大精调范围">
+              <button className="button" onClick={() => zoom(2)} aria-label={t('扩大精调范围')}>
                 <Plus />
               </button>
-              <button className="button" onClick={() => zoom(1, 0.5)} aria-label="向后平移精调范围">
+              <button
+                className="button"
+                onClick={() => zoom(1, 0.5)}
+                aria-label={t('向后平移精调范围')}
+              >
                 →
               </button>
             </div>
@@ -462,11 +490,16 @@ export function VideoMode({
         )}
         <footer>
           <span>
-            ← → {prefs.step} 秒 · Ctrl + ← → {prefs.fineStep} 秒
+            {t('← → {0} 秒 · Ctrl + ← → {1} 秒', [
+              numberText(prefs.step),
+              numberText(prefs.fineStep),
+            ])}
           </span>
-          <span>选段与预览不会保存素材</span>
+          <span>{t('选段与预览不会保存素材')}</span>
           <span data-record-shortcut>
-            {shortcut ? `按 ${shortcut} 开始／提前结束录制` : '录制快捷键尚未绑定，请在设置中配置'}
+            {shortcut
+              ? t(`按 ${shortcut} 开始／提前结束录制`)
+              : t('录制快捷键尚未绑定，请在设置中配置')}
           </span>
         </footer>
       </section>
@@ -503,9 +536,9 @@ function TimeInput({
   };
   return (
     <label>
-      {endpoint === 'a' ? '起点 A' : '终点 B'}
+      {endpoint === 'a' ? t('起点 A') : t('终点 B')}
       <input
-        aria-label={endpoint === 'a' ? '精确起点时间' : '精确终点时间'}
+        aria-label={endpoint === 'a' ? t('精确起点时间') : t('精确终点时间')}
         value={text}
         disabled={disabled}
         onFocus={() => {
@@ -520,7 +553,7 @@ function TimeInput({
           if (event.key === 'Enter') event.currentTarget.blur();
         }}
       />
-      {error && <small className="error">{error}</small>}
+      {error && <small className="error">{t(error)}</small>}
     </label>
   );
 }

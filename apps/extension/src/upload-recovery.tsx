@@ -1,3 +1,4 @@
+import { t, numberText } from './i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { errorMessage } from '@shared/model';
 import {
@@ -10,8 +11,8 @@ import {
 
 function bytes(value: number) {
   return value < 1024 * 1024
-    ? `${Math.ceil(value / 1024)} KB`
-    : `${(value / 1024 / 1024).toFixed(1)} MB`;
+    ? `${numberText(Math.ceil(value / 1024))} KB`
+    : `${numberText(value / 1024 / 1024, 1)} MB`;
 }
 
 export function UploadRecovery({
@@ -105,15 +106,18 @@ export function UploadRecovery({
 
   if (!jobs.length && !error && !warnings.length) return null;
   return (
-    <section className="status upload-recovery" aria-label="未完成的保存">
+    <section className="status upload-recovery" aria-label={t('未完成的保存')}>
       <div className="row recovery-heading">
-        <strong>未完成的保存{total ? ` · ${total}` : ''}</strong>
+        <strong>
+          {t('未完成的保存')}
+          {total ? ` · ${total}` : ''}
+        </strong>
         <button className="button" disabled={disabled} onClick={() => void load()}>
-          刷新未完成保存
+          {t('刷新未完成保存')}
         </button>
       </div>
       <p className="muted">
-        已收到的内容留在本地。附件收齐后可直接继续保存；未收齐的需重新选择剩余原文件。
+        {t('已收到的内容留在本地。附件收齐后可直接继续保存；未收齐的需重新选择剩余原文件。')}
       </p>
       {jobs.map((job) => (
         <div key={job.id} className="recovery-item">
@@ -121,8 +125,11 @@ export function UploadRecovery({
             <div className="recovery-summary">
               <strong>{job.name}</strong>
               <small className="muted">
-                {job.fileCount} 个附件 · 已收齐 {job.completeFiles} 个 · 已收到{' '}
-                {bytes(job.receivedBytes)}
+                {t('{0} 个附件 · 已收齐 {1} 个 · 已收到 {2}', [
+                  job.fileCount,
+                  job.completeFiles,
+                  bytes(job.receivedBytes),
+                ])}
                 {job.totalBytes !== null ? ` / ${bytes(job.totalBytes)}` : ''}
               </small>
             </div>
@@ -132,16 +139,16 @@ export function UploadRecovery({
                 disabled={disabled}
                 onClick={() => void run(() => proceed(job))}
               >
-                {job.completeFiles === job.fileCount ? '继续保存' : '选择原文件继续'}
+                {job.completeFiles === job.fileCount ? t('继续保存') : t('选择原文件继续')}
               </button>
               <button className="button" disabled={disabled} onClick={() => setDeleting(job)}>
-                删除未完成保存
+                {t('删除未完成保存')}
               </button>
             </div>
           </div>
           {choice?.id === job.id && (
             <div className="recovery-choice">
-              <p>只需选择以下尚未收齐的原文件，已收齐的附件会保留：</p>
+              <p>{t('只需选择以下尚未收齐的原文件，已收齐的附件会保留：')}</p>
               <ul>
                 {choice.files
                   .filter((file) => !file.complete)
@@ -150,15 +157,15 @@ export function UploadRecovery({
                       {file.originalName || file.fileName}
                       {file.bytes !== null
                         ? ` · ${bytes(file.bytes)}`
-                        : ' · 旧记录，请选择对应原文件'}
+                        : t(' · 旧记录，请选择对应原文件')}
                     </li>
                   ))}
               </ul>
               <button className="button" disabled={disabled} onClick={() => input.current?.click()}>
-                选择这些原文件
+                {t('选择这些原文件')}
               </button>
               <button className="button" disabled={disabled} onClick={() => setChoice(null)}>
-                暂不处理
+                {t('暂不处理')}
               </button>
             </div>
           )}
@@ -167,7 +174,7 @@ export function UploadRecovery({
       <input
         ref={input}
         type="file"
-        aria-label="恢复保存的原文件"
+        aria-label={t('恢复保存的原文件')}
         multiple
         accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm,.mov"
         onChange={(event) => {
@@ -178,15 +185,15 @@ export function UploadRecovery({
       />
       {jobs.length < total && (
         <button className="button" disabled={disabled} onClick={() => void load(jobs.length)}>
-          显示更多未完成保存
+          {t('显示更多未完成保存')}
         </button>
       )}
       {warnings.map((warning, index) => (
-        <p key={index}>{warning}</p>
+        <p key={index}>{t(warning)}</p>
       ))}
       {error && (
         <p className="error" role="alert">
-          {error}
+          {t(error)}
         </p>
       )}
       {deleting && (
@@ -197,8 +204,8 @@ export function UploadRecovery({
             aria-modal="true"
             aria-labelledby="discard-title"
           >
-            <h2 id="discard-title">删除这次未完成的保存？</h2>
-            <p>{deleting.name} 的暂存内容删除后不可恢复，原文件不受影响。</p>
+            <h2 id="discard-title">{t('删除这次未完成的保存？')}</h2>
+            <p>{t('{0} 的暂存内容删除后不可恢复，原文件不受影响。', [deleting.name])}</p>
             <div className="row">
               <button
                 autoFocus
@@ -206,7 +213,7 @@ export function UploadRecovery({
                 disabled={disabled}
                 onClick={() => setDeleting(null)}
               >
-                取消
+                {t('取消')}
               </button>
               <button
                 className="button danger"
@@ -227,7 +234,7 @@ export function UploadRecovery({
                   })
                 }
               >
-                确认删除
+                {t('确认删除')}
               </button>
             </div>
           </section>

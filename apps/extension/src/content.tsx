@@ -1,3 +1,4 @@
+import { t, useI18n } from './i18n';
 import { createRoot } from 'react-dom/client';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { FolderOpen, ImagePlus, Settings, Video, X, Upload, RotateCcw } from 'lucide-react';
@@ -26,6 +27,7 @@ import sharedCss from './theme.css?inline';
 import contentCss from './content.css?inline';
 
 function App() {
+  const { locale } = useI18n();
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
   const [loaded, setLoaded] = useState(false);
   const [theme, setTheme] = useState('light');
@@ -352,6 +354,7 @@ function App() {
     <>
       <div
         className="vault-root floating-root"
+        lang={locale}
         data-theme={theme}
         hidden={
           !loaded ||
@@ -364,7 +367,7 @@ function App() {
           <button
             className="pet-button"
             style={{ opacity: prefs.petOpacity }}
-            aria-label="P3-C，展开或收起菜单"
+            aria-label={t('P3-C，展开或收起菜单')}
             aria-expanded={menu}
             onContextMenu={(event) => {
               event.preventDefault();
@@ -451,10 +454,10 @@ function App() {
           )}
         </div>
         {menu && (
-          <section className="pet-menu panel" style={panelStyle} aria-label="四个功能入口">
+          <section className="pet-menu panel" style={panelStyle} aria-label={t('四个功能入口')}>
             <header>
-              <strong>瞬间资产库</strong>
-              <button className="icon-button" onClick={close} aria-label="关闭菜单">
+              <strong>{t('瞬间资产库')}</strong>
+              <button className="icon-button" onClick={close} aria-label={t('关闭菜单')}>
                 <X />
               </button>
             </header>
@@ -463,13 +466,13 @@ function App() {
                 disabled={!videoTarget && !supportedSite()}
                 title={
                   supportedSite()
-                    ? '调整视频端点并预览，使用录制快捷键开始'
-                    : '支持 B站、YouTube 和 X 的视频页面'
+                    ? t('调整视频端点并预览，使用录制快捷键开始')
+                    : t('支持 B站、YouTube 和 X 的视频页面')
                 }
                 onClick={toggleVideo}
               >
                 <Video />
-                <span>{videoTarget ? '退出选段' : '屏幕录制'}</span>
+                <span>{videoTarget ? t('退出选段') : t('屏幕录制')}</span>
               </button>
               <button
                 onClick={() => {
@@ -478,7 +481,7 @@ function App() {
                 }}
               >
                 <ImagePlus />
-                <span>接收截图</span>
+                <span>{t('接收截图')}</span>
               </button>
               <button
                 onClick={() => {
@@ -487,7 +490,7 @@ function App() {
                 }}
               >
                 <FolderOpen />
-                <span>素材管理</span>
+                <span>{t('素材管理')}</span>
               </button>
               <button
                 onClick={() => {
@@ -496,7 +499,7 @@ function App() {
                 }}
               >
                 <Settings />
-                <span>设置</span>
+                <span>{t('设置')}</span>
               </button>
             </div>
           </section>
@@ -504,7 +507,7 @@ function App() {
         {context && (
           <div className="context-menu panel" style={panelStyle}>
             <button className="button" onClick={() => void setPreferences({ petHidden: true })}>
-              隐藏桌宠
+              {t('隐藏桌宠')}
             </button>
           </div>
         )}
@@ -514,7 +517,7 @@ function App() {
           hidden={!intake}
           className="intake panel"
           style={panelStyle}
-          aria-label="接收截图"
+          aria-label={t('接收截图')}
           onPaste={(event) => {
             const received = Array.from(event.clipboardData.items)
               .filter((item) => item.type.startsWith('image/'))
@@ -527,11 +530,11 @@ function App() {
           }}
         >
           <header>
-            <strong>把灵感留在这里</strong>
+            <strong>{t('把灵感留在这里')}</strong>
             <button
               className="icon-button"
               onClick={() => setIntake(false)}
-              aria-label="关闭接收面板"
+              aria-label={t('关闭接收面板')}
             >
               <X />
             </button>
@@ -545,15 +548,15 @@ function App() {
             }}
           >
             <ImagePlus size={28} />
-            <b>粘贴或拖入图片</b>
-            <small>一次批量输入，保存为一条素材</small>
+            <b>{t('粘贴或拖入图片')}</b>
+            <small>{t('一次批量输入，保存为一条素材')}</small>
             <button
               className="button"
               disabled={busy || failed}
               onClick={() => input.current?.click()}
             >
               <Upload />
-              选择本地图片
+              {t('选择本地图片')}
             </button>
             <input
               ref={input}
@@ -569,34 +572,38 @@ function App() {
           {!!thumbs.length && (
             <div className="image-grid">
               {thumbs.map((url) => (
-                <img key={url} src={url} alt="本次接收的图片" />
+                <img key={url} src={url} alt={t('本次接收的图片')} />
               ))}
             </div>
           )}
           {!!status && (
             <p className={failed ? 'status error' : 'status'} role="status">
-              {status}
+              {t(status)}
             </p>
           )}
           {failed && (
             <div className="row">
               <button className="button primary" disabled={busy} onClick={() => void save()}>
                 <RotateCcw />
-                重试保存
+                {t('重试保存')}
               </button>
               <button className="button" onClick={() => void openManager('settings')}>
-                检查设置
+                {t('检查设置')}
               </button>
               <button className="button" onClick={() => void openManager('draft')}>
-                查看未完成保存
+                {t('查看未完成保存')}
               </button>
             </div>
           )}
         </section>
         {!intake && !!status && (
           <div className="floating-status status" role="status" style={panelStyle}>
-            {status}
-            <button className="icon-button" onClick={() => setStatus('')} aria-label="关闭提示">
+            {t(status)}
+            <button
+              className="icon-button"
+              onClick={() => setStatus('')}
+              aria-label={t('关闭提示')}
+            >
               <X />
             </button>
           </div>

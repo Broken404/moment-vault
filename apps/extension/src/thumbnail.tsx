@@ -1,3 +1,4 @@
+import { t } from './i18n';
 import { useEffect, useRef, useState } from 'react';
 import { FileVideo, Image } from 'lucide-react';
 import type { Bucket, Material } from '@shared/model';
@@ -47,7 +48,7 @@ export function Thumbnail({
     <span
       ref={ref}
       className={`type-thumb ${visible && !url && !failed ? 'thumb-pending' : ''}`}
-      title={failed ? '暂时无法预览，可用本地打开查看' : undefined}
+      title={failed ? t('暂时无法预览，可用本地打开查看') : undefined}
       aria-hidden="true"
     >
       {url ? (

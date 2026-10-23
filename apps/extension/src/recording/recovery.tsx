@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
 import type { CaptureStatus } from './types';
 import { errorMessage } from '@shared/model';
@@ -56,23 +57,23 @@ export function RecordingRecovery({ changed }: { changed: () => void }) {
   }, [processing]);
   if (!jobs.length && !error) return null;
   return (
-    <section className="status" aria-label="未完成的录制">
-      <strong>录制保存</strong>
+    <section className="status" aria-label={t('未完成的录制')}>
+      <strong>{t('录制保存')}</strong>
       {jobs.map((job) => (
         <div key={job.id} className="row">
           <span>
-            {job.name} · {job.message}
+            {job.name} · {t(job.message)}
           </span>
           {job.phase === 'failed' && (
             <button className="button" onClick={() => void retry(job.id)}>
-              重试保存 MP4
+              {t('重试保存 MP4')}
             </button>
           )}
         </div>
       ))}
       {error && (
         <p className="error" role="alert">
-          {error}
+          {t(error)}
         </p>
       )}
     </section>

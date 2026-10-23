@@ -5,5 +5,10 @@ export default defineConfig({
   resolve: {
     alias: { '@shared': fileURLToPath(new URL('./packages/shared/src', import.meta.url)) },
   },
-  test: { environment: 'jsdom', include: ['tests/**/*.test.ts'], restoreMocks: true },
+  test: {
+    environment: 'jsdom',
+    include: ['tests/**/*.test.ts'],
+    setupFiles: ['tests/setup.ts'],
+    restoreMocks: true,
+  },
 });

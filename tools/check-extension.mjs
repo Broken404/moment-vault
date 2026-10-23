@@ -14,6 +14,14 @@ assert.equal(
   identity.id,
 );
 assert.equal(manifest.background.type, 'module');
+assert.equal(manifest.default_locale, 'en');
+for (const locale of ['en', 'zh_CN']) {
+  const messages = JSON.parse(
+    await readFile(`dist/extension/_locales/${locale}/messages.json`, 'utf8'),
+  );
+  for (const match of JSON.stringify(manifest).matchAll(/__MSG_(\w+)__/g))
+    assert.ok(messages[match[1]]?.message, `Missing browser locale ${locale}: ${match[1]}`);
+}
 assert.ok(!manifest.externally_connectable, 'Ordinary pages must not receive a native helper API');
 
 const errors = [];
@@ -40,6 +48,7 @@ let prefs = {
 };
 window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
 window.chrome = {
+  i18n: { getUILanguage: () => 'zh-CN' },
   storage: {
     local: { get: async () => ({ preferences: prefs }) },
     onChanged: { addListener: (fn) => changes.push(fn), removeListener() {} },
@@ -71,6 +80,7 @@ try {
     new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }),
   );
   await until(() => root.querySelectorAll('.menu-grid button').length === 4);
+  assert.equal(root.querySelector('.menu-grid button span').textContent, '屏幕录制');
   assert.equal(
     root.querySelector('.menu-grid button').disabled,
     true,
@@ -131,6 +141,28 @@ try {
     player.querySelector('[data-moment-vault-video]')?.shadowRoot?.querySelector('.video-panel'),
   );
   const videoRoot = player.querySelector('[data-moment-vault-video]').shadowRoot;
+  const sessionHost = videoRoot.host;
+  prefs = { ...prefs, language: 'en' };
+  changes.forEach((fn) => fn({ preferences: { newValue: prefs } }, 'local'));
+  await until(
+    () => videoRoot.querySelector('.video-heading strong').textContent === 'Keep this moment',
+  );
+  assert.equal(
+    player.querySelector('[data-moment-vault-video]'),
+    sessionHost,
+    'Language changes must preserve the open video session',
+  );
+  assert.equal(root.querySelector('.vault-root').lang, 'en');
+  assert.equal(videoRoot.querySelector('.vault-root').lang, 'en');
+  assert.equal(
+    window.document.documentElement.lang,
+    '',
+    'Do not change the source webpage language',
+  );
+  assert.equal(
+    root.querySelector('.pet-button').getAttribute('aria-label'),
+    'P3-C, open or close menu',
+  );
   assert.equal(videoRoot.querySelectorAll('.endpoint').length, 2);
   assert.ok(
     videoRoot.querySelector('[data-record-shortcut]'),
@@ -140,6 +172,8 @@ try {
     new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
   );
   await until(() => !player.querySelector('[data-moment-vault-video]'));
+  messages.forEach((fn) => fn({ target: 'content', type: 'toggle-menu' }));
+  await until(() => root.querySelector('.menu-grid button span')?.textContent === 'Record video');
   assert.equal(
     player.hasAttribute('data-mv-selection'),
     false,
@@ -158,7 +192,7 @@ try {
   assert.equal(root.querySelector('.vault-root').dataset.theme, 'dark');
   assert.deepEqual(errors, []);
   process.stdout.write(
-    'PASS built extension: stable identity, startup, selection/Escape cleanup, shortcut-only recording entry, scoped intake and persisted hiding/theme\n',
+    'PASS built extension: stable identity, packaged locales, live language synchronization without recreating selection, Escape cleanup, shortcut-only recording, scoped intake and persisted hiding/theme\n',
   );
 } finally {
   window.close();

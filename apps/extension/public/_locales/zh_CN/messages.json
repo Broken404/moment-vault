@@ -1,0 +1,9 @@
+{
+  "extensionName": { "message": "Moment Vault · 瞬间资产库" },
+  "extensionDescription": { "message": "本地收集图片与视频，整理草稿并由你审核入库。" },
+  "actionTitle": { "message": "Moment Vault · 显示桌宠" },
+  "toggleMode": { "message": "打开／关闭视频选段模式" },
+  "recordSelection": { "message": "开始录制／提前结束" },
+  "toggleMenu": { "message": "打开／关闭桌宠菜单" },
+  "receiveImages": { "message": "打开图片接收面板" }
+}

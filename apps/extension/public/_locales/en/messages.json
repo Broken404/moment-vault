@@ -1,0 +1,11 @@
+{
+  "extensionName": { "message": "Moment Vault" },
+  "extensionDescription": {
+    "message": "Collect images and videos locally. Organize drafts and approve items for your library."
+  },
+  "actionTitle": { "message": "Moment Vault · Show companion" },
+  "toggleMode": { "message": "Open / close video selection" },
+  "recordSelection": { "message": "Start recording / stop early" },
+  "toggleMenu": { "message": "Open / close companion menu" },
+  "receiveImages": { "message": "Open image collection" }
+}

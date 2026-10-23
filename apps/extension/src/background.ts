@@ -1,6 +1,17 @@
 import { DEFAULT_PREFERENCES, errorMessage, validatePreferences } from '@shared/model';
 import type { HostOperation, HostRequest, HostResponse } from '@shared/model';
 import { recordingBackground } from './recording/background';
+import { languageSnapshot, observeLanguage, subscribeLanguage } from './i18n/state';
+import { translate } from './i18n/core';
+
+const updateTitle = () => {
+  void chrome.action
+    .setTitle({ title: translate('Moment Vault · 显示桌宠', languageSnapshot().locale) })
+    .catch(() => {});
+};
+observeLanguage();
+subscribeLanguage(updateTitle);
+updateTitle();
 
 let port: chrome.runtime.Port | null = null;
 const pending = new Map<

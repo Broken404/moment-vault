@@ -1,3 +1,4 @@
+import { t, useI18n, dateText, numberText } from './i18n';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -64,6 +65,7 @@ function SettingsPage({
   changed: (status: HostStatus) => void;
   show: (text: string) => void;
 }) {
+  const { language } = useI18n();
   const [config, setConfig] = useState<HostConfig>(
     initial?.config ?? { draftRoot: '', libraryRoot: '' },
   );
@@ -114,7 +116,7 @@ function SettingsPage({
     setError('');
     try {
       const selected = await host<{ cancelled: boolean; path: string }>('folder.pick', {
-        title: key === 'draftRoot' ? '选择草稿箱' : '选择资产库',
+        title: t(key === 'draftRoot' ? '选择草稿箱' : '选择资产库'),
         initial: config[key],
       });
       if (selected.cancelled) return;
@@ -136,70 +138,91 @@ function SettingsPage({
     <div className="settings-grid stack">
       {!initial?.configured && (
         <div className="status">
-          首次使用：连接本地助手，分别选择草稿箱和资产库，即可开始接收图片。
+          {t('首次使用：连接本地助手，分别选择草稿箱和资产库，即可开始接收图片。')}
         </div>
       )}
       {!!initial?.storageError && (
-        <div className="status error">{initial.storageError}，请重新选择可用目录。</div>
+        <div className="status error">
+          {t(initial.storageError)}
+          {t('，请重新选择可用目录。')}
+        </div>
       )}
       <section className="settings-card stack">
         <div className="section-title">
-          <h2>存储位置</h2>
-          <span className="muted">素材直接保存为本地文件</span>
+          <h2>{t('存储位置')}</h2>
+          <span className="muted">{t('素材直接保存为本地文件')}</span>
         </div>
         {(['draftRoot', 'libraryRoot'] as const).map((key) => (
           <div key={key} className="path-row">
             <div>
-              <b>{key === 'draftRoot' ? '草稿箱' : '资产库'}</b>
-              <p>{config[key] || '尚未选择'}</p>
+              <b>{key === 'draftRoot' ? t('草稿箱') : t('资产库')}</b>
+              <p>{config[key] || t('尚未选择')}</p>
               <small className="muted">
                 {key === 'draftRoot'
-                  ? '先收集，稍后整理与审核。'
-                  : '人工审核通过的素材保存在这里。'}
+                  ? t('先收集，稍后整理与审核。')
+                  : t('人工审核通过的素材保存在这里。')}
               </small>
             </div>
             <button className="button" disabled={busy || !connected} onClick={() => void pick(key)}>
               <FolderOpen />
-              选择目录
+              {t('选择目录')}
             </button>
           </div>
         ))}
-        <small className="muted">可选择不同磁盘。更换目录只切换当前库，旧素材保留在原位置。</small>
+        <small className="muted">
+          {t('可选择不同磁盘。更换目录只切换当前库，旧素材保留在原位置。')}
+        </small>
       </section>
       <section className="settings-card stack">
         <div className="section-title">
-          <h2>界面与桌宠</h2>
+          <h2>{t('界面与桌宠')}</h2>
           <Pet size={42} action="settings" />
         </div>
         <div className="settings-fields">
           <label className="field">
-            界面主题
+            {t('界面语言')}
+            <select
+              name="language"
+              value={language}
+              onChange={(e) =>
+                void savePreferences({ language: e.target.value as Preferences['language'] })
+              }
+            >
+              <option value="system">{t('跟随浏览器')}</option>
+              <option value="zh-CN">简体中文</option>
+              <option value="en">English</option>
+            </select>
+            <small>{t('其他语言使用 English。')}</small>
+          </label>
+          <label className="field">
+            {t('界面主题')}
             <select
               value={prefs.theme}
               onChange={(e) =>
                 void savePreferences({ theme: e.target.value as Preferences['theme'] })
               }
             >
-              <option value="system">跟随系统</option>
-              <option value="light">浅色</option>
-              <option value="dark">深色</option>
+              <option value="system">{t('跟随系统')}</option>
+              <option value="light">{t('浅色')}</option>
+              <option value="dark">{t('深色')}</option>
             </select>
           </label>
           <label className="field">
-            桌宠大小
+            {t('桌宠大小')}
             <select
               value={prefs.petSize}
               onChange={(e) =>
                 void savePreferences({ petSize: Number(e.target.value) as Preferences['petSize'] })
               }
             >
-              <option value={48}>小 · 48 px</option>
-              <option value={64}>中 · 64 px</option>
-              <option value={80}>大 · 80 px</option>
+              <option value={48}>{t('小 · 48 px')}</option>
+              <option value={64}>{t('中 · 64 px')}</option>
+              <option value={80}>{t('大 · 80 px')}</option>
             </select>
           </label>
           <label className="field">
-            桌宠不透明度 · {Math.round(prefs.petOpacity * 100)}%
+            {t('桌宠不透明度 ·')}
+            {Math.round(prefs.petOpacity * 100)}%
             <input
               type="range"
               min={30}
@@ -208,29 +231,30 @@ function SettingsPage({
               value={prefs.petOpacity * 100}
               onChange={(e) => void savePreferences({ petOpacity: Number(e.target.value) / 100 })}
             />
-            <small>只调整桌宠，菜单与面板保持清晰。</small>
+            <small>{t('只调整桌宠，菜单与面板保持清晰。')}</small>
           </label>
           <div className="field">
-            <span>桌宠位置</span>
+            <span>{t('桌宠位置')}</span>
             <button
               className="button"
               onClick={() => void savePreferences({ petPosition: null, petHidden: false })}
             >
-              恢复默认位置并显示
+              {t('恢复默认位置并显示')}
             </button>
           </div>
         </div>
       </section>
       <section className="settings-card stack">
-        <h2>视频与快捷键</h2>
+        <h2>{t('视频与快捷键')}</h2>
         <div className="status">
-          打开普通视频页的选段模式后，用录制快捷键开始或提前结束。录制停止后转成
-          MP4，保存成功才出现在草稿箱。
+          {t(
+            '打开普通视频页的选段模式后，用录制快捷键开始或提前结束。录制停止后转成 MP4，保存成功才出现在草稿箱。',
+          )}
         </div>
         <div className="settings-fields">
           {(['step', 'fineStep'] as const).map((key) => (
             <label className="field" key={key}>
-              {key === 'step' ? '方向键步长（秒）' : 'Ctrl＋方向键步长（秒）'}
+              {key === 'step' ? t('方向键步长（秒）') : t('Ctrl＋方向键步长（秒）')}
               <input
                 type="number"
                 min="0.001"
@@ -253,41 +277,46 @@ function SettingsPage({
           .filter((c) => c.name === 'toggle-mode' || c.name === 'record-selection')
           .map((command) => (
             <div className="section-title" key={command.name}>
-              <span>{command.description}</span>
-              <kbd>{command.shortcut || '未绑定'}</kbd>
+              <span>
+                {t(
+                  command.name === 'toggle-mode' ? '打开／关闭视频选段模式' : '开始录制／提前结束',
+                )}
+              </span>
+              <kbd>{command.shortcut || t('未绑定')}</kbd>
             </div>
           ))}
         <button
           className="button"
           onClick={() => void chrome.tabs.create({ url: 'edge://extensions/shortcuts' })}
         >
-          在 Edge 管理快捷键
+          {t('在 Edge 管理快捷键')}
         </button>
       </section>
       <section className="settings-card stack">
         <div className="section-title">
-          <h2>本地助手</h2>
-          <span>{connected ? '已连接 · 0.1.0' : '尚未连接'}</span>
+          <h2>{t('本地助手')}</h2>
+          <span>{connected ? t('已连接 · 0.1.0') : t('尚未连接')}</span>
         </div>
         <div className="row">
           <button className="button" disabled={busy} onClick={() => void detect()}>
             <RefreshCw />
-            重新检测
+            {t('重新检测')}
           </button>
           <button className="button" onClick={() => setHelp((value) => !value)}>
-            安装说明
+            {t('安装说明')}
           </button>
         </div>
         {help && (
           <div className="status">
-            请使用与扩展配套的本地助手。当前开发版按仓库 docs/development.md
-            构建并注册；正式安装包尚未发布。助手按需启动，不要求日常打开终端。
+            {t(
+              '请使用与扩展配套的本地助手。当前开发版按仓库 docs/development.md 构建并注册；正式安装包尚未发布。助手按需启动，不要求日常打开终端。',
+            )}
           </div>
         )}
       </section>
       {!!error && (
         <div className="status error" role="alert">
-          {error}
+          {t(error)}
         </div>
       )}
       <div className="row">
@@ -305,9 +334,9 @@ function SettingsPage({
           }}
         >
           <RotateCcw />
-          恢复默认设置
+          {t('恢复默认设置')}
         </button>
-        <small className="muted">保留目录和素材，快捷键由 Edge 管理。</small>
+        <small className="muted">{t('保留目录和素材，快捷键由 Edge 管理。')}</small>
       </div>
     </div>
   );
@@ -386,17 +415,17 @@ function Detail({
     }
   }
   return (
-    <aside className="detail stack" aria-label="素材说明">
+    <aside className="detail stack" aria-label={t('素材说明')}>
       <fieldset className="detail-form stack" disabled={disabled || busy}>
         {preview ? (
-          <img className="detail-preview" src={preview} alt="素材图片预览" />
+          <img className="detail-preview" src={preview} alt={t('素材图片预览')} />
         ) : (
           <div className="file-placeholder">
             {item.attachments[0]?.kind === 'video' ? <FileVideo size={44} /> : <Image size={44} />}
           </div>
         )}
         <label className="field">
-          素材名称
+          {t('素材名称')}
           <input
             value={name}
             readOnly={bucket !== 'draft'}
@@ -404,7 +433,7 @@ function Detail({
           />
         </label>
         <small className="muted">
-          {new Date(item.createdAt).toLocaleString()} · {item.attachments.length} 个附件
+          {dateText(item.createdAt, true)} · {t('{0} 个附件', [item.attachments.length])}
         </small>
         <button
           className="button"
@@ -417,13 +446,13 @@ function Detail({
           }
         >
           <FolderOpen />
-          本地打开
+          {t('本地打开')}
         </button>
         {attachments.map((file, index) => (
           <div className="attachment-fields stack" key={file.id}>
             <b>{file.fileName}</b>
             <label className="field">
-              来源
+              {t('来源')}
               <input
                 value={file.source}
                 readOnly={bucket !== 'draft'}
@@ -435,7 +464,7 @@ function Detail({
               />
             </label>
             <label className="field">
-              附件备注
+              {t('附件备注')}
               <textarea
                 rows={2}
                 value={file.note}
@@ -450,7 +479,7 @@ function Detail({
           </div>
         ))}
         <label className="field">
-          整组备注
+          {t('整组备注')}
           <textarea
             rows={4}
             value={note}
@@ -461,12 +490,12 @@ function Detail({
         {bucket === 'draft' && (
           <button className="button primary" disabled={busy} onClick={() => void save()}>
             <Check />
-            保存修改
+            {t('保存修改')}
           </button>
         )}
         {!!error && (
           <div className="error" role="alert">
-            {error}
+            {t(error)}
           </div>
         )}
       </fieldset>
@@ -475,6 +504,11 @@ function Detail({
 }
 
 function Manager() {
+  const { locale } = useI18n();
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.title = t('Moment Vault · 瞬间资产库');
+  }, [locale]);
   const [page, setPage] = useState(location.hash.slice(1) || 'draft');
   const [status, setStatus] = useState<HostStatus | null>(null);
   const [items, setItems] = useState<Material[]>([]),
@@ -482,7 +516,7 @@ function Manager() {
   const [selected, setSelected] = useState<string[]>([]),
     [busy, setBusy] = useState(false),
     [toast, setToast] = useState('');
-  const [error, setError] = useState(''),
+  const [error, setError] = useState<string | string[]>(''),
     [warnings, setWarnings] = useState<string[]>([]),
     [confirm, setConfirm] = useState(false);
   const [total, setTotal] = useState(0);
@@ -602,7 +636,7 @@ function Manager() {
       const problems = results.filter((result) => result.status !== 'moved');
       show(`已完成 ${results.length - problems.length}/${results.length} 条`);
       await refresh();
-      if (problems.length) setError(problems.map((p) => p.error).join('；'));
+      if (problems.length) setError(problems.map((p) => p.error || '操作未完成，请刷新列表后重试'));
     } catch (failure) {
       setError(errorMessage(failure));
     } finally {
@@ -661,10 +695,11 @@ function Manager() {
         <div className="brand">
           <Pet size={38} />
           <span>
-            瞬间资产库<small>Moment Vault</small>
+            {t('瞬间资产库')}
+            <small>{locale === 'en' ? t('灵感先留下') : 'Moment Vault'}</small>
           </span>
         </div>
-        <nav aria-label="素材位置">
+        <nav aria-label={t('素材位置')}>
           {Object.entries({
             draft: Inbox,
             library: FolderCheck,
@@ -681,23 +716,25 @@ function Manager() {
               }}
             >
               <Icon size={18} />
-              {names[key]}
+              {t(names[key])}
             </a>
           ))}
         </nav>
         <small className="sidebar-foot">
-          灵感先留下
+          {t('灵感先留下')}
           <br />
-          慢慢整理也没关系
+          {t('慢慢整理也没关系')}
         </small>
       </aside>
       <main>
         <header className="main-heading">
           <div>
             <span className="overline">MY COLLECTION</span>
-            <h1>{names[page] ?? '草稿箱'}</h1>
+            <h1>{t(names[page] ?? '草稿箱')}</h1>
             <p className="muted">
-              {page === 'settings' ? '常用偏好自动保存，素材始终留在本地。' : descriptions[bucket]}
+              {t(
+                page === 'settings' ? '常用偏好自动保存，素材始终留在本地。' : descriptions[bucket],
+              )}
             </p>
           </div>
           {page !== 'settings' && (
@@ -712,7 +749,7 @@ function Manager() {
                 }
               >
                 <FolderOpen />
-                打开目录
+                {t('打开目录')}
               </button>
               {bucket === 'draft' && (
                 <button
@@ -721,7 +758,7 @@ function Manager() {
                   onClick={() => input.current?.click()}
                 >
                   <Plus />
-                  导入素材
+                  {t('导入素材')}
                 </button>
               )}
               <input
@@ -743,20 +780,28 @@ function Manager() {
           <>
             {!status?.configured && (
               <div className="status">
-                请先在<a href="#settings">设置</a>中连接本地助手并选择两个目录。
+                {t('请先在')}
+                <a href="#settings">{t('设置')}</a>
+                {t('中连接本地助手并选择两个目录。')}
               </div>
             )}
             {!!error && (
               <div className="status error" role="alert">
-                {error}
+                {Array.isArray(error)
+                  ? error.map((message) => t(message)).join(locale === 'en' ? '; ' : '；')
+                  : t(error)}
                 {pending.current && (
                   <button className="button" disabled={busy} onClick={() => void importFiles()}>
-                    重试保存
+                    {t('重试保存')}
                   </button>
                 )}
               </div>
             )}
-            {!!warnings.length && <div className="status">{warnings.join('；')}</div>}
+            {!!warnings.length && (
+              <div className="status">
+                {warnings.map((warning) => t(warning)).join(locale === 'en' ? '; ' : '；')}
+              </div>
+            )}
             {bucket === 'draft' && status?.configured && (
               <UploadRecovery
                 root={status.config.draftRoot}
@@ -773,18 +818,18 @@ function Manager() {
             {bucket === 'draft' && <RecordingRecovery changed={() => void refresh(false)} />}
             {bucket === 'draft' && mergePending && !busy && (
               <div className="status" role="status">
-                上次合并尚未确认完成，可继续检查并清理原条目。
+                {t('上次合并尚未确认完成，可继续检查并清理原条目。')}
                 <button
                   className="button"
                   disabled={busy || detailDirty}
                   onClick={() => void merge()}
                 >
-                  继续合并
+                  {t('继续合并')}
                 </button>
               </div>
             )}
             <div className="collection">
-              <section className="list-panel" aria-label="素材列表">
+              <section className="list-panel" aria-label={t('素材列表')}>
                 <div className="batch-bar">
                   <label>
                     <input
@@ -793,7 +838,8 @@ function Manager() {
                       disabled={!items.length || busy}
                       onChange={(e) => setSelected(e.target.checked ? items.map((i) => i.id) : [])}
                     />{' '}
-                    全选{selected.length ? ` · ${selected.length}` : ''}
+                    {t('全选')}
+                    {selected.length ? ` · ${selected.length}` : ''}
                   </label>
                   <div className="row">
                     {bucket === 'draft' && (
@@ -802,25 +848,27 @@ function Manager() {
                           className="button"
                           disabled={selected.length < 2 || busy || detailDirty || !!mergePending}
                           title={
-                            detailDirty ? '请先保存右侧修改' : '按列表顺序归组，保留各附件与说明'
+                            detailDirty
+                              ? t('请先保存右侧修改')
+                              : t('按列表顺序归组，保留各附件与说明')
                           }
                           onClick={() => void merge()}
                         >
-                          合并为一条
+                          {t('合并为一条')}
                         </button>
                         <button
                           className="button primary"
                           disabled={!selected.length || busy || !!mergePending}
                           onClick={() => void transfer('items.promote')}
                         >
-                          入库
+                          {t('入库')}
                         </button>
                         <button
                           className="button"
                           disabled={!selected.length || busy || !!mergePending}
                           onClick={() => void transfer('items.recycle')}
                         >
-                          移到回收区
+                          {t('移到回收区')}
                         </button>
                       </>
                     )}
@@ -830,7 +878,7 @@ function Manager() {
                         disabled={!selected.length || busy}
                         onClick={() => void transfer('items.restore')}
                       >
-                        恢复
+                        {t('恢复')}
                       </button>
                     )}
                     {bucket !== 'draft' && (
@@ -839,13 +887,13 @@ function Manager() {
                         disabled={!selected.length || busy}
                         onClick={() => setConfirm(true)}
                       >
-                        永久删除
+                        {t('永久删除')}
                       </button>
                     )}
                     <button
                       className="icon-button"
                       disabled={busy}
-                      aria-label="刷新列表"
+                      aria-label={t('刷新列表')}
                       onClick={() => void refresh()}
                     >
                       <RefreshCw />
@@ -853,7 +901,7 @@ function Manager() {
                   </div>
                 </div>
                 {bucket === 'draft' && detailDirty && selected.length >= 2 && (
-                  <div className="status">请先保存右侧修改，再合并草稿。</div>
+                  <div className="status">{t('请先保存右侧修改，再合并草稿。')}</div>
                 )}
                 {items.map((material) => (
                   <div
@@ -861,7 +909,7 @@ function Manager() {
                     className={`material-row ${active === material.id ? 'active' : ''}`}
                   >
                     <input
-                      aria-label={`选择 ${material.name}`}
+                      aria-label={t('选择 {0}', [material.name])}
                       type="checkbox"
                       disabled={busy}
                       checked={selected.includes(material.id)}
@@ -891,9 +939,12 @@ function Manager() {
                       <span>
                         <b>{material.name}</b>
                         <small>
-                          {material.attachments.length} 个附件 ·{' '}
-                          {attachmentCounts(material.attachments)} ·{' '}
-                          {new Date(material.createdAt).toLocaleDateString()}
+                          {t('{0} 个附件', [material.attachments.length])} ·{' '}
+                          {attachmentCounts(material.attachments)
+                            .split(' · ')
+                            .map((part) => t(part))
+                            .join(' · ')}{' '}
+                          · {dateText(material.createdAt)}
                         </small>
                       </span>
                     </button>
@@ -902,17 +953,15 @@ function Manager() {
                 {!items.length && (
                   <div className="empty">
                     <Inbox size={36} />
-                    <h2>{busy ? '正在读取本地素材…' : '这里还没有素材'}</h2>
-                    <p>收集到的内容会完整保留为本地文件。</p>
+                    <h2>{busy ? t('正在读取本地素材…') : t('这里还没有素材')}</h2>
+                    <p>{t('收集到的内容会完整保留为本地文件。')}</p>
                   </div>
                 )}
                 <footer className="list-foot">
-                  <span>
-                    {items.length}/{total} 条素材
-                  </span>
+                  <span>{t('{0}/{1} 条素材', [numberText(items.length), numberText(total)])}</span>
                   {items.length < total && (
                     <button className="button" disabled={busy} onClick={() => void refresh(true)}>
-                      加载更多
+                      {t('加载更多')}
                     </button>
                   )}
                 </footer>
@@ -927,15 +976,15 @@ function Manager() {
                   dirtyChanged={setDetailDirty}
                 />
               ) : (
-                <aside className="detail empty muted">选择一条素材，查看对应说明。</aside>
+                <aside className="detail empty muted">{t('选择一条素材，查看对应说明。')}</aside>
               )}
             </div>
           </>
         )}
         {!!toast && (
           <div className="toast status" role="status">
-            {toast}
-            <button className="icon-button" aria-label="关闭提示" onClick={() => setToast('')}>
+            {t(toast)}
+            <button className="icon-button" aria-label={t('关闭提示')} onClick={() => setToast('')}>
               <X />
             </button>
           </div>
@@ -949,14 +998,14 @@ function Manager() {
             aria-modal="true"
             aria-labelledby="delete-title"
           >
-            <h2 id="delete-title">永久删除 {selected.length} 条素材？</h2>
-            <p>删除后不可恢复，整条素材和全部附件都会删除。</p>
+            <h2 id="delete-title">{t('永久删除 {0} 条素材？', [selected.length])}</h2>
+            <p>{t('删除后不可恢复，整条素材和全部附件都会删除。')}</p>
             <div className="row">
               <button autoFocus className="button" onClick={() => setConfirm(false)}>
-                取消
+                {t('取消')}
               </button>
               <button className="button danger" onClick={() => void remove()}>
-                永久删除
+                {t('永久删除')}
               </button>
             </div>
           </section>
