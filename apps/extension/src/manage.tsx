@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import {
   beginUpload,
+  HostError,
   host,
   preferences,
   readAttachment,
@@ -37,6 +38,7 @@ import { Pet, themeName } from './ui';
 import './theme.css';
 import './manage.css';
 import { RecordingRecovery } from './recording/recovery';
+import { UploadRecovery } from './upload-recovery';
 import { pendingMerge, prepareMerge, submitMerge, type PendingMerge } from './merge';
 import { Thumbnail } from './thumbnail';
 import { attachmentCounts, thumbnails } from './thumbnails';
@@ -485,6 +487,7 @@ function Manager() {
     [confirm, setConfirm] = useState(false);
   const [total, setTotal] = useState(0);
   const [thumbnailRefresh, setThumbnailRefresh] = useState(0);
+  const [uploadRefresh, setUploadRefresh] = useState(0);
   const [detailDirty, setDetailDirty] = useState(false);
   const [mergePending, setMergePending] = useState<PendingMerge | null>(null);
   const merging = useRef(false);
@@ -584,6 +587,9 @@ function Manager() {
       show('已存入草稿箱');
       await refresh();
     } catch (failure) {
+      if (failure instanceof HostError && failure.code === 'upload-discarded')
+        pending.current = null;
+      setUploadRefresh((value) => value + 1);
       setError(errorMessage(failure));
     } finally {
       setBusy(false);
@@ -724,7 +730,7 @@ function Manager() {
                 accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm,.mov"
                 multiple
                 onChange={(e) => {
-                  void importFiles(Array.from(e.target.files ?? []));
+                  if (e.target.files?.length) void importFiles(Array.from(e.target.files));
                   e.target.value = '';
                 }}
               />
@@ -751,6 +757,19 @@ function Manager() {
               </div>
             )}
             {!!warnings.length && <div className="status">{warnings.join('；')}</div>}
+            {bucket === 'draft' && status?.configured && (
+              <UploadRecovery
+                root={status.config.draftRoot}
+                disabled={busy || detailDirty || !!mergePending}
+                refreshKey={thumbnailRefresh + uploadRefresh}
+                busy={setBusy}
+                show={show}
+                changed={async (id) => {
+                  if (pending.current?.batch?.uploadId === id) pending.current = null;
+                  await refresh(false);
+                }}
+              />
+            )}
             {bucket === 'draft' && <RecordingRecovery changed={() => void refresh(false)} />}
             {bucket === 'draft' && mergePending && !busy && (
               <div className="status" role="status">

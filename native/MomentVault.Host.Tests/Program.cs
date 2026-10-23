@@ -297,6 +297,122 @@ var tests = new List<(string Name, Action Action)>
         Equal(second.RootElement.GetProperty("result").GetProperty("item").GetProperty("id").GetString(), payload.operationId);
         Equal(store.List("draft").Items.Count, 1);
     }),
+    ("interrupted mixed uploads recover after restart with metadata, prefix verification and one result", () =>
+    {
+        using var store = Store("upload-recovery");
+        var bytes = ImageBytes(); var large = Enumerable.Repeat((byte)17, 250000).ToArray();
+        var first = FileDescriptor() with { OriginalName = "finished.png", Bytes = bytes.Length, LastModified = 123 };
+        var second = FileDescriptor() with { OriginalName = "remaining.png", Bytes = large.Length, LastModified = 124 };
+        var upload = store.Begin("原素材", [first, second], "原备注"); var id = upload.Material.Id;
+        store.Append(id, first.Id, 0, Convert.ToBase64String(bytes)); store.FinishFile(id, first.Id, 1, bytes.Length);
+        store.Append(id, second.Id, 0, Convert.ToBase64String(large[..196608]));
+        using var restarted = new VaultStore(Path.Combine(testRoot, "upload-recovery", "state"));
+        var jobs = restarted.IncompleteUploads(store.Config.DraftRoot, 0); Equal(jobs.Total, 1);
+        Equal(jobs.Items[0].CompleteFiles, 1); Equal(jobs.Items[0].ReceivedBytes, (long)bytes.Length + 196608);
+        var progress = restarted.GetUpload(store.Config.DraftRoot, id);
+        Equal(progress.Files[1].OriginalName, "remaining.png"); Equal(progress.Files[1].Bytes, (long?)250000);
+        var pending = Path.Combine(store.Config.DraftRoot, ".moment-vault", "pending", id);
+        var before = SafeFiles.Snapshot(pending);
+        Throws(() => restarted.Append(id, second.Id, 0, Convert.ToBase64String([99, 100])), "chunk-conflict");
+        True(SafeFiles.Same(before, SafeFiles.Snapshot(pending)));
+        restarted.Append(id, second.Id, 0, Convert.ToBase64String(large[..196608]));
+        restarted.Append(id, second.Id, 1, Convert.ToBase64String(large[196608..]));
+        Throws(() => restarted.FinishFile(id, second.Id, 2, large.Length - 1), "file-mismatch");
+        restarted.FinishFile(id, second.Id, 2, large.Length);
+        var saved = restarted.Commit(id); Equal(saved.Id, id); Equal(saved.Note, "原备注"); Equal(saved.Name, "原素材");
+        Equal(saved.Attachments[0].Source, first.Source); Equal(saved.Attachments[1].Note, second.Note);
+        True(File.ReadAllBytes(Path.Combine(restarted.Find("draft", id), saved.Attachments[1].FileName)).SequenceEqual(large));
+        Equal(restarted.Commit(id).Id, id); Equal(restarted.List("draft").Items.Count, 1);
+        Equal(restarted.IncompleteUploads(store.Config.DraftRoot, 0).Total, 0);
+    }),
+    ("a failed finish record write retains replayable parts across restart", () =>
+    {
+        using var store = Store("finish-interrupted"); var bytes = ImageBytes();
+        var file = FileDescriptor() with { OriginalName = "original.png", Bytes = bytes.Length };
+        var upload = store.Begin("未完成写入", [file]); var id = upload.Material.Id;
+        store.Append(id, file.Id, 0, Convert.ToBase64String(bytes));
+        var pending = Path.Combine(store.Config.DraftRoot, ".moment-vault", "pending", id);
+        var record = Path.Combine(pending, "upload.json"); File.SetAttributes(record, FileAttributes.ReadOnly);
+        var failed = false;
+        try { store.FinishFile(id, file.Id, 1, bytes.Length); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed = true; }
+        True(failed); File.SetAttributes(record, FileAttributes.Normal);
+        using var restarted = new VaultStore(Path.Combine(testRoot, "finish-interrupted", "state"));
+        True(!restarted.GetUpload(store.Config.DraftRoot, id).Files[0].Complete);
+        restarted.Append(id, file.Id, 0, Convert.ToBase64String(bytes));
+        restarted.FinishFile(id, file.Id, 1, bytes.Length);
+        True(restarted.GetUpload(store.Config.DraftRoot, id).Files[0].Complete);
+        Equal(restarted.Commit(id).Id, id);
+    }),
+    ("lost final replies and retained cleanup records return the already saved item", () =>
+    {
+        using var store = Store("upload-lost-reply"); var file = FileDescriptor(); var bytes = ImageBytes();
+        var upload = store.Begin("已收到", [file]); var id = upload.Material.Id;
+        store.Append(id, file.Id, 0, Convert.ToBase64String(bytes)); store.FinishFile(id, file.Id, 1, bytes.Length);
+        var record = Path.Combine(store.Config.DraftRoot, ".moment-vault", "pending", id, "upload.json");
+        File.SetAttributes(record, FileAttributes.ReadOnly);
+        var item = store.Commit(id);
+        using var restarted = new VaultStore(Path.Combine(testRoot, "upload-lost-reply", "state"));
+        Equal(restarted.GetUpload(store.Config.DraftRoot, id).Phase, "saved");
+        Equal(restarted.IncompleteUploads(store.Config.DraftRoot, 0).Total, 0);
+        using var input = new MemoryStream(); using var output = new MemoryStream();
+        Frame(input, "retry", "items.begin", new { uploadId = id, draftRoot = store.Config.DraftRoot, name = "已收到", files = new[] { file } });
+        input.Position = 0; Protocol.Run(input, output, restarted); output.Position = 0;
+        using var reply = ReadFrame(output);
+        True(reply.RootElement.GetProperty("ok").GetBoolean());
+        Equal(reply.RootElement.GetProperty("result").GetProperty("recovery").GetProperty("phase").GetString(), "saved");
+        Equal(restarted.List("draft").Items.Count, 1); Equal(item.Id, id);
+        File.SetAttributes(record, FileAttributes.Normal);
+    }),
+    ("discard requires confirmation and an occupied part leaves its recovery record retryable", () =>
+    {
+        using var store = Store("upload-discard"); var item = Save(store); var directory = store.Find("draft", item.Id);
+        var before = SafeFiles.Snapshot(directory); var file = FileDescriptor(); var upload = store.Begin("不要的暂存", [file]);
+        var id = upload.Material.Id; store.Append(id, file.Id, 0, "AQID");
+        Throws(() => store.DiscardUpload(store.Config.DraftRoot, id, false), "confirmation-required");
+        var pending = Path.Combine(store.Config.DraftRoot, ".moment-vault", "pending", id);
+        var part = Path.Combine(pending, file.Id + ".000000.part"); File.SetAttributes(part, FileAttributes.ReadOnly);
+        var failed = false;
+        try { store.DiscardUpload(store.Config.DraftRoot, id, true); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed = true; }
+        True(failed); True(File.Exists(Path.Combine(pending, "upload.json")));
+        File.SetAttributes(part, FileAttributes.Normal); store.DiscardUpload(store.Config.DraftRoot, id, true);
+        store.DiscardUpload(store.Config.DraftRoot, id, true); True(!Directory.Exists(pending));
+        Throws(() => store.Begin("不要的暂存", [file], requestedId: id), "upload-discarded");
+        Throws(() => store.DiscardUpload(store.Config.DraftRoot, item.Id, true), "upload-already-saved");
+        True(SafeFiles.Same(before, SafeFiles.Snapshot(directory)));
+    }),
+    ("stale directory requests cannot resume, publish or delete another root's pending upload", () =>
+    {
+        using var store = Store("upload-root"); var root = store.Config.DraftRoot; var file = FileDescriptor();
+        var upload = store.Begin("原目录", [file]); var id = upload.Material.Id; store.Append(id, file.Id, 0, "AQID");
+        using var restarted = new VaultStore(Path.Combine(testRoot, "upload-root", "state"));
+        var next = root + "-next"; Directory.CreateDirectory(next); restarted.Configure(new(next, store.Config.LibraryRoot));
+        Throws(() => restarted.GetUpload(root, id), "upload-directory-changed");
+        Throws(() => restarted.DiscardUpload(root, id, true), "upload-directory-changed");
+        Equal(restarted.IncompleteUploads(next, 0).Total, 0);
+        using var input = new MemoryStream(); using var output = new MemoryStream();
+        Frame(input, "stale", "items.commit", new { draftRoot = root, uploadId = id });
+        input.Position = 0; Protocol.Run(input, output, restarted); output.Position = 0;
+        using var reply = ReadFrame(output); Equal(reply.RootElement.GetProperty("error").GetProperty("code").GetString(), "upload-directory-changed");
+        True(File.Exists(Path.Combine(root, ".moment-vault", "pending", id, file.Id + ".000000.part")));
+    }),
+    ("legacy uploads remain recoverable while recordings and unreadable records are handled separately", () =>
+    {
+        using var store = Store("legacy-upload"); var file = FileDescriptor(); var bytes = ImageBytes(); var upload = store.Begin("旧任务", [file]);
+        var id = upload.Material.Id; store.Append(id, file.Id, 0, Convert.ToBase64String(bytes));
+        var pendingRoot = Path.Combine(store.Config.DraftRoot, ".moment-vault", "pending");
+        var path = Path.Combine(pendingRoot, id, "upload.json");
+        var state = MomentVault.Host.Json.Read<UploadState>(File.ReadAllText(path)); state.Inputs.Clear();
+        File.WriteAllText(path, MomentVault.Host.Json.Write(state));
+        _ = store.BeginRecording("录制", Guid.NewGuid().ToString("N"), "self-made", new(0, 2));
+        var broken = Path.Combine(pendingRoot, Guid.NewGuid().ToString("N")); Directory.CreateDirectory(broken);
+        File.WriteAllText(Path.Combine(broken, "upload.json"), "incomplete-json");
+        var listed = store.IncompleteUploads(store.Config.DraftRoot, 0); Equal(listed.Total, 1); Equal(listed.Warnings.Length, 1);
+        var legacy = store.GetUpload(store.Config.DraftRoot, id); Equal(legacy.Files[0].OriginalName, ""); Equal(legacy.Files[0].Bytes, null);
+        store.Append(id, file.Id, 0, Convert.ToBase64String(bytes)); store.FinishFile(id, file.Id, 1, bytes.Length);
+        Equal(store.Commit(id).Id, id); True(Directory.Exists(broken));
+    }),
     ("thumbnail work reports missing tools without altering sources or blocking protocol calls", () =>
     {
         using var store = Store("thumbnail-missing-tools", new RecordingMedia(Path.Combine(testRoot, "missing-ffmpeg.exe"), Path.Combine(testRoot, "missing-ffprobe.exe")));

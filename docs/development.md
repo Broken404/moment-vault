@@ -61,6 +61,8 @@ npm run check:registration
 
 列表缩略图由 `items.thumbnail` 异步生成，当前助手需带配套 FFmpeg；普通网页不能调用该接口。缓存、生成限制及检查方式见 [素材缩略图](material-thumbnails.md)。
 
+未完成文件保存通过 `uploads.list/get/discard` 从原草稿目录发现，完整附件直接继续保存，缺失附件重选原文件并比对已收到的前缀。实现和生产上传代码连接真实助手的复核命令见 [上传恢复](upload-recovery.md)。
+
 - 原生宿主只通过标准输入/输出长度前缀协议通信，没有本地 HTTP 服务；stdout 只输出协议消息。
 - 扩展按 192 KiB 分块并等待确认；同一分块重复写入必须字节一致。完整校验后才出现正式草稿。
 - 描述.md 顶部采用 YAML 1.2 允许的 JSON 流式映射，底部是用户自由备注。使用 System.Text.Json 读写并保留未知字段，避免维护第二套元数据解析依赖；保存检查原说明哈希。
@@ -74,7 +76,7 @@ npm run check:registration
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/check-recording-media.ps1
 ```
 
-开发环境需 .NET 10 和已安装的 FFmpeg。脚本只在 `.local-data` 生成自制运动片、音频尾段反例与独立草稿/资产库，执行真实编解码、分块协议、失败保留、重启重试和导入保留原格式检查。实际 Edge 保留样本也已单独跑过同组检查；脚本生成的反例不代表浏览器复现。原生普通文件/协议检查当前为 15 项。
+开发环境需 .NET 10 和已安装的 FFmpeg。脚本只在 `.local-data` 生成自制运动片、音频尾段反例与独立草稿/资产库，执行真实编解码、分块协议、失败保留、重启重试和导入保留原格式检查。实际 Edge 保留样本也已单独跑过同组检查；脚本生成的反例不代表浏览器复现。原生普通文件/协议检查当前为 30 项。
 
 产品助手从自身目录的 `media/ffmpeg.exe`、`media/ffprobe.exe` 取工具；未随包时报告缺失，不自动使用系统 PATH。录制协议及剩余范围见 [本地处理](recording-processing.md)。
 

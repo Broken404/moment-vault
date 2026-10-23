@@ -1,4 +1,4 @@
-import type { HostOperation, HostResponse, Material, Preferences } from '@shared/model';
+import type { HostOperation, HostResponse, HostStatus, Material, Preferences } from '@shared/model';
 import { DEFAULT_PREFERENCES, validatePreferences } from '@shared/model';
 
 const extensions: Record<string, { kind: 'image' | 'video'; mime: string }> = {
@@ -105,6 +105,7 @@ export interface UploadBatch {
   attachments: { id: string }[];
   fileIndex: number;
   nextChunk: number;
+  draftRoot?: string;
 }
 export function beginUpload(files: File[]): UploadBatch {
   if (!files.length || files.some((file) => !fileKind(file) || file.size === 0))
@@ -124,6 +125,11 @@ export async function uploadFiles(
   batch: UploadBatch,
   onProgress: (text: string) => void,
 ): Promise<Material> {
+  if (!batch.draftRoot) {
+    const status = await host<HostStatus>('ping');
+    if (!status.configured) throw new Error('请先连接本地助手并配置有效的草稿目录');
+    batch.draftRoot = status.config.draftRoot;
+  }
   const descriptors = files.map((file, index) => ({
     id: batch.attachments[index].id,
     extension: file.name.includes('.')
@@ -136,30 +142,46 @@ export async function uploadFiles(
       'application/octet-stream',
     source: '',
     note: '',
+    originalName: file.name,
+    bytes: file.size,
+    lastModified: file.lastModified,
   }));
-  await host('items.begin', { uploadId: batch.uploadId, name: batch.name, files: descriptors });
+  const result = await host<{ recovery?: UploadProgress }>('items.begin', {
+    uploadId: batch.uploadId,
+    draftRoot: batch.draftRoot,
+    name: batch.name,
+    files: descriptors,
+  });
+  if (result.recovery?.phase === 'saved') return result.recovery.item!;
   for (let index = batch.fileIndex; index < files.length; index++) {
+    if (result.recovery?.files[index]?.complete) {
+      batch.fileIndex = index + 1;
+      batch.nextChunk = 0;
+      continue;
+    }
     const file = files[index];
     const attachmentId = batch.attachments[index].id;
     let chunks = batch.nextChunk;
     for (let offset = chunks * 192 * 1024; offset < file.size; offset += 192 * 1024) {
       const bytes = new Uint8Array(await file.slice(offset, offset + 192 * 1024).arrayBuffer());
-      onProgress(
-        `正在保存 ${index + 1}/${files.length} · ${Math.min(100, Math.round(((offset + bytes.length) / file.size) * 100))}%`,
-      );
       // One acknowledged request at a time bounds memory and permits service
       // worker/native port errors to surface before claiming a saved material.
       await host('items.append', {
         uploadId: batch.uploadId,
+        draftRoot: batch.draftRoot,
         attachmentId,
         sequence: chunks,
         base64: base64(bytes),
       });
       chunks++;
       batch.nextChunk = chunks;
+      onProgress(
+        `正在保存 ${index + 1}/${files.length} · ${Math.min(100, Math.round(((offset + bytes.length) / file.size) * 100))}%`,
+      );
     }
     await host('items.finishFile', {
       uploadId: batch.uploadId,
+      draftRoot: batch.draftRoot,
       attachmentId,
       chunks,
       bytes: file.size,
@@ -167,7 +189,103 @@ export async function uploadFiles(
     batch.fileIndex = index + 1;
     batch.nextChunk = 0;
   }
-  return host<Material>('items.commit', { uploadId: batch.uploadId });
+  onProgress('附件已收齐，正在完成保存…');
+  return host<Material>('items.commit', { uploadId: batch.uploadId, draftRoot: batch.draftRoot });
+}
+
+export interface UploadFileProgress {
+  id: string;
+  fileName: string;
+  originalName: string;
+  extension: string;
+  kind: 'image' | 'video';
+  mime: string;
+  bytes: number | null;
+  lastModified: number | null;
+  complete: boolean;
+  receivedBytes: number;
+}
+export interface UploadProgress {
+  phase: 'pending' | 'saved';
+  id: string;
+  name: string;
+  createdAt: string;
+  files: UploadFileProgress[];
+  item?: Material;
+}
+export interface UploadSummary {
+  id: string;
+  name: string;
+  createdAt: string;
+  fileCount: number;
+  completeFiles: number;
+  receivedBytes: number;
+  totalBytes: number | null;
+}
+export interface UploadList {
+  items: UploadSummary[];
+  total: number;
+  warnings: string[];
+}
+
+// Browser file references cannot survive a page close. Ask only for incomplete
+// originals, match their metadata, and replay the retained prefix for native
+// byte-for-byte verification before sending the remainder. Never create an ID.
+export async function resumeUpload(
+  draftRoot: string,
+  uploadId: string,
+  selected: File[],
+  onProgress: (text: string) => void,
+): Promise<Material> {
+  const progress = await host<UploadProgress>('uploads.get', { draftRoot, uploadId });
+  if (progress.phase === 'saved') return progress.item!;
+  const missing = progress.files.filter((file) => !file.complete);
+  if (missing.length !== selected.length)
+    throw new Error(`请选择尚未收齐的 ${missing.length} 个原文件，已收齐的附件无需重选`);
+  const remaining = [...selected];
+  const matched = missing.map((file) => {
+    const index = remaining.findIndex(
+      (input) =>
+        fileKind(input) === file.kind &&
+        (input.name.split('.').at(-1)?.toLowerCase() === file.extension ||
+          (!input.name.includes('.') && imageExtensions[input.type] === file.extension)) &&
+        (!file.originalName || input.name === file.originalName) &&
+        (file.bytes === null || input.size === file.bytes) &&
+        (file.lastModified === null || input.lastModified === file.lastModified),
+    );
+    if (index < 0)
+      throw new Error(
+        `原文件不匹配：${file.originalName || file.fileName}。请保持文件名、大小和修改时间不变后重选`,
+      );
+    return { attachment: file, input: remaining.splice(index, 1)[0] };
+  });
+  for (const [index, { attachment, input }] of matched.entries()) {
+    let sequence = 0;
+    for (let offset = 0; offset < input.size; offset += 192 * 1024) {
+      const bytes = new Uint8Array(await input.slice(offset, offset + 192 * 1024).arrayBuffer());
+      await host('items.append', {
+        draftRoot,
+        uploadId,
+        attachmentId: attachment.id,
+        sequence,
+        base64: base64(bytes),
+      });
+      sequence++;
+      const verified = offset + bytes.length;
+      onProgress(
+        `${verified <= attachment.receivedBytes ? '正在核对已收到的内容' : '正在继续保存'} ${index + 1}/${matched.length} · ${Math.round((Math.max(attachment.receivedBytes, verified) / input.size) * 100)}%`,
+      );
+    }
+    await host('items.finishFile', {
+      draftRoot,
+      uploadId,
+      attachmentId: attachment.id,
+      chunks: sequence,
+      bytes: input.size,
+    });
+  }
+  onProgress('附件已收齐，正在完成保存…');
+  return host<Material>('items.commit', { draftRoot, uploadId });
 }
 
 export async function readAttachment(

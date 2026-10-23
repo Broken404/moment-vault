@@ -52,7 +52,8 @@ public sealed class Material
     [JsonIgnore] public string FolderName { get; set; } = "";
 }
 
-public sealed record FileUpload(string Id, string Extension, string Kind, string Mime, string Source = "", string Note = "");
+public sealed record FileUpload(string Id, string Extension, string Kind, string Mime, string Source = "", string Note = "",
+    string OriginalName = "", long? Bytes = null, long? LastModified = null);
 public sealed class UploadState
 {
     public Material Material { get; set; } = new();
@@ -60,7 +61,14 @@ public sealed class UploadState
     public Dictionary<string, int> FinishedChunks { get; set; } = [];
     public Dictionary<string, long> ExpectedBytes { get; set; } = [];
     public RecordingUpload? Recording { get; set; }
+    public List<FileUpload> Inputs { get; set; } = [];
 }
+public sealed record UploadFileProgress(string Id, string FileName, string OriginalName, string Extension, string Kind,
+    string Mime, long? Bytes, long? LastModified, bool Complete, long ReceivedBytes);
+public sealed record UploadProgress(string Phase, string Id, string Name, DateTimeOffset CreatedAt,
+    UploadFileProgress[] Files, Material? Item = null);
+public sealed record UploadSummary(string Id, string Name, DateTimeOffset CreatedAt, int FileCount,
+    int CompleteFiles, long ReceivedBytes, long? TotalBytes);
 public sealed record RecordingSelection(double A, double B);
 public sealed record RecordingEnd(double ActualStart, double ActualEnd, string StopReason);
 public sealed record RecordingMediaInfo(int Width, int Height, double Duration, double VideoDuration,

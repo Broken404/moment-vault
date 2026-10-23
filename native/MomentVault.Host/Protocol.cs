@@ -34,6 +34,8 @@ public static class Protocol
                     throw new VaultException("protocol-version", "扩展与本地助手版本不兼容，请重新安装配套版本");
                 var payload = request.GetProperty("payload");
                 uploadId = Text(payload, "uploadId");
+                if (Text(payload, "draftRoot") is { Length: > 0 } root && uploadId.Length > 0)
+                    store.RequireDraftRoot(root);
                 var result = Dispatch(store, request.GetProperty("op").GetString()!, payload, parentWindow);
                 response = new { id, ok = true, result };
             }
@@ -67,6 +69,9 @@ public static class Protocol
         "items.append" => Append(store, p),
         "items.finishFile" => FinishFile(store, p),
         "items.commit" => View(store.Commit(Text(p, "uploadId")), "draft"),
+        "uploads.list" => UploadList(store, p),
+        "uploads.get" => UploadView(store.GetUpload(Text(p, "draftRoot"), Text(p, "uploadId"))),
+        "uploads.discard" => DiscardUpload(store, p),
         "recordings.begin" => BeginRecording(store, p),
         "recordings.process" => RecordingView(store.ProcessRecording(Text(p, "uploadId"),
             Json.Read<RecordingEnd>(p.GetProperty("end").GetRawText()))),
@@ -136,7 +141,21 @@ public static class Protocol
         var files = Json.Read<FileUpload[]>(p.GetProperty("files").GetRawText());
         var id = Text(p, "uploadId");
         var upload = store.Begin(Text(p, "name"), files, Text(p, "note"), id.Length == 0 ? null : id);
-        return new { uploadId = upload.Material.Id, attachments = upload.Material.Attachments.Select(a => new { a.Id, a.FileName }) };
+        return new { uploadId = upload.Material.Id, attachments = upload.Material.Attachments.Select(a => new { a.Id, a.FileName }),
+            recovery = UploadView(store.UploadProgress(upload)) };
+    }
+    private static object UploadView(UploadProgress progress) => new
+    { progress.Phase, progress.Id, progress.Name, progress.CreatedAt, progress.Files,
+        item = progress.Item is null ? null : View(progress.Item, "draft") };
+    private static object UploadList(VaultStore store, JsonElement p)
+    {
+        var result = store.IncompleteUploads(Text(p, "draftRoot"), p.TryGetProperty("offset", out var offset) ? offset.GetInt32() : 0);
+        return new { result.Items, result.Total, result.Warnings };
+    }
+    private static object DiscardUpload(VaultStore store, JsonElement p)
+    {
+        store.DiscardUpload(Text(p, "draftRoot"), Text(p, "uploadId"), p.TryGetProperty("confirmed", out var flag) && flag.ValueKind == JsonValueKind.True);
+        return new { discarded = true };
     }
     private static object Append(VaultStore store, JsonElement p)
     { store.Append(Text(p, "uploadId"), Text(p, "attachmentId"), p.GetProperty("sequence").GetInt32(), Text(p, "base64")); return new { accepted = true }; }

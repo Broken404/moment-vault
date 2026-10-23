@@ -332,6 +332,32 @@ kbd {
 .manager-shell main > .status {
   margin-block: 12px;
 }
+.upload-recovery .recovery-heading {
+  justify-content: space-between;
+  align-items: center;
+}
+.recovery-item {
+  border-top: 1px solid var(--line);
+  padding-block: 12px;
+}
+.recovery-summary {
+  min-width: 0;
+  flex: 1 1 180px;
+  overflow-wrap: anywhere;
+}
+.recovery-summary small {
+  display: block;
+  margin-top: 5px;
+}
+.recovery-choice {
+  padding: 8px 12px;
+  background: var(--soft);
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+.recovery-choice .button {
+  margin-right: 8px;
+}
 @media (min-width: 1600px) {
   .collection {
     grid-template-columns: minmax(350px, 1fr) 340px;

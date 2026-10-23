@@ -23,6 +23,8 @@ it('groups two files into one material and waits for each acknowledged chunk', a
     runtime: {
       sendMessage: vi.fn(async (message) => {
         calls.push(message);
+        if (message.op === 'ping')
+          return { ok: true, result: { configured: true, config: { draftRoot: 'D:\\draft' } } };
         return {
           ok: true,
           result:
@@ -51,6 +53,8 @@ it('retries a lost chunk acknowledgement with the same upload and attachment IDs
     runtime: {
       sendMessage: vi.fn(async (message) => {
         calls.push(message);
+        if (message.op === 'ping')
+          return { ok: true, result: { configured: true, config: { draftRoot: 'D:\\draft' } } };
         if (message.op === 'items.append' && message.payload.sequence === 1 && fail) {
           fail = false;
           throw new Error('connection lost after write');
@@ -76,6 +80,8 @@ it('does not re-upload completed files when the commit response was lost', async
   vi.stubGlobal('chrome', {
     runtime: {
       sendMessage: vi.fn(async (message) => {
+        if (message.op === 'ping')
+          return { ok: true, result: { configured: true, config: { draftRoot: 'D:\\draft' } } };
         if (message.op === 'items.append') writes++;
         if (message.op === 'items.commit' && lost) {
           lost = false;

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { FolderOpen, ImagePlus, Settings, Video, X, Upload, RotateCcw } from 'lucide-react';
 import {
   beginUpload,
+  HostError,
   fileKind,
   openManager,
   preferences,
@@ -319,7 +320,9 @@ function App() {
       setStatus(`已存入草稿箱 · 1 条素材，${item.attachments.length} 张图片`);
       batch.current = null;
     } catch (error) {
-      setFailed(true);
+      const discarded = error instanceof HostError && error.code === 'upload-discarded';
+      if (discarded) batch.current = null;
+      setFailed(!discarded);
       setStatus(errorMessage(error));
       setIntake(true);
     } finally {
@@ -558,7 +561,7 @@ function App() {
               accept="image/png,image/jpeg,image/webp,image/gif"
               multiple
               onChange={(event) => {
-                void save(Array.from(event.target.files ?? []));
+                if (event.target.files?.length) void save(Array.from(event.target.files));
                 event.target.value = '';
               }}
             />
@@ -583,6 +586,9 @@ function App() {
               </button>
               <button className="button" onClick={() => void openManager('settings')}>
                 检查设置
+              </button>
+              <button className="button" onClick={() => void openManager('draft')}>
+                查看未完成保存
               </button>
             </div>
           )}

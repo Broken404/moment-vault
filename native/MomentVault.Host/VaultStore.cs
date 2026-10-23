@@ -83,7 +83,7 @@ public sealed partial class VaultStore : IDisposable
         {
             if (!Configured) return 0;
             var committed = List("draft").Items.Select(i => i.Id).ToHashSet();
-            return Directory.EnumerateDirectories(Area("pending")).Count(d => !committed.Contains(Path.GetFileName(d)));
+            return Directory.EnumerateDirectories(Area("pending")).Count(d => !committed.Contains(Path.GetFileName(d)) && !UploadDiscarded(Path.GetFileName(d)));
         }
     }
     public string Root(string bucket) => bucket switch
@@ -127,6 +127,7 @@ public sealed partial class VaultStore : IDisposable
 
     private string Pending(string id)
     {
+        RequireUploadNotDiscarded(id);
         var path = Path.Combine(Area("pending"), SafeFiles.Id(id));
         SafeFiles.RejectLinks(path);
         if (!Directory.Exists(path)) throw new VaultException("missing-upload", "未完成的保存不存在");
@@ -135,6 +136,7 @@ public sealed partial class VaultStore : IDisposable
     private static string UploadStatePath(string directory) => Path.Combine(directory, "upload.json");
     private static UploadState ReadUpload(string directory)
     {
+        SafeFiles.RejectLinks(UploadStatePath(directory));
         var state = Json.Read<UploadState>(File.ReadAllText(UploadStatePath(directory)));
         state.Material.Note = state.Note;
         return state;
@@ -150,14 +152,17 @@ public sealed partial class VaultStore : IDisposable
     {
         _ = Root("draft"); _ = Root("library");
         if (files.Length == 0 || files.Length > 200) throw new VaultException("invalid-files", "每次请选择 1–200 个素材文件");
-        var state = new UploadState { Recording = recording };
+        var state = new UploadState { Recording = recording, Inputs = files.ToList() };
         if (requestedId is not null) state.Material.Id = SafeFiles.Id(requestedId);
+        RequireUploadNotDiscarded(state.Material.Id);
         state.Material.Name = SafeFiles.Name(string.IsNullOrWhiteSpace(name) ? $"{DateTime.Now:yyyyMMdd}-素材组" : name);
         state.Material.Note = note;
         var ids = new HashSet<string>();
         for (var index = 0; index < files.Length; index++)
         {
             var file = files[index];
+            if (file.OriginalName.Length > 255 || file.Bytes is <= 0 || file.LastModified is < 0)
+                throw new VaultException("invalid-files", "原文件信息无效");
             SafeFiles.Id(file.Id);
             if (!ids.Add(file.Id)) throw new VaultException("invalid-files", "附件标识重复");
             var extension = file.Extension.TrimStart('.').ToLowerInvariant();
@@ -171,6 +176,7 @@ public sealed partial class VaultStore : IDisposable
             });
         }
         var directory = Path.Combine(Area("pending"), state.Material.Id);
+        SafeFiles.RejectLinks(directory);
         var committed = List("draft").Items.SingleOrDefault(i => i.Id == state.Material.Id);
         if (committed is not null) return new() { Material = committed };
         if (Directory.Exists(directory))
@@ -181,6 +187,8 @@ public sealed partial class VaultStore : IDisposable
                 !previous.Material.Attachments.Zip(state.Material.Attachments).All(pair => pair.First.Id == pair.Second.Id &&
                     (previous.Recording?.InputFileName ?? pair.First.FileName) == pair.Second.FileName && pair.First.Kind == pair.Second.Kind))
                 throw new VaultException("upload-conflict", "重试保存与原输入不同，原内容保留");
+            if (previous.Inputs.Count > 0 && !previous.Inputs.SequenceEqual(state.Inputs))
+                throw new VaultException("upload-conflict", "重试保存与原文件信息不同，原内容保留");
             activeUploads.Add(previous.Material.Id);
             return previous;
         }
@@ -208,8 +216,15 @@ public sealed partial class VaultStore : IDisposable
         }
         if (sequence > 0 && !File.Exists(Path.Combine(directory, $"{attachmentId}.{sequence - 1:000000}.part")))
             throw new VaultException("chunk-order", "文件分块顺序不完整，请重试");
-        using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None);
-        stream.Write(bytes); stream.Flush(true);
+        // A crash or a full disk must not publish a truncated acknowledged part.
+        var temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            using (var stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+            { stream.Write(bytes); stream.Flush(true); }
+            File.Move(temporary, path);
+        }
+        finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
 
     public void FinishFile(string uploadId, string attachmentId, int chunks, long bytes)
@@ -221,6 +236,9 @@ public sealed partial class VaultStore : IDisposable
         var file = state.Material.Attachments.SingleOrDefault(a => a.Id == attachmentId)
             ?? throw new VaultException("missing-attachment", "附件不存在");
         if (chunks <= 0 || chunks > 100001 || bytes <= 0) throw new VaultException("empty-file", "没有收到完整文件");
+        var input = state.Inputs.SingleOrDefault(i => i.Id == attachmentId);
+        if (input?.Bytes is long expected && expected != bytes)
+            throw new VaultException("file-mismatch", "文件大小与原文件不同，原分块保留，请重新选择原文件");
         var target = Path.Combine(directory, file.FileName);
         var temporary = target + ".assembling";
         try

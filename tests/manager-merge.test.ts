@@ -40,6 +40,8 @@ it('wires the real manager selection, dirty-edit guard, single submission and me
     runtime: {
       sendMessage: async (message: Record<string, unknown>) => {
         if (message.type === 'recording-jobs') return { ok: true, jobs: [] };
+        if (message.op === 'uploads.list')
+          return { ok: true, result: { items: [], total: 0, warnings: [] } };
         if (message.op === 'ping')
           return {
             ok: true,

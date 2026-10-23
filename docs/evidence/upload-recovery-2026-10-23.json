@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-23",
+  "status": "implemented-and-checked-awaiting-formal-extension-acceptance",
+  "scope": "interrupted local file uploads; recording recovery and overall v1 delivery remain separately tracked",
+  "implementation": {
+    "localDiskPendingRecordsSurvivePageMemoryLoss": true,
+    "noFullMediaBrowserCacheAdded": true,
+    "noNewDependencies": true,
+    "existingUploadAndAttachmentIdsReused": true,
+    "onlyIncompleteOriginalFilesNeedReselection": true,
+    "reselectedFilesMatchNameSizeModificationTimeAndKind": true,
+    "selectedFileOrderMayDifferFromOriginalAttachmentOrder": true,
+    "retainedPrefixReplayedForByteComparisonAndReusedOnDisk": true,
+    "chunkPublicationIsAtomic": true,
+    "nativeCompletionUsedAfterLostFinishAcknowledgement": true,
+    "alreadySavedDraftReturnedAfterLostCommitReply": true,
+    "draftDirectoryCheckedOnNewAndRecoveryRequests": true,
+    "listPageSize": 20,
+    "managerOnlyRecoveryOperations": ["uploads.list", "uploads.get", "uploads.discard"],
+    "confirmedDiscardKeepsOriginalsAndBlocksLateRecreation": true,
+    "discardRecordRetainedUntilContentCleanupCompletes": true,
+    "legacyPendingMetadataSupported": true,
+    "corruptRecordWarningsPreserveOtherReadableJobs": true,
+    "recordingsUseExistingIndependentRecoveryEntry": true
+  },
+  "checks": {
+    "frontendPassed": 81,
+    "frontendFiles": 14,
+    "newRecoveryCallChecks": 6,
+    "newRecoveryComponentChecks": 4,
+    "nativeFileAndProtocolPassed": 30,
+    "newNativeRecoveryGroups": 6,
+    "formatTypecheckAndGeneratedBuildPassed": true,
+    "productionTypeScriptToActualNative": {
+      "scope": "production TypeScript and actual native processes, isolated self-made media",
+      "passed": true,
+      "cases": 4,
+      "restartPartialRecovery": true,
+      "fullMetadataAndThreeHashesPreserved": true,
+      "prefixConflictPreservesAllPendingBytes": true,
+      "retainedPrefixNotRewritten": true,
+      "allReceivedRecoveryNeedsNoFiles": true,
+      "lostCommitReplyDoesNotRepublish": true,
+      "confirmedDiscardCannotBeRecreatedByLateRetry": true,
+      "recoveredMediaDecodes": true,
+      "originalInputsUnchanged": true,
+      "actualFormalExtensionAcceptance": false,
+      "samplePartialChunkBytes": 196608,
+      "savedItems": 3
+    },
+    "browserWithLoopbackAdapter": {
+      "scope": "Edge production manager via loopback IPC adapter and actual isolated native helper; not formal extension",
+      "passed": true,
+      "allReceivedContinuedWithoutFiles": true,
+      "partialFileChosenThroughRealBrowserChooser": true,
+      "onlyMissingFileWasRequested": true,
+      "retainedPrefixProgressObserved": true,
+      "refreshShowsTwoSavedItemsAndNoPendingPanel": true,
+      "fourAttachmentHashesAndMetadataPreserved": true,
+      "originalInputsUnchanged": true,
+      "actualFormalExtensionAcceptance": false
+    },
+    "lightAndDarkPanelsInspected": true,
+    "ownedBrowserTabsAndLoopbackServerClosed": true,
+    "recordingFilePipelineRegression": {
+      "passed": true,
+      "scope": "generated input through production recording publisher and actual helper, not tab capture",
+      "videoCodec": "h264",
+      "audioCodec": "aac",
+      "videoDurationSeconds": 2,
+      "videoFrames": 60,
+      "audioFrames": 94
+    }
+  },
+  "deployment": {
+    "helperDirectory": "dist/host-upload-recovery",
+    "hostDllSha256": "41e94ded927b4c8218f70c3926a3f3894d387db27264a6e1cd9080ad41ecb9fb",
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "existingDirectorySettingsUnchanged": true,
+    "registrationAndOriginPingPassed": true
+  },
+  "actualFormalExtensionAcceptance": {
+    "status": "pending user reload and one continue-save action",
+    "preparedSelfMadeUpload": {
+      "id": "3f6772481e0b4c829ebe712459d23557",
+      "name": "恢复验收-已收齐的图片与视频",
+      "attachmentCount": 2,
+      "allAttachmentsReceived": true,
+      "committed": false
+    },
+    "noExistingPersonalMediaReadOrChangedDuringPreparation": true,
+    "noManualRecordingRequired": true
+  },
+  "limitations": [
+    "Browser recovery paths used the production UI and actual native helper through a loopback adapter; this is distinct from formal-extension Native Messaging acceptance.",
+    "Missing original bytes that never reached the helper cannot be reconstructed if the original file is lost.",
+    "Original metadata and received prefixes are checked; an unreceived tail has no independent original hash to compare.",
+    "Real power loss, a physically full disk, multiple extension instances and large pending queues are not a completed matrix.",
+    "Video capture freeze root-cause conclusions and overall v1 completion status are unchanged."
+  ]
+}
