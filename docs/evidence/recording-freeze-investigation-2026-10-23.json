@@ -1,6 +1,6 @@
 {
   "date": "2026-10-23",
-  "status": "unresolved-actual-owned-cold-picture-stall-confirmed-instrumented-run-prepared",
+  "status": "superseded-by-input-frame-consumer-trial-after-audio-only-tail-reproduced",
   "implementationBasis": "de24e6b",
   "captureAlgorithmChanged": false,
   "feedbackCommand": "python tools/check_recording.py .spike-data/draft/spike-native-8208b9defbe844dc8274e216fb0c82a6/material.webm",
@@ -483,7 +483,7 @@
     "contactSheet": ".local-data/freeze-lab-20261023/real-cold-short-contact.jpg"
   },
   "nextInstrumentedCapture": {
-    "status": "prepared, not run",
+    "status": "completed; reproduced audio-only tail, see followUpEvidence",
     "selectedRange": [2, 12],
     "changes": "Bounded in-memory source/draw/chunk counters and stopped original WebM export on exact owned source only",
     "additionalVideoFrameCallbacks": false,
@@ -492,5 +492,6 @@
     "normalBuildProbeEndpointRemoved": true,
     "diagnosticMayAffectScheduling": true,
     "exportRoot": ".local-data/recording-freeze-fixture/probes/<id>/"
-  }
+  },
+  "followUpEvidence": "recording-frame-consumer-trial-2026-10-23.json"
 }

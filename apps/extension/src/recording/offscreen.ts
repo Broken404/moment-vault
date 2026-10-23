@@ -3,6 +3,7 @@ import { recordingStore as store } from './store';
 import { publishRecording } from './publish';
 import { startRecorder } from './recorder';
 import { ownedProbe } from './owned-probe';
+import { keepVideoFramesActive } from './frame-consumer';
 import {
   captureGeometry,
   publicStatus,
@@ -27,6 +28,7 @@ interface Live {
   ended?: Promise<void>;
   started?: boolean;
   probe?: ReturnType<typeof ownedProbe>;
+  stopFrames?: () => void;
 }
 let live: Live | undefined;
 async function bounded<T>(promise: Promise<T>, milliseconds: number): Promise<T> {
@@ -92,6 +94,7 @@ async function publish(job: RecordingJob) {
   void task;
 }
 async function release(value: Live) {
+  value.stopFrames?.();
   clearInterval(value.timer);
   clearTimeout(value.startupTimer);
   for (const track of new Set([
@@ -146,6 +149,7 @@ async function prepare(job: RecordingJob, streamId: string) {
     if (value.aborted || live !== value) throw new Error('录制准备已取消。');
     if (video.readyState < 2 || !video.videoWidth || !media.getAudioTracks().length)
       throw new Error('当前标签没有就绪的音视频录制流。');
+    value.stopFrames = keepVideoFramesActive(video, () => value.probe?.mark('input-frame', video));
     value.audio = new AudioContext();
     value.audio.createMediaStreamSource(media).connect(value.audio.destination);
     await value.audio.resume();

@@ -1,0 +1,438 @@
+{
+  "date": "2026-10-23",
+  "status": "candidate-input-frame-subscription-prepared-actual-validation-pending",
+  "baselineImplementation": "e80cbc8",
+  "freezeFixed": false,
+  "reproducedOriginalClass": {
+    "id": "f246fd3703b4400d935efbe2fd96d225",
+    "rawSha256": "6983d294fbc0020280230c6642e65e1bc96d1fc1f2d622d70f32302f514f0cc5",
+    "bytes": 35881,
+    "rawCheck": {
+      "ok": false,
+      "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+      "videoFrames": 5,
+      "firstVideoTime": 0.0,
+      "lastVideoTime": 0.165,
+      "lastAudioTime": 1.285,
+      "audioOnlyTailSeconds": 1.12,
+      "maximumVideoGapSeconds": 0.066,
+      "toleranceSeconds": 0.25,
+      "pictureCheckOk": true,
+      "maximumUnchangedPictureSeconds": 0.165,
+      "pictureChangeThresholdGrayLevels": 0.5
+    },
+    "actualRange": [2, 3.280512],
+    "stopReason": "manual-shortcut",
+    "drawCount": 41,
+    "maximumDrawGapMs": 42.6,
+    "sourceTickCount": 8,
+    "maximumSourceTickGapMs": 208.5,
+    "inputFirstQuality": [2, 1],
+    "inputLastQuality": [28, 27],
+    "inputTotalMinusDroppedStayedAtOne": true,
+    "inputFrameCallbackCount": 0,
+    "nativeProcessing": "failed; audio/video validation rejected output, original retained",
+    "counterLimitation": "Cumulative decoded/dropped counters locate a presentation symptom but alone do not prove its cause.",
+    "sourceProbeSnapshot": {
+      "id": "f246fd3703b4400d935efbe2fd96d225",
+      "side": "source",
+      "source": "http://127.0.0.1:43820/capture.html",
+      "epochMs": 1792759062183.9001,
+      "columns": ["elapsedMs", "stage", "mediaTime", "totalFrames", "droppedFrames", "ready"],
+      "samples": [
+        [0.10000000149011612, "source-ready", 2, 246, 0, 4],
+        [271.79999999701977, "source-play", 2, 246, 0, 4],
+        [272.1000000014901, "source-tick", 2, 246, 0, 4],
+        [402.79999999701977, "source-tick", 2.073278, 248, 0, 4],
+        [602.1000000014901, "source-tick", 2.272863, 255, 0, 4],
+        [807.3999999985099, "source-tick", 2.478254, 255, 0, 4],
+        [1015.8999999985099, "source-tick", 2.680178, 256, 0, 4],
+        [1201.1000000014901, "source-tick", 2.869648, 257, 0, 4],
+        [1400.5, "source-tick", 3.070499, 257, 0, 4],
+        [1604, "source-tick", 3.27407, 258, 0, 4],
+        [1609.6000000014901, "source-stop", 3.280512, 258, 0, 4],
+        [4087.1999999955297, "source-release", 3.280512, 288, 26, 4]
+      ],
+      "selection": {
+        "a": 2,
+        "b": 12,
+        "actualStart": 2,
+        "source": "http://127.0.0.1:43820/capture.html",
+        "title": "Moment Vault 自制短片停帧验证",
+        "rect": {
+          "x": 24,
+          "y": 114.66667175292969,
+          "width": 640,
+          "height": 360
+        },
+        "viewport": {
+          "width": 1699,
+          "height": 828
+        }
+      },
+      "lastTime": 3.280512
+    },
+    "inputProbeSnapshot": {
+      "id": "f246fd3703b4400d935efbe2fd96d225",
+      "side": "input",
+      "source": "http://127.0.0.1:43820/capture.html",
+      "epochMs": 1792759062237.2,
+      "columns": ["elapsedMs", "stage", "mediaTime", "totalFrames", "droppedFrames", "ready"],
+      "samples": [
+        [162.60000000149012, "input-ready", 0.004651, 1, 0, 4],
+        [214.70000000298023, "draw", 0.056764, 2, 1, 4],
+        [217.60000000149012, "recorder-start", 0.059602, 2, 1, 4],
+        [249.10000000149012, "draw", 0.091176, 2, 1, 4],
+        [281.20000000298023, "draw", 0.12329, 2, 1, 4],
+        [314.8999999985099, "draw", 0.156955, 3, 2, 4],
+        [347.70000000298023, "draw", 0.18976, 3, 2, 4],
+        [380.8999999985099, "draw", 0.223017, 4, 3, 4],
+        [415.20000000298023, "draw", 0.257273, 5, 4, 4],
+        [447.1000000014901, "draw", 0.289168, 6, 5, 4],
+        [480.20000000298023, "draw", 0.322221, 7, 6, 4],
+        [512, "draw", 0.354102, 8, 7, 4],
+        [545.7999999970198, "draw", 0.387874, 9, 8, 4],
+        [578.2000000029802, "draw", 0.420244, 10, 9, 4],
+        [620.7999999970198, "draw", 0.462859, 11, 10, 4],
+        [643.8999999985099, "draw", 0.486039, 12, 11, 4],
+        [678.5, "draw", 0.520608, 13, 12, 4],
+        [711, "draw", 0.553035, 14, 13, 4],
+        [734.3999999985099, "recorder-chunk", 0.576397, 14, 13, 4],
+        [742.8999999985099, "draw", 0.585011, 14, 13, 4],
+        [776.6000000014901, "draw", 0.618673, 15, 14, 4],
+        [810, "draw", 0.652066, 16, 15, 4],
+        [843, "draw", 0.685122, 16, 15, 4],
+        [875.5, "draw", 0.717509, 17, 16, 4],
+        [908.7000000029802, "draw", 0.750825, 17, 16, 4],
+        [942.2000000029802, "draw", 0.784277, 17, 16, 4],
+        [974.2999999970198, "draw", 0.816399, 18, 17, 4],
+        [1007.2000000029802, "draw", 0.84933, 19, 18, 4],
+        [1043.8999999985099, "draw", 0.886002, 19, 18, 4],
+        [1073.1000000014901, "draw", 0.915121, 20, 19, 4],
+        [1109.2999999970198, "draw", 0.951406, 20, 19, 4],
+        [1139.2999999970198, "draw", 0.981367, 20, 19, 4],
+        [1172.7999999970198, "draw", 1.014854, 21, 20, 4],
+        [1205.7999999970198, "draw", 1.047901, 22, 21, 4],
+        [1240.7000000029802, "draw", 1.082765, 22, 21, 4],
+        [1271.1000000014901, "draw", 1.113185, 23, 22, 4],
+        [1305, "draw", 1.147081, 23, 22, 4],
+        [1337.3999999985099, "draw", 1.179452, 24, 23, 4],
+        [1370.3999999985099, "draw", 1.21254, 25, 24, 4],
+        [1403.7999999970198, "draw", 1.245888, 26, 25, 4],
+        [1438.2000000029802, "draw", 1.280203, 26, 25, 4],
+        [1473.1000000014901, "draw", 1.31508, 27, 26, 4],
+        [1505.5, "draw", 1.347566, 27, 26, 4],
+        [1516.3999999985099, "recorder-chunk", 1.358406, 27, 26, 4],
+        [1536.7000000029802, "draw", 1.378768, 28, 27, 4],
+        [1557.6000000014901, "recorder-stop", 1.399721, 28, 27, 4],
+        [1558, "recorder-chunk", 1.400088, 28, 27, 4]
+      ],
+      "selection": {
+        "a": 2,
+        "b": 12,
+        "actualStart": 2,
+        "source": "http://127.0.0.1:43820/capture.html",
+        "title": "Moment Vault 自制短片停帧验证",
+        "rect": {
+          "x": 24,
+          "y": 114.66667175292969,
+          "width": 640,
+          "height": 360
+        },
+        "viewport": {
+          "width": 1699,
+          "height": 828
+        }
+      },
+      "end": {
+        "actualStart": 2,
+        "actualEnd": 3.280512,
+        "stopReason": "manual-shortcut"
+      },
+      "parts": 3
+    },
+    "nativeRejectedMp4": true,
+    "retainedUserPendingOriginalHashMatchesExport": true,
+    "visualFirstSourceClock": 2,
+    "visualLastSourceClock": 2.033,
+    "matchingSourceControl": {
+      "ok": true,
+      "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+      "videoFrames": 39,
+      "firstVideoTime": 0.0,
+      "lastVideoTime": 1.266667,
+      "lastAudioTime": 1.258667,
+      "audioOnlyTailSeconds": 0,
+      "maximumVideoGapSeconds": 0.033334,
+      "toleranceSeconds": 0.25,
+      "pictureCheckOk": true,
+      "maximumUnchangedPictureSeconds": 0.033334,
+      "pictureChangeThresholdGrayLevels": 0.5
+    },
+    "originalHistoricalFileUnchanged": true
+  },
+  "candidate": {
+    "hypothesis": "Detached MediaStream video current frame can stop advancing without a continuous frame subscriber even while the canvas timer runs.",
+    "change": "Continuously requestVideoFrameCallback on offscreen input video; cancel subscription on release; existing 30 Hz draw timer, encoder, geometry and MP4 validation retained.",
+    "newInputFrameCallbackProbeMarker": true,
+    "prediction": "New input-frame callbacks and changing burned source clock persist through manual stop; raw tail and picture checks pass and native saves a validated MP4.",
+    "status": "Implemented but not yet tested with actual tabCapture.",
+    "mechanismReferences": [
+      "https://github.com/chromium/chromium/blob/main/third_party/blink/renderer/modules/mediastream/web_media_player_ms.cc#L1362",
+      "https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/modules/mediastream/web_media_player_ms_compositor.h",
+      "https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback"
+    ],
+    "mechanismLimit": "Current Chromium source supports the hypothesis; it is not proof of the installed Edge failure cause."
+  },
+  "checks": {
+    "frontendPassed": 55,
+    "typecheckPassed": true,
+    "formatPassed": true,
+    "ordinaryAndOwnedBuildPassed": true,
+    "ordinaryBuildRemovesAllTestEndpoints": true,
+    "frameConsumerLifecycleTestsInitiallyRedThenGreen": 2,
+    "lifecycleTestsDoNotReproduceBrowserCompositorBug": true,
+    "ownedFileStreamHarness": [
+      {
+        "sample": "visible-1-c3f7fbc9",
+        "metadata": {
+          "mode": "visible",
+          "index": 1,
+          "id": "c3f7fbc9-8738-436b-b443-02f6d225cad1",
+          "elapsedMs": 2014.3999999985099,
+          "end": {
+            "actualStart": 2,
+            "actualEnd": 3.944913,
+            "stopReason": "owned-short-stop"
+          },
+          "sourceDimensions": [960, 540],
+          "documentHidden": false,
+          "pipeline": "production-offscreen-with-owned-file-stream",
+          "nativePublishingExcluded": true,
+          "parallelDiagnosticEncoder": false,
+          "largeInput": false,
+          "parts": 4,
+          "bytes": 746061
+        },
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 62,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.075,
+          "lastAudioTime": 1.985,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.066,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.076,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "visible-2-40d321e9",
+        "metadata": {
+          "mode": "visible",
+          "index": 2,
+          "id": "40d321e9-3996-42c0-ba4e-ada2bffdae69",
+          "elapsedMs": 2007.7000000029802,
+          "end": {
+            "actualStart": 2,
+            "actualEnd": 3.936421,
+            "stopReason": "owned-short-stop"
+          },
+          "sourceDimensions": [960, 540],
+          "documentHidden": false,
+          "pipeline": "production-offscreen-with-owned-file-stream",
+          "nativePublishingExcluded": true,
+          "parallelDiagnosticEncoder": false,
+          "largeInput": false,
+          "parts": 4,
+          "bytes": 724849
+        },
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 62,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.037,
+          "lastAudioTime": 1.982,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.065,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.189,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "visible-3-1f38bfe6",
+        "metadata": {
+          "mode": "visible",
+          "index": 3,
+          "id": "1f38bfe6-0595-4556-bb99-dd6e9a86ff56",
+          "elapsedMs": 2013.2999999970198,
+          "end": {
+            "actualStart": 2,
+            "actualEnd": 3.951699,
+            "stopReason": "owned-short-stop"
+          },
+          "sourceDimensions": [960, 540],
+          "documentHidden": false,
+          "pipeline": "production-offscreen-with-owned-file-stream",
+          "nativePublishingExcluded": true,
+          "parallelDiagnosticEncoder": false,
+          "largeInput": false,
+          "parts": 4,
+          "bytes": 731356
+        },
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 64,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.072,
+          "lastAudioTime": 1.987,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.067,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.194,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "hidden-1-0c0882bf",
+        "metadata": {
+          "mode": "hidden",
+          "index": 1,
+          "id": "0c0882bf-850c-405b-bf22-f3d9b2ce2296",
+          "elapsedMs": 2008.3999999985099,
+          "end": {
+            "actualStart": 2,
+            "actualEnd": 3.867554,
+            "stopReason": "owned-short-stop"
+          },
+          "sourceDimensions": [960, 540],
+          "documentHidden": false,
+          "pipeline": "production-offscreen-with-owned-file-stream",
+          "nativePublishingExcluded": true,
+          "parallelDiagnosticEncoder": false,
+          "largeInput": false,
+          "parts": 4,
+          "bytes": 653023
+        },
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 57,
+          "firstVideoTime": 0,
+          "lastVideoTime": 1.946,
+          "lastAudioTime": 1.918,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.081,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.196,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "hidden-2-959d5f34",
+        "metadata": {
+          "mode": "hidden",
+          "index": 2,
+          "id": "959d5f34-8f80-4f8c-a3c7-c17fc5291af9",
+          "elapsedMs": 2009.9000000059605,
+          "end": {
+            "actualStart": 2,
+            "actualEnd": 3.947145,
+            "stopReason": "owned-short-stop"
+          },
+          "sourceDimensions": [960, 540],
+          "documentHidden": false,
+          "pipeline": "production-offscreen-with-owned-file-stream",
+          "nativePublishingExcluded": true,
+          "parallelDiagnosticEncoder": false,
+          "largeInput": false,
+          "parts": 4,
+          "bytes": 732236
+        },
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 61,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.008,
+          "lastAudioTime": 1.932,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.068,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.168,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      },
+      {
+        "sample": "hidden-3-f447e5cd",
+        "metadata": {
+          "mode": "hidden",
+          "index": 3,
+          "id": "f447e5cd-f08f-4434-ae7e-254d66620afb",
+          "elapsedMs": 2003.2000000029802,
+          "end": {
+            "actualStart": 2,
+            "actualEnd": 3.941881,
+            "stopReason": "owned-short-stop"
+          },
+          "sourceDimensions": [960, 540],
+          "documentHidden": false,
+          "pipeline": "production-offscreen-with-owned-file-stream",
+          "nativePublishingExcluded": true,
+          "parallelDiagnosticEncoder": false,
+          "largeInput": false,
+          "parts": 4,
+          "bytes": 650887
+        },
+        "report": {
+          "ok": true,
+          "scope": "timestamps and picture changes of short, explicitly moving self-made fixture",
+          "videoFrames": 57,
+          "firstVideoTime": 0,
+          "lastVideoTime": 2.009,
+          "lastAudioTime": 1.935,
+          "audioOnlyTailSeconds": 0,
+          "maximumVideoGapSeconds": 0.07,
+          "toleranceSeconds": 0.25,
+          "pictureCheckOk": true,
+          "maximumUnchangedPictureSeconds": 0.162,
+          "pictureChangeThresholdGrayLevels": 0.5
+        }
+      }
+    ],
+    "ownedFileStreamHarnessIsNotActualTabCapture": true,
+    "normalContentBuild": {
+      "mode": "normal",
+      "containsFixtureOrigin": false,
+      "contentSha256": "9a7e2eb577c2ba08769b6a750cb306513df9fe8d3a0a06a5a6aaed3caefb711c",
+      "gateCheckPassed": true
+    },
+    "ownedContentBuild": {
+      "mode": "owned",
+      "containsFixtureOrigin": true,
+      "contentSha256": "fc4d00d23dde529afd855f5dec84be52e72e0a3700044d5e8d7b114b123dee68",
+      "gateCheckPassed": true
+    },
+    "candidateOffscreenBundleSha256": "7f9c1c76bd16a3f59828b5a8a5f0006bbdf5ad8587a5cefe5eec5c4757c1fb7b"
+  },
+  "actualAcceptance": {
+    "status": "not run; requires extension reload and actual shortcut on owned source",
+    "selectedRange": [2, 12],
+    "stopReason": "manual-shortcut",
+    "targetSourceDurationSeconds": "about 2; evaluate actual recorded interval",
+    "rawTailAndFrameGapAndPictureToleranceSeconds": 0.25,
+    "pictureChangeThresholdGrayLevels": 0.5,
+    "rawMustPassBeforeMp4CanEstablishSuccess": true,
+    "uninstrumentedColdCaptureStillRequiredBeforeClosure": true
+  }
+}
