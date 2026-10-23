@@ -1,12 +1,12 @@
 {
   "date": "2026-10-23",
   "productionImplementationCommit": "c203f25",
-  "status": "prechecks-passed-awaiting-real-shortcut-capture",
+  "status": "actual-mp4-and-preview-passed-mute-badge-fix-built-awaiting-reload",
   "samplePage": "https://x.com/SpaceX/status/2110886603371536546",
   "sampleTitle": "SpaceX: Falcon 9 first stage droneship landing",
   "scope": "One X post video; shared production capture-to-MP4 flow",
-  "productionCodeChanged": false,
-  "extensionReloadRequired": false,
+  "productionCodeChanged": true,
+  "extensionReloadRequired": true,
   "contentSha256": "092ece7ffed7ae1fe7d8439a7e7f05b6fc56b5aab1717933ab125c64b04b726c",
   "automatedChecks": {
     "command": "node node_modules/vitest/vitest.mjs run tests/recording.test.ts tests/video-sites.test.ts tests/video-session.test.ts --pool=threads --maxWorkers=1",
@@ -69,7 +69,129 @@
     "durationSeconds": 6,
     "stopReason": "selected-end"
   },
-  "realCapture": "pending actual user shortcut; no simulated extension recording command used",
+  "realCapture": {
+    "trigger": "User actual Ctrl+Shift+9 on the prepared X tab; user replied 好了 after automatic selected-end stop",
+    "recordedImplementationCommit": "c203f25",
+    "materialId": "8d2435828f0643c2841fea0d10478050",
+    "attachmentId": "976edd9e63dc452d80d496c3544e2a99",
+    "canonicalSource": "https://x.com/SpaceX/status/2110886603371536546",
+    "sha256": "bcf4dc55e293a3f0887600eb6b2488e51e769610c3b73f9ce6aff07297e7c8a1",
+    "metadataHashMatches": true,
+    "metadataSizeMatches": true,
+    "bytes": 1781280,
+    "range": {
+      "a": 2,
+      "b": 8,
+      "actualStart": 2,
+      "actualEnd": 8.016777,
+      "stopReason": "selected-end",
+      "duration": 6.133333,
+      "capture": "tabCapture-to-canvas"
+    },
+    "actualSourceSeconds": 6.016777,
+    "containerSeconds": 6.133333,
+    "containerExcessSeconds": 0.116556,
+    "comparisonToleranceSeconds": 0.12,
+    "durationGatePassed": true,
+    "probe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 940,
+          "height": 528,
+          "start_time": "0.000000",
+          "duration": "6.133333",
+          "nb_read_frames": "184"
+        },
+        {
+          "index": 1,
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "start_time": "0.014000",
+          "duration": "6.081333",
+          "nb_read_frames": "286"
+        }
+      ],
+      "format": {
+        "duration": "6.133333",
+        "size": "1781280"
+      }
+    },
+    "completeDecodePassed": true,
+    "audioOverallRmsDbfs": -36.621971,
+    "postSavePage": {
+      "busy": "false",
+      "caption": "画面 00:07.975 · 已缓存",
+      "captureLayer": false,
+      "hiddenControlMarkers": 0,
+      "nativeButtons": [
+        {
+          "label": "Play",
+          "opacity": "1",
+          "visibility": "visible"
+        },
+        {
+          "label": "Mute",
+          "opacity": "1",
+          "visibility": "visible"
+        },
+        {
+          "label": "Video Settings",
+          "opacity": "1",
+          "visibility": "visible"
+        },
+        {
+          "label": "Picture-in-Picture",
+          "opacity": "1",
+          "visibility": "visible"
+        },
+        {
+          "label": "Full screen",
+          "opacity": "1",
+          "visibility": "visible"
+        }
+      ],
+      "range": [
+        {
+          "name": "起点 A",
+          "value": "2"
+        },
+        {
+          "name": "终点 B",
+          "value": "8"
+        }
+      ],
+      "recordingBar": false,
+      "recordingMarker": false,
+      "source": {
+        "height": 720,
+        "muted": false,
+        "paused": true,
+        "ready": 4,
+        "time": 8.016777,
+        "width": 1280
+      },
+      "status": "已存入草稿箱",
+      "screenshot": ".local-data/x-recording-20261023/saved.png"
+    },
+    "pictureInspection": {
+      "firstMiddleLastFrames": [0, 92, 183],
+      "observedContent": "Approaching droneship to landing burn; embedded source telemetry progresses T+00:08:19 / 22 / 25",
+      "sourceBoundsAndAspectMatched": true,
+      "extensionPetAndPanelAbsent": true,
+      "nativeControlsAbsent": false,
+      "defect": "A standalone X Mute button remains at the lower right of the recorded video",
+      "sourcePreviewComparison": "The visible canvas source-frame preview has the telemetry and no mute badge; screenshot crop inspected for comparison",
+      "contactSheet": ".local-data/x-recording-20261023/frames.jpg",
+      "lastFrame": ".local-data/x-recording-20261023/last.png",
+      "sourcePreviewInspectionCrop": ".local-data/x-recording-20261023/preview-inspection.png"
+    },
+    "overallQualityAcceptancePassed": false
+  },
   "acceptance": [
     "New actual MP4 draft has the expected main-post source, A/B range and selected-end reason",
     "Independent complete decode, metadata hash and size, non-silent audio inspection",
@@ -77,10 +199,47 @@
     "Saved page status, paused source, cleaned capture controls and restored boundary preview"
   ],
   "limitations": [
-    "Preview and automated checks do not establish real X media recording or MP4 saving",
+    "The first actual MP4 saved and preview recovered, but its visible native mute badge fails control-hiding acceptance; sample and hash retained",
     "One ordinary X post cannot establish all layouts, other stop paths, portrait, weak-network or performance conditions",
-    "Frame-confirmed preview is not frame-exact export; source range and container duration remain separate",
+    "Audio RMS establishes non-silence, not comprehensive semantic audio/video synchronization",
+    "The unchanged 0.12-second container-to-source duration comparison is not a universal accuracy guarantee or frame-exact export",
     "Previously retained short-clip freeze remains a separate open quality item",
     "No original media, screenshots, personal directory configuration or account identifiers committed"
-  ]
+  ],
+  "muteBadgeDefect": {
+    "actualPageObservation": "On source playback X replaces seek controls with a standalone Mute button; no Seek slider exists in that state",
+    "observedBadgeRect": {
+      "x": 946.770751953125,
+      "y": 471.3541259765625,
+      "width": 39.981056213378906,
+      "height": 39.981056213378906
+    },
+    "rootCause": "Preparation marked only existing seek-control ancestors; the playback-only button is subsequently mounted outside that marked subtree",
+    "redCommand": "node node_modules/vitest/vitest.mjs run tests/recording.test.ts --pool=threads --maxWorkers=1 -t \"prepares X capture\"",
+    "beforeFix": {
+      "passed": 0,
+      "failed": 1,
+      "expected": "hidden",
+      "actual": "visible"
+    },
+    "fix": "Keep the initial scoped control marker and add recording-player-scoped live Mute/Unmute button selectors so later mounts are hidden and release restores visibility",
+    "afterFixFocusedTests": {
+      "passed": 2,
+      "failed": 0
+    },
+    "actualFixedRecording": "pending updated extension reload and actual capture",
+    "fixBuild": {
+      "basisCommit": "37b184a",
+      "contentSha256": "1718d359d8bb86f74b7ae3249ee7cd9eb3c690c30ca302e3421b8dc85ff2bc02",
+      "fullFrontendCommand": "node node_modules/vitest/vitest.mjs run --pool=threads --maxWorkers=1",
+      "fullFrontendPassed": 52,
+      "formatCheckPassed": true,
+      "buildCommand": "npm run build",
+      "typecheckPassed": true,
+      "productionBuildPassed": true,
+      "generatedExtensionCheckPassed": true,
+      "nativeCodeChanged": false,
+      "realFixedMedia": "pending extension reload and targeted actual recording"
+    }
+  }
 }

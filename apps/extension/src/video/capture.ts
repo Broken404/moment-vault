@@ -202,7 +202,14 @@ export function videoCapture(
               hidden.push(candidate);
             }
           }
-          style.textContent = `[data-mv-hidden-control="${token}"]{opacity:0!important;visibility:hidden!important;}`;
+          // X mounts a separate mute badge after playback starts, outside the seek controls.
+          // Scope its live selector to this recording so newly mounted badges stay hidden too.
+          style.textContent =
+            [
+              `[data-mv-hidden-control="${token}"]`,
+              `[data-mv-recording="${token}"] button[aria-label="Mute"]`,
+              `[data-mv-recording="${token}"] button[aria-label="Unmute"]`,
+            ].join(',') + '{opacity:0!important;visibility:hidden!important;}';
         }
         document.head.append(style);
         cleanup = () => {
