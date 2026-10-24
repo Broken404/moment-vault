@@ -1276,7 +1276,7 @@
   ],
   "followupFirstScan": {
     "evidence": "large-library-startup-2026-10-24.json",
-    "status": "native-scale-and-regressions-passed-formal-reconnect-pending",
+    "status": "native-scale-and-formal-reconnect-accepted",
     "historicalMeasurementsAbovePreserved": true
   }
 }

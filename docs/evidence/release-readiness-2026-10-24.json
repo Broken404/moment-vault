@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "recovery-and-read-preview-accepted-first-list-native-optimized-reconnect-pending",
+  "status": "recovery-read-preview-and-first-list-accepted-full-matrix-pending",
   "scope": "Approved v1 release regression; no AI, store publication or user media changes",
   "order": [
     "Formal partial-upload reselection acceptance",
@@ -104,15 +104,36 @@
     "optimizedReadMs": 809.188,
     "libraryItemsDuringRead": 1501,
     "formalPreviewPending": false,
-    "firstListAndFullMatrixStillPending": true,
     "formalPreviewAcceptedOn": "2026-10-24",
     "firstListOptimization": {
       "evidence": "large-library-startup-2026-10-24.json",
-      "status": "native-scale-and-regressions-passed-formal-reconnect-pending",
+      "status": "native-scale-and-formal-reconnect-accepted",
       "first1500FullScaleMs": 1747.611,
       "first1500DiagnosticMs": 2424.766,
-      "formalReconnectPending": true,
-      "realRecordingRequired": false
-    }
+      "formalReconnectPending": false,
+      "realRecordingRequired": false,
+      "formalAcceptanceOn": "2026-10-24",
+      "formalAcceptance": {
+        "status": "user-confirmed-and-current-deployment-verified",
+        "acceptedOn": "2026-10-24",
+        "timeZone": "Asia/Shanghai",
+        "checkedAtUtc": "2026-10-24T13:26:43.486875+00:00",
+        "implementationCommit": "dfaff36",
+        "userConfirmation": "可以正常显示",
+        "scope": "User confirmed formal-extension reload followed by normal list and right-pane preview display; native scale timings remain separately measured",
+        "formalExtensionReloadAndManagerRefreshUserConfirmed": true,
+        "listAndRightPanePreviewUserConfirmedNormal": true,
+        "independentBrowserInspection": false,
+        "browserRenderingTimed": false,
+        "actualHelperRegistrationAndOriginFramedPingPassed": true,
+        "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d",
+        "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+        "directorySettingsUnchanged": true,
+        "newSelfMadeMaterialsAddedToUserLibrary": 0,
+        "additionalReloadRequired": false,
+        "repeatRecordingRequired": false
+      }
+    },
+    "fullPerformanceMatrixStillPending": true
   }
 }

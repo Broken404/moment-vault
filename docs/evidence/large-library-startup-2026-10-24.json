@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "native-scale-and-regressions-passed-formal-reconnect-pending",
+  "status": "native-scale-and-formal-reconnect-accepted",
   "scope": "Approved large-library first-opening latency fix; isolated self-made data and actual native processes; not browser-render latency or physical disk-cold testing",
   "baselineCommit": "2e095fa",
   "rootCause": "List serially opened and read every description before duplicate validation, sorting and pagination; first access to newly created descriptions dominated the measured scan",
@@ -1610,13 +1610,29 @@
     "recordingRequired": false,
     "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
     "configUnchanged": true,
-    "formalExtensionReloadPending": true,
+    "formalExtensionReloadPending": false,
     "registeredHost": "dist/host-library-load",
-    "registrationAndOriginCheckPassed": true
+    "registrationAndOriginCheckPassed": true,
+    "reloadWasRequiredBeforeAcceptance": true
   },
   "formalExtensionAcceptance": {
-    "status": "pending-reconnect",
+    "status": "user-confirmed-and-current-deployment-verified",
+    "acceptedOn": "2026-10-24",
+    "timeZone": "Asia/Shanghai",
+    "checkedAtUtc": "2026-10-24T13:26:43.486875+00:00",
+    "implementationCommit": "dfaff36",
+    "userConfirmation": "可以正常显示",
+    "scope": "User confirmed formal-extension reload followed by normal list and right-pane preview display; native scale timings remain separately measured",
+    "formalExtensionReloadAndManagerRefreshUserConfirmed": true,
+    "listAndRightPanePreviewUserConfirmedNormal": true,
+    "independentBrowserInspection": false,
+    "browserRenderingTimed": false,
+    "actualHelperRegistrationAndOriginFramedPingPassed": true,
+    "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d",
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "directorySettingsUnchanged": true,
     "newSelfMadeMaterialsAddedToUserLibrary": 0,
+    "additionalReloadRequired": false,
     "repeatRecordingRequired": false
   },
   "limitations": [
