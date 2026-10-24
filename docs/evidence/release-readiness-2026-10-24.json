@@ -1,8 +1,12 @@
 {
   "date": "2026-10-24",
-  "status": "partial-reselection-fixture-prepared-awaiting-formal-extension",
+  "status": "partial-reselection-accepted-continuous-use-regression-next",
   "scope": "Approved v1 release regression; no AI, store publication or user media changes",
-  "order": ["Formal partial-upload reselection acceptance", "Continuous-use and performance regression", "Self-use installer and upgrade validation"],
+  "order": [
+    "Formal partial-upload reselection acceptance",
+    "Continuous-use and performance regression",
+    "Self-use installer and upgrade validation"
+  ],
   "baseline": {
     "implementationCommit": "20e931d44e29e82f93717c7014d9f0ca880dbe1d",
     "localizationAcceptanceRecordCommit": "b9c4c9f",
@@ -18,7 +22,7 @@
     "preparationUsesOnlySelfMadeOriginalsAndOneOwnedPendingId": true
   },
   "partialReselection": {
-    "status": "prepared-not-accepted",
+    "status": "formal-extension-and-saved-files-accepted",
     "uploadId": "d5c876f77a444621863cf3c5b6865088",
     "name": "恢复验收-补选原文件",
     "attachmentCount": 2,
@@ -28,12 +32,68 @@
     "originalImageBytes": 1083855,
     "helperRestartDiscoveryPassed": true,
     "retainedPrefixHashAndTimestampUnchangedAfterRestart": true,
-    "notCommittedAsDraft": true,
-    "freshReadOnlyProgressCheck": "pending with one complete file out of two",
-    "formalExtensionReselection": "awaiting user action",
-    "savedMediaAndUniquenessVerification": "not yet applicable",
+    "formalExtensionReselection": "user-confirmed",
+    "savedMediaAndUniquenessVerification": "passed",
     "localPreparationManifest": ".local-data/upload-recovery-partial-acceptance/manifest.json",
-    "localReadOnlyVerifier": ".local-data/upload-recovery-partial-acceptance/verify.py"
+    "localReadOnlyVerifier": ".local-data/upload-recovery-partial-acceptance/verify.py",
+    "notCommittedAsDraftDuringPreparation": true,
+    "progressBeforeFormalAction": "pending with one complete file out of two",
+    "acceptance": {
+      "status": "passed",
+      "acceptedOn": "2026-10-24",
+      "timeZone": "Asia/Shanghai",
+      "evidence": "direct user confirmation of formal-extension selection followed by independent read-only disk and protocol verification",
+      "userConfirmation": "已保存，只有一条、2 个附件",
+      "userFollowedPartialOriginalSelectionSteps": true,
+      "independentBrowserInspectionThisTurn": false,
+      "implementationCommit": "20e931d44e29e82f93717c7014d9f0ca880dbe1d",
+      "verification": {
+        "status": "passed",
+        "checkedAtUtc": "2026-10-24T06:55:43.106372+00:00",
+        "scope": "independent read-only disk/protocol check of the owned partially-received recovery fixture; user/browser action must be recorded separately",
+        "uploadId": "d5c876f77a444621863cf3c5b6865088",
+        "savedItemCountForFixture": 1,
+        "attachmentCount": 2,
+        "sameUploadAndAttachmentIds": true,
+        "namesNotesSourcesOrderAndCreationTimePreserved": true,
+        "descriptionRevisionMatchesDisk": true,
+        "files": [
+          {
+            "id": "48bddc502e294fc0ae8bb3b119c838d3",
+            "kind": "video",
+            "bytes": 35697,
+            "sha256": "ef12aecc991c037130804ee87989cc78deba8506d3c6ab9e6fddfa5d0ea44249",
+            "originalAndSavedBytesMatch": true,
+            "metadataPreserved": true,
+            "decodePassed": true
+          },
+          {
+            "id": "975c9371ae2d49f1a880093b60736312",
+            "kind": "image",
+            "bytes": 1083855,
+            "sha256": "e18c991ababfc380c298443e1e18f97eb608bbeb2abe36369fd022511238cf2f",
+            "originalAndSavedBytesMatch": true,
+            "metadataPreserved": true,
+            "decodePassed": true
+          }
+        ],
+        "ownedPendingDirectoryRemoved": true,
+        "sourceOriginalsAndModificationTimesUnchanged": true,
+        "existingDirectorySettingsUnchanged": true,
+        "verificationHostOperations": [
+          "items.list",
+          "ping",
+          "uploads.get"
+        ],
+        "noRecoveryOrCommitReplayedDuringVerification": true,
+        "browserPrivateStorageRead": false
+      }
+    }
   },
-  "limitations": ["Preparing a native pending task is not a real browser crash or physical power-loss test", "No claim of formal partial-reselection acceptance before the browser action and saved-file checks", "Previous all-received and language acceptance remains separate and does not need repetition", "Performance matrix, installer and overall v1 delivery are not complete"]
+  "limitations": [
+    "Preparing a native pending task is not a real browser crash or physical power-loss test",
+    "Previous all-received and language acceptance remains separate and does not need repetition",
+    "Performance matrix, installer and overall v1 delivery are not complete",
+    "Formal acceptance covers the prepared partial-reselection path; no claim of every browser-crash, power-loss or full-disk scenario"
+  ]
 }
