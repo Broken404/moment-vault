@@ -1,0 +1,1246 @@
+{
+  "date": "2026-10-24",
+  "status": "native-read-optimization-validated-formal-preview-pending",
+  "scope": "sequential local attachment reads; upload recovery accepted separately; no browser latency or recording-quality guarantee",
+  "rootCause": "Each ReadFile chunk called Find, which rescanned all material descriptions through List",
+  "competingExplanations": [
+    {
+      "explanation": "Image decoding or byte transfer dominates",
+      "finding": "Native read path has no image decoding; even the short final chunk cost about a full library scan before the fix"
+    },
+    {
+      "explanation": "Only helper startup makes reads slow",
+      "finding": "All 23 reads in the 1500-item baseline took about 0.6 to 0.8 seconds; startup alone cannot account for it. First-scan variability remains separately unresolved"
+    }
+  ],
+  "implementation": {
+    "source": "native/MomentVault.Host/AttachmentReader.cs",
+    "maximumContinuations": 16,
+    "idleLifetimeMilliseconds": 10000,
+    "reuseOnlyImmediateNextChunk": true,
+    "newReadsRewindsAndSkipsUseNormalLookup": true,
+    "rootAndBucketSeparated": true,
+    "descriptionRevisionAndFileIdentityLengthTimestampCheckedPerChunk": true,
+    "noMediaBytesOrFileHandlesRetained": true,
+    "standardWriteLookupUnchanged": true,
+    "newDependencies": 0,
+    "protocolAndDescriptionFormatUnchanged": true
+  },
+  "baseline": {
+    "helperDllSha256": "41e94ded927b4c8218f70c3926a3f3894d387db27264a6e1cd9080ad41ecb9fb",
+    "largeAttachment": {
+      "bytes": 4334289,
+      "itemsInLibrary": 1501,
+      "uploadMs": 2016.549,
+      "readAllMs": 16296.999,
+      "readCalls": {
+        "samples": [
+          766.293,
+          734.288,
+          753.798,
+          676.012,
+          758.777,
+          732.109,
+          743.487,
+          686.931,
+          786.667,
+          739.596,
+          698.25,
+          700.616,
+          687.203,
+          739.733,
+          686.069,
+          688.817,
+          780.491,
+          714.982,
+          679.522,
+          643.885,
+          616.817,
+          639.474,
+          632.047
+        ],
+        "medianMs": 700.616,
+        "maxMs": 786.667
+      },
+      "sha256": "e5acc914b5f872d82720581c51d614a86c2e20f18844937254060392662f3c35",
+      "roundTripBytesMatch": true
+    },
+    "counts": [
+      {
+        "items": 100,
+        "attachments": 200,
+        "firstListIncludingHelperStartupMs": 2417.68,
+        "firstPage": {
+          "samples": [
+            43.828,
+            52.936,
+            49.272,
+            49.212,
+            59.637
+          ],
+          "medianMs": 49.272,
+          "maxMs": 59.637
+        },
+        "tailPage": {
+          "samples": [
+            45.79,
+            51.93,
+            51.223,
+            50.248,
+            57.136
+          ],
+          "medianMs": 51.223,
+          "maxMs": 57.136
+        },
+        "ping": {
+          "samples": [
+            59.127,
+            58.765,
+            48.087,
+            58.081,
+            56.517
+          ],
+          "medianMs": 58.081,
+          "maxMs": 59.127
+        },
+        "helperMemoryBeforeThumbnails": {
+          "threads": 8,
+          "workingSetBytes": 61480960,
+          "privateBytes": 32059392
+        },
+        "helperMemoryAfterThumbnails": {
+          "threads": 15,
+          "workingSetBytes": 65388544,
+          "privateBytes": 33460224
+        },
+        "thumbnailConcurrencyRequested": 2,
+        "thumbnails": [
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 384.627,
+            "request": {
+              "samples": [
+                12.967,
+                1.948,
+                4.418
+              ],
+              "medianMs": 4.418,
+              "maxMs": 12.967
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 551.583,
+            "request": {
+              "samples": [
+                2.24,
+                1.59,
+                2.338,
+                2.931
+              ],
+              "medianMs": 2.338,
+              "maxMs": 2.931
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 334.108,
+            "request": {
+              "samples": [
+                1.496,
+                2.447,
+                2.651
+              ],
+              "medianMs": 2.447,
+              "maxMs": 2.651
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 502.519,
+            "request": {
+              "samples": [
+                1.643,
+                3.512,
+                1.471,
+                2.851
+              ],
+              "medianMs": 2.851,
+              "maxMs": 3.512
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 475.942,
+            "request": {
+              "samples": [
+                1.258,
+                1.568,
+                1.77,
+                2.179
+              ],
+              "medianMs": 1.77,
+              "maxMs": 2.179
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 650.145,
+            "request": {
+              "samples": [
+                1.409,
+                1.22,
+                1.276,
+                1.427,
+                4.046
+              ],
+              "medianMs": 1.409,
+              "maxMs": 4.046
+            }
+          },
+          {
+            "kind": "image",
+            "position": "oldest",
+            "readyMs": 168.596,
+            "request": {
+              "samples": [
+                1.203,
+                4.089
+              ],
+              "medianMs": 4.089,
+              "maxMs": 4.089
+            }
+          }
+        ],
+        "thumbnailCachedRequest": {
+          "samples": [
+            1.958,
+            1.658,
+            1.665,
+            2.202,
+            1.975,
+            1.949,
+            2.332
+          ],
+          "medianMs": 1.958,
+          "maxMs": 2.332
+        },
+        "pingDuringThumbnails": {
+          "samples": [
+            65.663,
+            58.833,
+            53.912,
+            56.104,
+            55.862,
+            56.806,
+            58.72,
+            48.405,
+            47.667,
+            48.208,
+            48.012,
+            55.05,
+            49.912,
+            49.727,
+            46.753
+          ],
+          "medianMs": 53.912,
+          "maxMs": 65.663
+        }
+      },
+      {
+        "items": 500,
+        "attachments": 1000,
+        "firstListIncludingHelperStartupMs": 9460.141,
+        "firstPage": {
+          "samples": [
+            225.944,
+            236.001,
+            235.827,
+            255.822,
+            254.243
+          ],
+          "medianMs": 236.001,
+          "maxMs": 255.822
+        },
+        "tailPage": {
+          "samples": [
+            241.933,
+            230.623,
+            277.42,
+            226,
+            254.12
+          ],
+          "medianMs": 241.933,
+          "maxMs": 277.42
+        },
+        "ping": {
+          "samples": [
+            239.837,
+            238.35,
+            288.175,
+            255.078,
+            234.158
+          ],
+          "medianMs": 239.837,
+          "maxMs": 288.175
+        },
+        "helperMemoryBeforeThumbnails": {
+          "threads": 8,
+          "workingSetBytes": 69177344,
+          "privateBytes": 38920192
+        },
+        "helperMemoryAfterThumbnails": {
+          "threads": 15,
+          "workingSetBytes": 70541312,
+          "privateBytes": 38350848
+        },
+        "thumbnailConcurrencyRequested": 2,
+        "thumbnails": [
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 376.853,
+            "request": {
+              "samples": [
+                10.173,
+                3.78
+              ],
+              "medianMs": 10.173,
+              "maxMs": 10.173
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 767.741,
+            "request": {
+              "samples": [
+                1.722,
+                2.601,
+                7.526
+              ],
+              "medianMs": 2.601,
+              "maxMs": 7.526
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 411.184,
+            "request": {
+              "samples": [
+                1.699,
+                2.782
+              ],
+              "medianMs": 2.782,
+              "maxMs": 2.782
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 782.386,
+            "request": {
+              "samples": [
+                1.698,
+                2.147,
+                2.301
+              ],
+              "medianMs": 2.147,
+              "maxMs": 2.301
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 396.958,
+            "request": {
+              "samples": [
+                1.476,
+                3.725
+              ],
+              "medianMs": 3.725,
+              "maxMs": 3.725
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 832.153,
+            "request": {
+              "samples": [
+                1.335,
+                1.631,
+                2.546
+              ],
+              "medianMs": 1.631,
+              "maxMs": 2.546
+            }
+          },
+          {
+            "kind": "image",
+            "position": "oldest",
+            "readyMs": 1.924,
+            "request": {
+              "samples": [
+                1.883
+              ],
+              "medianMs": 1.883,
+              "maxMs": 1.883
+            }
+          }
+        ],
+        "thumbnailCachedRequest": {
+          "samples": [
+            2.228,
+            2.146,
+            2.304,
+            2.548,
+            2.011,
+            2.272,
+            2.324
+          ],
+          "medianMs": 2.272,
+          "maxMs": 2.548
+        },
+        "pingDuringThumbnails": {
+          "samples": [
+            253.33,
+            271.023,
+            295.099,
+            301.515,
+            260.4,
+            241.477,
+            277.836,
+            318.747,
+            238.936,
+            271.152
+          ],
+          "medianMs": 271.152,
+          "maxMs": 318.747
+        }
+      },
+      {
+        "items": 1500,
+        "attachments": 3000,
+        "firstListIncludingHelperStartupMs": 23214.477,
+        "firstPage": {
+          "samples": [
+            664.236,
+            738.631,
+            860.84,
+            730.057,
+            672.621
+          ],
+          "medianMs": 730.057,
+          "maxMs": 860.84
+        },
+        "tailPage": {
+          "samples": [
+            681.08,
+            694.455,
+            905.352,
+            680.976,
+            704.363
+          ],
+          "medianMs": 694.455,
+          "maxMs": 905.352
+        },
+        "ping": {
+          "samples": [
+            720.727,
+            696.592,
+            815.599,
+            704.055,
+            694.23
+          ],
+          "medianMs": 704.055,
+          "maxMs": 815.599
+        },
+        "helperMemoryBeforeThumbnails": {
+          "threads": 6,
+          "workingSetBytes": 67371008,
+          "privateBytes": 37720064
+        },
+        "helperMemoryAfterThumbnails": {
+          "threads": 13,
+          "workingSetBytes": 70959104,
+          "privateBytes": 39219200
+        },
+        "thumbnailConcurrencyRequested": 2,
+        "thumbnails": [
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 955.665,
+            "request": {
+              "samples": [
+                10.265,
+                3.684
+              ],
+              "medianMs": 10.265,
+              "maxMs": 10.265
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 958.505,
+            "request": {
+              "samples": [
+                4.548,
+                2.794
+              ],
+              "medianMs": 4.548,
+              "maxMs": 4.548
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 833.051,
+            "request": {
+              "samples": [
+                1.24,
+                2.128
+              ],
+              "medianMs": 2.128,
+              "maxMs": 2.128
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 835.119,
+            "request": {
+              "samples": [
+                1.223,
+                2.021
+              ],
+              "medianMs": 2.021,
+              "maxMs": 2.021
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 926.67,
+            "request": {
+              "samples": [
+                2.04,
+                2.123
+              ],
+              "medianMs": 2.123,
+              "maxMs": 2.123
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 928.421,
+            "request": {
+              "samples": [
+                1.395,
+                1.709
+              ],
+              "medianMs": 1.709,
+              "maxMs": 1.709
+            }
+          },
+          {
+            "kind": "image",
+            "position": "oldest",
+            "readyMs": 739.387,
+            "request": {
+              "samples": [
+                739.335
+              ],
+              "medianMs": 739.335,
+              "maxMs": 739.335
+            }
+          }
+        ],
+        "thumbnailCachedRequest": {
+          "samples": [
+            1.8,
+            2.099,
+            1.813,
+            2.198,
+            2.027,
+            1.896,
+            735.5
+          ],
+          "medianMs": 2.027,
+          "maxMs": 735.5
+        },
+        "pingDuringThumbnails": {
+          "samples": [
+            826.85,
+            685.557,
+            726.777,
+            704.883,
+            819.209,
+            734.182,
+            733.402
+          ],
+          "medianMs": 733.402,
+          "maxMs": 826.85
+        }
+      }
+    ]
+  },
+  "optimized": {
+    "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+    "readerSourceSha256": "6c4d133273ffb50cdcfca7f682d79bcb31d851f84abcd48516adc458193d0ef5",
+    "largeAttachment": {
+      "bytes": 4334289,
+      "itemsInLibrary": 1501,
+      "uploadMs": 2129.301,
+      "readAllMs": 809.188,
+      "readCalls": {
+        "samples": [
+          733.99,
+          3.589,
+          3.142,
+          3.243,
+          3.189,
+          3.404,
+          3.272,
+          2.844,
+          3.012,
+          3.158,
+          2.995,
+          3.08,
+          3.029,
+          2.82,
+          3.079,
+          2.935,
+          3.231,
+          3.04,
+          2.991,
+          3.077,
+          2.484,
+          2.889,
+          1.143
+        ],
+        "medianMs": 3.077,
+        "maxMs": 733.99
+      },
+      "sha256": "e5acc914b5f872d82720581c51d614a86c2e20f18844937254060392662f3c35",
+      "roundTripBytesMatch": true
+    },
+    "counts": [
+      {
+        "items": 100,
+        "attachments": 200,
+        "firstListIncludingHelperStartupMs": 2062.876,
+        "firstPage": {
+          "samples": [
+            35.025,
+            35.863,
+            34.891,
+            35.77,
+            37.751
+          ],
+          "medianMs": 35.77,
+          "maxMs": 37.751
+        },
+        "tailPage": {
+          "samples": [
+            38.109,
+            35.696,
+            33.848,
+            43.398,
+            33.118
+          ],
+          "medianMs": 35.696,
+          "maxMs": 43.398
+        },
+        "ping": {
+          "samples": [
+            38.486,
+            37.08,
+            35.632,
+            42,
+            33.15
+          ],
+          "medianMs": 37.08,
+          "maxMs": 42
+        },
+        "helperMemoryBeforeThumbnails": {
+          "threads": 8,
+          "workingSetBytes": 61341696,
+          "privateBytes": 32120832
+        },
+        "helperMemoryAfterThumbnails": {
+          "threads": 15,
+          "workingSetBytes": 65441792,
+          "privateBytes": 33644544
+        },
+        "thumbnailConcurrencyRequested": 2,
+        "thumbnails": [
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 328.24,
+            "request": {
+              "samples": [
+                18.55,
+                1.306,
+                4.165
+              ],
+              "medianMs": 4.165,
+              "maxMs": 18.55
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 481.786,
+            "request": {
+              "samples": [
+                1.225,
+                0.982,
+                1.388,
+                1.804
+              ],
+              "medianMs": 1.388,
+              "maxMs": 1.804
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 450.096,
+            "request": {
+              "samples": [
+                0.923,
+                1.182,
+                1.132,
+                2.154
+              ],
+              "medianMs": 1.182,
+              "maxMs": 2.154
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 605.758,
+            "request": {
+              "samples": [
+                0.923,
+                0.933,
+                0.977,
+                1.369,
+                1.895
+              ],
+              "medianMs": 0.977,
+              "maxMs": 1.895
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 309.403,
+            "request": {
+              "samples": [
+                1.202,
+                1.34,
+                2.248
+              ],
+              "medianMs": 1.34,
+              "maxMs": 2.248
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 310.872,
+            "request": {
+              "samples": [
+                1.339,
+                1.271,
+                1.424
+              ],
+              "medianMs": 1.339,
+              "maxMs": 1.424
+            }
+          },
+          {
+            "kind": "image",
+            "position": "oldest",
+            "readyMs": 143.914,
+            "request": {
+              "samples": [
+                1.171,
+                1.717
+              ],
+              "medianMs": 1.717,
+              "maxMs": 1.717
+            }
+          }
+        ],
+        "thumbnailCachedRequest": {
+          "samples": [
+            2.569,
+            1.617,
+            1.63,
+            1.552,
+            1.641,
+            1.619,
+            1.375
+          ],
+          "medianMs": 1.619,
+          "maxMs": 2.569
+        },
+        "pingDuringThumbnails": {
+          "samples": [
+            40.837,
+            40.138,
+            49.412,
+            32.031,
+            37.128,
+            43.913,
+            37.514,
+            37.712,
+            51.493,
+            40.612,
+            47.816,
+            40.542,
+            37.954,
+            39.365
+          ],
+          "medianMs": 40.542,
+          "maxMs": 51.493
+        }
+      },
+      {
+        "items": 500,
+        "attachments": 1000,
+        "firstListIncludingHelperStartupMs": 7758.686,
+        "firstPage": {
+          "samples": [
+            199.262,
+            242.862,
+            288.858,
+            218.69,
+            236.864
+          ],
+          "medianMs": 236.864,
+          "maxMs": 288.858
+        },
+        "tailPage": {
+          "samples": [
+            264.586,
+            249.306,
+            280.959,
+            206.301,
+            256.854
+          ],
+          "medianMs": 256.854,
+          "maxMs": 280.959
+        },
+        "ping": {
+          "samples": [
+            238.861,
+            209.332,
+            228.933,
+            212.598,
+            336.57
+          ],
+          "medianMs": 228.933,
+          "maxMs": 336.57
+        },
+        "helperMemoryBeforeThumbnails": {
+          "threads": 8,
+          "workingSetBytes": 69246976,
+          "privateBytes": 39841792
+        },
+        "helperMemoryAfterThumbnails": {
+          "threads": 15,
+          "workingSetBytes": 70045696,
+          "privateBytes": 37818368
+        },
+        "thumbnailConcurrencyRequested": 2,
+        "thumbnails": [
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 489.375,
+            "request": {
+              "samples": [
+                13.246,
+                5.467
+              ],
+              "medianMs": 13.246,
+              "maxMs": 13.246
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 1017.268,
+            "request": {
+              "samples": [
+                2.554,
+                1.683,
+                2.195
+              ],
+              "medianMs": 2.195,
+              "maxMs": 2.554
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 390.175,
+            "request": {
+              "samples": [
+                1.352,
+                2.22
+              ],
+              "medianMs": 2.22,
+              "maxMs": 2.22
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 392.276,
+            "request": {
+              "samples": [
+                1.385,
+                2.054
+              ],
+              "medianMs": 2.054,
+              "maxMs": 2.054
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 374.872,
+            "request": {
+              "samples": [
+                1.274,
+                2.089
+              ],
+              "medianMs": 2.089,
+              "maxMs": 2.089
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 683.157,
+            "request": {
+              "samples": [
+                1.265,
+                1.443,
+                1.976
+              ],
+              "medianMs": 1.443,
+              "maxMs": 1.976
+            }
+          },
+          {
+            "kind": "image",
+            "position": "oldest",
+            "readyMs": 1.618,
+            "request": {
+              "samples": [
+                1.581
+              ],
+              "medianMs": 1.581,
+              "maxMs": 1.581
+            }
+          }
+        ],
+        "thumbnailCachedRequest": {
+          "samples": [
+            1.381,
+            1.662,
+            1.754,
+            1.402,
+            1.545,
+            1.71,
+            1.573
+          ],
+          "medianMs": 1.573,
+          "maxMs": 1.754
+        },
+        "pingDuringThumbnails": {
+          "samples": [
+            367.724,
+            419.85,
+            233.539,
+            276.335,
+            226.979,
+            263.994,
+            200.991,
+            206.868,
+            199.835
+          ],
+          "medianMs": 233.539,
+          "maxMs": 419.85
+        }
+      },
+      {
+        "items": 1500,
+        "attachments": 3000,
+        "firstListIncludingHelperStartupMs": 20480.515,
+        "firstPage": {
+          "samples": [
+            642.461,
+            753.352,
+            877.173,
+            718.53,
+            631.351
+          ],
+          "medianMs": 718.53,
+          "maxMs": 877.173
+        },
+        "tailPage": {
+          "samples": [
+            670.039,
+            962.16,
+            845.788,
+            816.643,
+            557.504
+          ],
+          "medianMs": 816.643,
+          "maxMs": 962.16
+        },
+        "ping": {
+          "samples": [
+            869.689,
+            731.874,
+            835.821,
+            584.706,
+            585.698
+          ],
+          "medianMs": 731.874,
+          "maxMs": 869.689
+        },
+        "helperMemoryBeforeThumbnails": {
+          "threads": 6,
+          "workingSetBytes": 71401472,
+          "privateBytes": 41861120
+        },
+        "helperMemoryAfterThumbnails": {
+          "threads": 13,
+          "workingSetBytes": 72146944,
+          "privateBytes": 40218624
+        },
+        "thumbnailConcurrencyRequested": 2,
+        "thumbnails": [
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 738.927,
+            "request": {
+              "samples": [
+                7.507,
+                2.979
+              ],
+              "medianMs": 7.507,
+              "maxMs": 7.507
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 741.039,
+            "request": {
+              "samples": [
+                1.477,
+                2.044
+              ],
+              "medianMs": 2.044,
+              "maxMs": 2.044
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 786.88,
+            "request": {
+              "samples": [
+                2.542,
+                3.163
+              ],
+              "medianMs": 3.163,
+              "maxMs": 3.163
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 788.903,
+            "request": {
+              "samples": [
+                1.12,
+                1.974
+              ],
+              "medianMs": 1.974,
+              "maxMs": 1.974
+            }
+          },
+          {
+            "kind": "video",
+            "position": "first-page",
+            "readyMs": 946.872,
+            "request": {
+              "samples": [
+                1.126,
+                2.024
+              ],
+              "medianMs": 2.024,
+              "maxMs": 2.024
+            }
+          },
+          {
+            "kind": "image",
+            "position": "first-page",
+            "readyMs": 949.053,
+            "request": {
+              "samples": [
+                1.326,
+                2.131
+              ],
+              "medianMs": 2.131,
+              "maxMs": 2.131
+            }
+          },
+          {
+            "kind": "image",
+            "position": "oldest",
+            "readyMs": 772.268,
+            "request": {
+              "samples": [
+                772.224
+              ],
+              "medianMs": 772.224,
+              "maxMs": 772.224
+            }
+          }
+        ],
+        "thumbnailCachedRequest": {
+          "samples": [
+            1.581,
+            1.938,
+            1.699,
+            1.84,
+            1.703,
+            1.716,
+            624.914
+          ],
+          "medianMs": 1.716,
+          "maxMs": 624.914
+        },
+        "pingDuringThumbnails": {
+          "samples": [
+            614.67,
+            582.583,
+            665.014,
+            697.855,
+            837.939,
+            868.173,
+            620.703
+          ],
+          "medianMs": 665.014,
+          "maxMs": 868.173
+        }
+      }
+    ]
+  },
+  "diagnosticReadScaling": {
+    "scope": "100-item relative diagnostic budget; not a portable UI latency target",
+    "before": {
+      "status": "failed",
+      "check": {
+        "budgetMs": 455.576,
+        "actualMs": 2872.467,
+        "passed": false
+      }
+    },
+    "after": {
+      "status": "measured",
+      "check": {
+        "budgetMs": 442.72,
+        "actualMs": 145.934,
+        "passed": true
+      }
+    }
+  },
+  "checks": {
+    "nativeFileAndProtocolPassed": 34,
+    "newNativeReadGroups": 4,
+    "sourceAndDescriptionChangeChecksFailedBeforeGuard": true,
+    "frontendPassed": 88,
+    "frontendFiles": 16,
+    "frontendCommand": "npx vitest run --maxWorkers=2",
+    "defaultFrontendAttempt": "16 worker startup timeouts; no tests executed; full rerun with two workers passed",
+    "formatTypecheckProductionBuildAndGeneratedContentCheckPassed": true,
+    "actualProductionRecordingFilePipeline": {
+      "passed": true,
+      "scope": "generated video through production TypeScript and actual native helper, not tabCapture",
+      "videoCodec": "h264",
+      "videoFrames": 60,
+      "audioCodec": "aac",
+      "audioFrames": 94,
+      "durationSeconds": 2
+    },
+    "actualCandidate1005001500ItemMeasurementsCompleted": true,
+    "largeReadBytesMatchOriginal": true,
+    "sourceOriginalsUnchanged": true
+  },
+  "deployment": {
+    "helperDirectory": "dist/host-material-read",
+    "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "offscreenUnchanged": true,
+    "existingDirectorySettingsUnchanged": true,
+    "registrationAndOriginFramedPingPassed": true,
+    "mediaToolsCopiedFromExistingMatchingDistribution": true
+  },
+  "formalPreviewAcceptance": {
+    "status": "prepared-awaiting-user",
+    "id": "b169c7f2743c435d9b663aeb99c9dc60",
+    "name": "预览性能验收-大图片",
+    "imageWidth": 1600,
+    "imageHeight": 900,
+    "bytes": 4334289,
+    "sha256": "e5acc914b5f872d82720581c51d614a86c2e20f18844937254060392662f3c35",
+    "nativeReadCalls": 23,
+    "nativeReadBytesMatch": true,
+    "actualPngDecodePassed": true,
+    "extensionReloadRequiredToReconnectHelper": true,
+    "realRecordingRequired": false,
+    "localManifest": ".local-data/material-read-acceptance/manifest.json"
+  },
+  "localArtifacts": {
+    "initial15SecondTimeout": ".local-data/library-measurement-a0adab10-8127-433b-be6c-0dc8f9b06e63/result.json",
+    "initialDatasetReplay": ".local-data/library-measurement-a0adab10-8127-433b-be6c-0dc8f9b06e63/replay.json",
+    "baseline": ".local-data/library-measurement-28c41fee-7486-4154-b1f1-9cd0fa337b7d/result.json",
+    "optimized": ".local-data/library-measurement-3222bf19-37c6-4ef4-8b6b-6b22d0872d54/result.json",
+    "redSmallCase": ".local-data/library-measurement-bc5b9ed0-0ae1-4713-95f2-1ea89baebd74/result.json",
+    "greenSmallCase": ".local-data/library-measurement-dc2feaf8-ad66-4be1-b7e3-a31c3c7c538f/result.json",
+    "recordingPipeline": ".local-data/recording-pipeline-df1cff6e-dca7-4a0a-af64-b852df63577b"
+  },
+  "limitations": [
+    "Measurements use real isolated helper processes and self-made files, not formal-browser display timing",
+    "First list request includes helper startup and first access to new files; OS disk cache was not controlled",
+    "1500-item first list still took 20480.515 ms; root cause of first-scan variability is not independently confirmed",
+    "Oldest cached thumbnail lookup still had a 624.914 ms maximum; this fix does not optimize list or thumbnail indexing",
+    "Memory samples are helper-main-process snapshots after thumbnails, not browser or FFmpeg child-process peak measurements",
+    "Formal preview confirmation, full performance matrix, installer and overall v1 delivery remain incomplete"
+  ]
+}

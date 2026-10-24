@@ -32,6 +32,8 @@ node tools/check-native.mjs --require-cross-volume
 
 ## 自用开发安装
 
+2026-10-24 开发部署补记：大图连续分块读取的修正版当前注册在 `dist/host-material-read`；使用注册检查时传入匹配的 `--host-directory dist/host-material-read`。既有 `dist/host-upload-recovery` 保留为上传恢复和读取对照，不将其文件指纹视为当前运行版本。优化与范围见 [大图读取](material-read-performance.md)，当前正式扩展显示验收单独记录。
+
 构建完成后，执行注册脚本，只写当前用户的 Edge Native Messaging 项：
 
 ```powershell

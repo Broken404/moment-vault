@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "partial-reselection-accepted-continuous-use-regression-next",
+  "status": "partial-reselection-accepted-read-performance-fix-awaiting-formal-preview",
   "scope": "Approved v1 release regression; no AI, store publication or user media changes",
   "order": [
     "Formal partial-upload reselection acceptance",
@@ -95,5 +95,15 @@
     "Previous all-received and language acceptance remains separate and does not need repetition",
     "Performance matrix, installer and overall v1 delivery are not complete",
     "Formal acceptance covers the prepared partial-reselection path; no claim of every browser-crash, power-loss or full-disk scenario"
-  ]
+  ],
+  "continuousUse": {
+    "status": "in-progress",
+    "materialReadEvidence": "material-read-performance-2026-10-24.json",
+    "largeAttachmentBytes": 4334289,
+    "baselineReadMs": 16296.999,
+    "optimizedReadMs": 809.188,
+    "libraryItemsDuringRead": 1501,
+    "formalPreviewPending": true,
+    "firstListAndFullMatrixStillPending": true
+  }
 }

@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using MomentVault.Host;
@@ -431,6 +432,58 @@ var tests = new List<(string Name, Action Action)>
         Throws(() => store.Thumbnail("library", item.Id, item.Attachments[0].Id), "missing-item");
         Equal(store.List("draft").Items.Count, 1);
     }),
+    ("chunked reads reject a changed source and can restart with its current bytes", () =>
+    {
+        using var store = Store("read-source-change"); var bytes = LargeImageBytes(42);
+        var item = SaveFiles(store, "large source", [(FileDescriptor(), bytes)]); var attachment = item.Attachments[0];
+        var first = ReadBytes(store, "draft", item, 0); True(first.Length == 192 * 1024);
+        True(first.SequenceEqual(bytes.Take(first.Length)));
+        var directory = store.Find("draft", item.Id); var media = Path.Combine(directory, attachment.FileName);
+        var stamp = File.GetLastWriteTimeUtc(media); var changed = (byte[])bytes.Clone(); changed[first.Length] ^= 1;
+        File.WriteAllBytes(media, changed); File.SetLastWriteTimeUtc(media, stamp.AddSeconds(1));
+        Throws(() => store.ReadFile("draft", item.Id, attachment.Id, first.Length), "read-changed");
+        var reopened = ReadAllBytes(store, "draft", item); True(reopened.SequenceEqual(changed));
+    }),
+    ("chunked reads reject changed description snapshots and reopen after a folder rename", () =>
+    {
+        using var store = Store("read-description-change"); var bytes = LargeImageBytes(43);
+        var item = SaveFiles(store, "large description", [(FileDescriptor(), bytes)]);
+        var first = ReadBytes(store, "draft", item, 0); var directory = store.Find("draft", item.Id);
+        var edited = Description.Load(directory); edited.Note = "External note update"; Description.Save(directory, edited);
+        Throws(() => store.ReadFile("draft", item.Id, item.Attachments[0].Id, first.Length), "read-changed");
+        True(ReadAllBytes(store, "draft", item).SequenceEqual(bytes));
+        first = ReadBytes(store, "draft", item, 0);
+        Directory.Move(directory, directory + "-renamed");
+        Throws(() => store.ReadFile("draft", item.Id, item.Attachments[0].Id, first.Length), "read-changed");
+        True(ReadAllBytes(store, "draft", item).SequenceEqual(bytes));
+    }),
+    ("interleaved and nonsequential reads stay correct and cannot reuse another bucket or root", () =>
+    {
+        using var store = Store("read-scope"); var bytes = LargeImageBytes(44); var otherBytes = LargeImageBytes(45);
+        var item = SaveFiles(store, "large A", [(FileDescriptor(), bytes)]); var other = SaveFiles(store, "large B", [(FileDescriptor(), otherBytes)]);
+        var first = ReadBytes(store, "draft", item, 0); var otherFirst = ReadBytes(store, "draft", other, 0);
+        True(ReadBytes(store, "draft", item, first.Length).SequenceEqual(bytes.Skip(first.Length).Take(192 * 1024)));
+        True(ReadBytes(store, "draft", other, otherFirst.Length).SequenceEqual(otherBytes.Skip(otherFirst.Length).Take(192 * 1024)));
+        True(ReadBytes(store, "draft", item, 42).SequenceEqual(bytes.Skip(42).Take(192 * 1024)));
+        True(ReadBytes(store, "draft", item, 0).SequenceEqual(first));
+        Throws(() => store.ReadFile("library", item.Id, item.Attachments[0].Id, first.Length), "missing-item");
+        var source = store.Find("draft", item.Id); var newDraft = Path.Combine(Path.GetDirectoryName(store.Config.DraftRoot)!, "other-draft"); Directory.CreateDirectory(newDraft);
+        var target = Path.Combine(newDraft, "copy"); Directory.CreateDirectory(target);
+        foreach (var file in Directory.EnumerateFiles(source)) File.Copy(file, Path.Combine(target, Path.GetFileName(file)));
+        var changed = (byte[])bytes.Clone(); changed[first.Length] ^= 1; File.WriteAllBytes(Path.Combine(target, item.Attachments[0].FileName), changed);
+        store.Configure(new(newDraft, store.Config.LibraryRoot));
+        True(ReadBytes(store, "draft", item, first.Length).SequenceEqual(changed.Skip(first.Length).Take(192 * 1024)));
+    }),
+    ("read continuation reuse never bypasses duplicate material checks for writes", () =>
+    {
+        using var store = Store("read-write-separation"); var bytes = LargeImageBytes(46);
+        var item = SaveFiles(store, "read then update", [(FileDescriptor(), bytes)]);
+        _ = ReadBytes(store, "draft", item, 0); var source = store.Find("draft", item.Id);
+        var duplicate = Path.Combine(store.Config.DraftRoot, "duplicate"); Directory.CreateDirectory(duplicate);
+        foreach (var file in Directory.EnumerateFiles(source)) File.Copy(file, Path.Combine(duplicate, Path.GetFileName(file)));
+        Throws(() => store.Update(item.Id, item.Revision, "must not update", "", []), "missing-item");
+        Equal(Description.Load(source).Name, item.Name); Equal(Description.Load(duplicate).Name, item.Name);
+    }),
     ("framed protocol handles multiple messages and keeps stdout structured", () =>
     {
         var store = Store("protocol");
@@ -490,10 +543,32 @@ static Material SaveFiles(VaultStore store, string name, (FileUpload File, byte[
     var upload = store.Begin(name, files.Select(f => f.File).ToArray());
     foreach (var file in files)
     {
-        store.Append(upload.Material.Id, file.File.Id, 0, Convert.ToBase64String(file.Bytes));
-        store.FinishFile(upload.Material.Id, file.File.Id, 1, file.Bytes.Length);
+        var chunks = (file.Bytes.Length + 192 * 1024 - 1) / (192 * 1024);
+        for (var sequence = 0; sequence < chunks; sequence++)
+            store.Append(upload.Material.Id, file.File.Id, sequence, Convert.ToBase64String(file.Bytes.AsSpan(sequence * 192 * 1024, Math.Min(192 * 1024, file.Bytes.Length - sequence * 192 * 1024))));
+        store.FinishFile(upload.Material.Id, file.File.Id, chunks, file.Bytes.Length);
     }
     return store.Commit(upload.Material.Id);
+}
+static byte[] LargeImageBytes(int seed)
+{
+    using var image = new Bitmap(512, 512, PixelFormat.Format24bppRgb);
+    var data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+    try { var pixels = new byte[Math.Abs(data.Stride) * image.Height]; new Random(seed).NextBytes(pixels); Marshal.Copy(pixels, 0, data.Scan0, pixels.Length); }
+    finally { image.UnlockBits(data); }
+    using var stream = new MemoryStream(); image.Save(stream, ImageFormat.Png); return stream.ToArray();
+}
+static byte[] ReadBytes(VaultStore store, string bucket, Material item, long offset)
+{
+    using var response = JsonDocument.Parse(MomentVault.Host.Json.Write(store.ReadFile(bucket, item.Id, item.Attachments[0].Id, offset)));
+    Equal(response.RootElement.GetProperty("offset").GetInt64(), offset);
+    return Convert.FromBase64String(response.RootElement.GetProperty("base64").GetString()!);
+}
+static byte[] ReadAllBytes(VaultStore store, string bucket, Material item)
+{
+    using var stream = new MemoryStream(); var length = new FileInfo(Path.Combine(store.Find(bucket, item.Id), item.Attachments[0].FileName)).Length;
+    while (stream.Length < length) { var bytes = ReadBytes(store, bucket, item, stream.Length); True(bytes.Length > 0); stream.Write(bytes); }
+    return stream.ToArray();
 }
 static void True(bool value) { if (!value) throw new Exception("Assertion failed"); }
 static void Equal<T>(T a, T b) { if (!EqualityComparer<T>.Default.Equals(a, b)) throw new Exception($"Expected {b}; actual {a}"); }

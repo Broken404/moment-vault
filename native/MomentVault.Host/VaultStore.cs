@@ -399,22 +399,6 @@ public sealed partial class VaultStore : IDisposable
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or VaultException) { /* Disposable cache cleanup must not turn a completed deletion into a failed result. */ }
     }
 
-    public object ReadFile(string bucket, string id, string attachmentId, long offset)
-    {
-        var directory = Find(bucket, id);
-        var item = Description.Load(directory);
-        var file = item.Attachments.SingleOrDefault(a => a.Id == attachmentId)
-            ?? throw new VaultException("missing-attachment", "附件不存在");
-        var path = Path.Combine(directory, file.FileName);
-        SafeFiles.RejectLinks(path);
-        using var stream = File.OpenRead(path);
-        if (offset < 0 || offset > stream.Length) throw new VaultException("invalid-offset", "读取位置无效");
-        stream.Position = offset;
-        var buffer = new byte[(int)Math.Min(192 * 1024, stream.Length - offset)];
-        stream.ReadExactly(buffer);
-        return new { base64 = Convert.ToBase64String(buffer), offset, total = stream.Length, mime = file.Mime };
-    }
-
     public void Open(string bucket, string? id, string? attachmentId)
     {
         var path = id is null ? Root(bucket) : Find(bucket, id);
