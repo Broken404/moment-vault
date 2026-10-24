@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "native-read-optimization-validated-formal-preview-pending",
+  "status": "read-optimization-and-formal-preview-accepted-first-scan-pending",
   "scope": "sequential local attachment reads; upload recovery accepted separately; no browser latency or recording-quality guarantee",
   "rootCause": "Each ReadFile chunk called Find, which rescanned all material descriptions through List",
   "competingExplanations": [
@@ -1212,7 +1212,7 @@
     "mediaToolsCopiedFromExistingMatchingDistribution": true
   },
   "formalPreviewAcceptance": {
-    "status": "prepared-awaiting-user",
+    "status": "user-confirmed-and-files-verified",
     "id": "b169c7f2743c435d9b663aeb99c9dc60",
     "name": "预览性能验收-大图片",
     "imageWidth": 1600,
@@ -1222,9 +1222,40 @@
     "nativeReadCalls": 23,
     "nativeReadBytesMatch": true,
     "actualPngDecodePassed": true,
-    "extensionReloadRequiredToReconnectHelper": true,
     "realRecordingRequired": false,
-    "localManifest": ".local-data/material-read-acceptance/manifest.json"
+    "localManifest": ".local-data/material-read-acceptance/manifest.json",
+    "reloadRequiredBeforeAcceptance": true,
+    "additionalReloadRequired": false,
+    "acceptance": {
+      "status": "passed",
+      "checkedAtUtc": "2026-10-24T07:32:57.858565+00:00",
+      "acceptedOn": "2026-10-24",
+      "implementationCommit": "798a44d",
+      "userConfirmation": "右侧正常显示彩色测试图",
+      "userConfirmedReloadAndFormalRightPaneDisplay": true,
+      "independentBrowserInspectionThisTurn": false,
+      "uploadId": "b169c7f2743c435d9b663aeb99c9dc60",
+      "savedItemCountForFixture": 1,
+      "attachmentCount": 1,
+      "bytes": 4334289,
+      "sha256": "e5acc914b5f872d82720581c51d614a86c2e20f18844937254060392662f3c35",
+      "imageWidth": 1600,
+      "imageHeight": 900,
+      "codec": "png",
+      "savedAndOriginalBytesUnchanged": true,
+      "materialMetadataAndDescriptionRevisionUnchanged": true,
+      "fullDecodePassed": true,
+      "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+      "existingDirectorySettingsUnchanged": true,
+      "verificationHostOperations": [
+        "items.list",
+        "ping",
+        "uploads.get"
+      ],
+      "noUploadOrReadReplayDuringVerification": true,
+      "browserDisplayLatencyMeasured": false,
+      "firstLargeLibraryScanAcceptance": false
+    }
   },
   "localArtifacts": {
     "initial15SecondTimeout": ".local-data/library-measurement-a0adab10-8127-433b-be6c-0dc8f9b06e63/result.json",
@@ -1241,6 +1272,6 @@
     "1500-item first list still took 20480.515 ms; root cause of first-scan variability is not independently confirmed",
     "Oldest cached thumbnail lookup still had a 624.914 ms maximum; this fix does not optimize list or thumbnail indexing",
     "Memory samples are helper-main-process snapshots after thumbnails, not browser or FFmpeg child-process peak measurements",
-    "Formal preview confirmation, full performance matrix, installer and overall v1 delivery remain incomplete"
+    "Formal right-pane display is user-confirmed and the image independently verified; first-list latency, full performance matrix, installer and overall v1 delivery remain incomplete"
   ]
 }

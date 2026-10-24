@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "partial-reselection-accepted-read-performance-fix-awaiting-formal-preview",
+  "status": "partial-reselection-and-read-preview-accepted-first-scan-pending",
   "scope": "Approved v1 release regression; no AI, store publication or user media changes",
   "order": [
     "Formal partial-upload reselection acceptance",
@@ -103,7 +103,8 @@
     "baselineReadMs": 16296.999,
     "optimizedReadMs": 809.188,
     "libraryItemsDuringRead": 1501,
-    "formalPreviewPending": true,
-    "firstListAndFullMatrixStillPending": true
+    "formalPreviewPending": false,
+    "firstListAndFullMatrixStillPending": true,
+    "formalPreviewAcceptedOn": "2026-10-24"
   }
 }
