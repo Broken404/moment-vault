@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "implemented-and-isolated-edge-validated-formal-extension-pending",
+  "status": "formal-extension-language-switch-and-refresh-accepted",
   "scope": "UI localization only; no AI, media processing, material migration or installer work",
   "languages": { "default": "system", "choices": ["system", "zh-CN", "en"], "otherBrowserLanguagesFallback": "en", "chineseBrowserVariants": "zh-CN" },
   "implementation": {
@@ -43,6 +43,18 @@
     "formalExtensionAcceptance": false,
     "localScreenshots": [".local-data/i18n/settings-en-light.png", ".local-data/i18n/drafts-en-dark.png", ".local-data/i18n/menu-en-dark.png", ".local-data/i18n/video-en-light.png", ".local-data/i18n/settings-en-narrow.png"]
   },
+  "formalExtensionAcceptance": {
+    "date": "2026-10-24",
+    "implementationCommit": "20e931d44e29e82f93717c7014d9f0ca880dbe1d",
+    "evidence": "direct user confirmation in this conversation",
+    "userConfirmation": "可以的，已经重新加载，切换成 English 后刷新也还是英文。",
+    "extensionReloaded": true,
+    "switchedToEnglish": true,
+    "englishRetainedAfterSettingsRefresh": true,
+    "independentBrowserInspectionThisTurn": false,
+    "additionalReloadOrRecordingRequired": false,
+    "scope": "Formal extension English selection and refresh retention; earlier automated and isolated browser coverage remains separately recorded"
+  },
   "unchanged": {
     "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
     "registeredHelperDllSha256": "41e94ded927b4c8218f70c3926a3f3894d387db27264a6e1cd9080ad41ecb9fb",
@@ -51,5 +63,5 @@
     "extensionIdentity": true,
     "permissions": true
   },
-  "pending": ["Formal extension reload, switch to English in Settings, then refresh and confirm retention", "Full v1 quality matrix and installation remain separate work"]
+  "pending": ["Full v1 quality matrix and installation remain separate work"]
 }
