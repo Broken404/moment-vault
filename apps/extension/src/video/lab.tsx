@@ -12,6 +12,8 @@ import themeCss from '../theme.css?inline';
 import { checkSavedPreview } from './lab-recovery';
 
 function Lab() {
+  const query = new URLSearchParams(location.search);
+  const media = query.get('media') ?? 'fixture';
   const [site, setSite] = useState<Site>('youtube'),
     [theme, setTheme] = useState('light');
   const [target, setTarget] = useState<VideoTarget | null>(null);
@@ -94,7 +96,7 @@ function Lab() {
   );
   return (
     <div
-      className={`vault-root fixture-page${new URLSearchParams(location.search).has('reported-layout') ? ' reported-layout' : ''}`}
+      className={`vault-root fixture-page${query.has('reported-layout') ? ' reported-layout' : ''}${media.startsWith('portrait') ? ' portrait-layout' : ''}`}
       data-theme={theme}
     >
       <style>
@@ -109,6 +111,7 @@ function Lab() {
       .fixture-rail{position:absolute;bottom:24px;left:18px;right:18px;height:8px;background:#ffffff66;cursor:pointer}
       .fixture-progress{height:100%;background:#f0be55;pointer-events:none}.fixture-thumb{position:absolute;top:-4px;width:16px;height:16px;background:#fff;border-radius:50%;transform:translateX(-50%);pointer-events:none}
       .fixture-native{display:flex;gap:8px;align-items:center;padding:10px 0}.fixture-native span{font-size:12px;font-variant-numeric:tabular-nums}
+      .portrait-layout .fixture-player{aspect-ratio:9/16;max-height:660px;width:370px}
       .fixture-proof{padding:15px;border:1px solid var(--line);background:var(--paper)}.fixture-proof h2{font-size:14px;margin:0 0 12px}
       .fixture-proof pre{font-size:11px;line-height:1.7;white-space:pre-wrap}.fixture-note{font-size:12px;color:var(--muted);max-width:780px;line-height:1.8}
       .fixture-pet{display:flex;align-items:center;gap:12px;margin:20px 0 4px}.fixture-pet span+span{font-size:12px}
@@ -123,6 +126,30 @@ function Lab() {
         使用正式选段与预览代码；下方播放器和三种进度条均为自制夹具，不代表三站验收通过。
       </p>
       <div className="fixture-toolbar">
+        <button
+          className="button"
+          onClick={() => {
+            const endpoint = target?.player
+              .querySelector('[data-moment-vault-video]')
+              ?.shadowRoot?.querySelector<HTMLElement>('.endpoint.a');
+            if (!endpoint) return;
+            endpoint.focus();
+            void (async () => {
+              for (let index = 0; index < 100; index++) {
+                endpoint.dispatchEvent(
+                  new KeyboardEvent('keydown', {
+                    key: index < 53 ? 'ArrowRight' : 'ArrowLeft',
+                    bubbles: true,
+                    composed: true,
+                  }),
+                );
+                await new Promise((resolve) => setTimeout(resolve, 8));
+              }
+            })();
+          }}
+        >
+          快速往返 100 次（程序化按键）
+        </button>
         <button
           className="button"
           onClick={() => {
@@ -240,7 +267,7 @@ function Lab() {
           >
             <video
               ref={video}
-              src={`/fixture.mp4?source=${source}`}
+              src={`/${media}.mp4?source=${source}&network=${query.get('network') ?? 'normal'}&run=${query.get('run') ?? 'default'}`}
               preload="auto"
               playsInline
               onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}

@@ -23,6 +23,13 @@ for (const locale of ['en', 'zh_CN']) {
     assert.ok(messages[match[1]]?.message, `Missing browser locale ${locale}: ${match[1]}`);
 }
 assert.ok(!manifest.externally_connectable, 'Ordinary pages must not receive a native helper API');
+if (process.env.MOMENT_VAULT_VIDEO_PERFORMANCE_LAB !== '1')
+  assert.ok(
+    !(await readFile('dist/extension/content.js', 'utf8')).includes(
+      'data-moment-vault-performance-report',
+    ),
+    'Normal extension must omit the opt-in performance probe',
+  );
 
 const errors = [];
 const console = new VirtualConsole();

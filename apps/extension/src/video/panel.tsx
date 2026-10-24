@@ -18,6 +18,7 @@ import themeCss from '../theme.css?inline';
 import panelCss from './panel.css?inline';
 import { videoCapture, type CaptureHooks } from './capture';
 import type { CaptureStatus } from '../recording/types';
+import { videoPerformanceProbe } from './performance-probe';
 
 export function VideoMode({
   target,
@@ -95,12 +96,14 @@ export function VideoMode({
       layer.addEventListener(type, contain);
     root.append(style, layer);
     target.player.append(host);
+    const performanceProbe = videoPerformanceProbe(target, host);
     let opened: VideoSession | undefined;
     try {
       opened = new VideoSession(
         target,
         host,
         (value) => {
+          performanceProbe?.update(value);
           setSnapshot(value);
           stateRef.current?.(value);
         },
@@ -110,6 +113,7 @@ export function VideoMode({
     } catch (error) {
       opened?.close();
       host.remove();
+      performanceProbe?.close(opened);
       errorRef.current(error instanceof Error ? error.message : String(error));
       closeRef.current();
       return;
@@ -167,6 +171,7 @@ export function VideoMode({
       session.close();
       controller.current = null;
       host.remove();
+      performanceProbe?.close(session);
     };
     // Target identity creates the session; preference/theme changes do not reopen it.
   }, [target]);

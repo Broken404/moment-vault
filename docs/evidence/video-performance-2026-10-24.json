@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-24",
+  "status": "incomplete-computer-use-stopped-latency-review-needed",
+  "baselineCommit": "089e7da",
+  "scope": "Owned real media in Edge using production selection/preview modules and explicit DOM-only performance observation; not formal-platform or capture acceptance",
+  "stopReason": "Computer Use stopped this turn because it could not determine the current Edge window URL with enough confidence to enforce policy",
+  "furtherComputerActionsAfterStop": false,
+  "localServerStopped": true,
+  "fixtures": [
+    { "name": "hour", "durationSeconds": 3600, "width": 640, "height": 360, "fps": 15, "bytes": 249093367, "sha256": "0c1904a07f7b79539b5f839331b999b6fa13cdd378cba1081a79a34f1cc556b1" },
+    { "name": "portrait", "durationSeconds": 40, "width": 360, "height": 640, "fps": 30, "bytes": 4276007, "sha256": "475f9d74cb7e6499c4c6cafb4be3a0ec211d79013f993a37e92186faf61279c4" },
+    { "name": "portrait-low", "durationSeconds": 40, "width": 180, "height": 320, "fps": 30, "bytes": 1668733, "sha256": "f507de4eaca43cc9c2f2aa2c026f860a15a904fe302822268de9f090f71ebdf2" }
+  ],
+  "observations": {
+    "source": "actual Edge DOM and opt-in application-owned report, not independent screenshots",
+    "longSeek": { "seekable": [[0, 3600]], "initialBuffered": [[0, 56.355]], "requestedTargets": [3598, 1800], "finalTarget": 1800, "actualFrame": 1800, "reportedReadyMs": 490, "status": "preliminary-correctness-only" },
+    "rapidKeyboard": { "programmaticEvents": 100, "initialA": 1800, "finalA": 1830, "unchangedB": 3598, "actualFinalFrame": 1830, "reportedFinalRequestReadyMs": 1705.9, "physicalPointerDrag": false, "status": "final-position-correct-performance-not-accepted" },
+    "inputResponseConcern": { "observedNextRafMaximumMs": 1002.4, "pageReportedVisible": true, "causeEstablished": false, "actualScreenPresentationMeasured": false },
+    "observedMaximumCacheBytes": 2764800,
+    "observedMaximumCacheEntries": 3
+  },
+  "pending": ["Frontmost response reproduction and observation-overhead comparison", "Long-video short-range and fine-adjustment boundaries", "Portrait layout and frame aspect", "Slow Range responses and buffering", "Timeout, retry and close while loading", "Repeated entry/exit cache and callback release", "Three-platform real-page matrix"],
+  "checks": { "typecheck": "passed", "normalProductionBuild": "passed", "generatedExtensionSmoke": "passed", "normalBundleOmitsDiagnosticMarker": true, "fullFrontendSuiteRerun": false, "nativeCodeChanged": false },
+  "deployment": { "formalDiagnosticBuildEnabled": false, "formalExtensionReloaded": false, "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d", "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb", "realRecordingPerformed": false, "userMaterialWrites": false },
+  "overallVideoPerformanceAccepted": false
+}
