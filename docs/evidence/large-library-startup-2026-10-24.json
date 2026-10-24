@@ -1,0 +1,1629 @@
+{
+  "date": "2026-10-24",
+  "status": "native-scale-and-regressions-passed-formal-reconnect-pending",
+  "scope": "Approved large-library first-opening latency fix; isolated self-made data and actual native processes; not browser-render latency or physical disk-cold testing",
+  "baselineCommit": "2e095fa",
+  "rootCause": "List serially opened and read every description before duplicate validation, sorting and pagination; first access to newly created descriptions dominated the measured scan",
+  "feedbackLoop": {
+    "command": "$env:MOMENT_VAULT_TEST_HOST=(Resolve-Path dist/host-material-read/MomentVault.Host.exe).Path; node tools/measure-material-library.mjs --check-first-list",
+    "defaultItems": 500,
+    "defaultBudgetMs": 2000,
+    "smallerCases": {
+      "count40": {
+        "localArtifact": ".local-data/library-measurement-c3643ad9-21e8-41e3-a8e7-37befa1a3ba4/result.json",
+        "status": "measured",
+        "startedAtUtc": "2026-10-24T13:03:30.321Z",
+        "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+        "nodeVersion": "22.23.2",
+        "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+        "measurementScriptSha256": "3e6cce33a8a74b3f02ef4df191f848a7da1c809391229d88e3c0724685584e00",
+        "counts": [
+          {
+            "items": 40,
+            "attachments": 80,
+            "firstListIncludingHelperStartupMs": 990.004,
+            "firstPage": {
+              "samples": [
+                22.128,
+                21.93,
+                24.082,
+                21.86,
+                22.032
+              ],
+              "medianMs": 22.032,
+              "maxMs": 24.082
+            },
+            "tailPage": {
+              "samples": [
+                22.267,
+                21.963,
+                21.968,
+                23.274,
+                23.053
+              ],
+              "medianMs": 22.267,
+              "maxMs": 23.274
+            },
+            "ping": {
+              "samples": [
+                24.231,
+                21.693,
+                21.866,
+                22.562,
+                22.14
+              ],
+              "medianMs": 22.14,
+              "maxMs": 24.231
+            },
+            "helperMemoryBeforeThumbnails": {
+              "threads": 8,
+              "workingSetBytes": 57774080,
+              "privateBytes": 29032448
+            },
+            "helperMemoryAfterThumbnails": {
+              "threads": 8,
+              "workingSetBytes": 57774080,
+              "privateBytes": 29032448
+            },
+            "thumbnailConcurrencyRequested": 2,
+            "thumbnails": [],
+            "thumbnailCachedRequest": null,
+            "pingDuringThumbnails": null
+          }
+        ],
+        "firstListCheck": {
+          "budgetMs": 2000,
+          "actualMs": 990.004,
+          "passed": true
+        },
+        "completedAtUtc": "2026-10-24T13:03:33.533Z"
+      },
+      "count100BorderlineFailure": {
+        "localArtifact": ".local-data/library-measurement-3c92b10c-7d95-4144-be8a-79f04a4ef95a/result.json",
+        "status": "failed",
+        "startedAtUtc": "2026-10-24T13:03:14.630Z",
+        "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+        "nodeVersion": "22.23.2",
+        "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+        "measurementScriptSha256": "67c2e7666d6e7fca623744b1bb78b353bfea89c8061354ce6bacec6e1ee8be90",
+        "counts": [
+          {
+            "items": 100,
+            "attachments": 200,
+            "firstListIncludingHelperStartupMs": 2048.337,
+            "firstPage": {
+              "samples": [
+                38.756,
+                38.892,
+                43.094,
+                37.566,
+                39.252
+              ],
+              "medianMs": 38.892,
+              "maxMs": 43.094
+            },
+            "tailPage": {
+              "samples": [
+                40.29,
+                39.289,
+                35.232,
+                39.322,
+                36.349
+              ],
+              "medianMs": 39.289,
+              "maxMs": 40.29
+            },
+            "ping": {
+              "samples": [
+                39.494,
+                46.451,
+                40.079,
+                37.69,
+                38.522
+              ],
+              "medianMs": 39.494,
+              "maxMs": 46.451
+            },
+            "helperMemoryBeforeThumbnails": {
+              "threads": 8,
+              "workingSetBytes": 61480960,
+              "privateBytes": 32432128
+            },
+            "helperMemoryAfterThumbnails": {
+              "threads": 8,
+              "workingSetBytes": 61480960,
+              "privateBytes": 32432128
+            },
+            "thumbnailConcurrencyRequested": 2,
+            "thumbnails": [],
+            "thumbnailCachedRequest": null,
+            "pingDuringThumbnails": null
+          }
+        ],
+        "firstListCheck": {
+          "budgetMs": 2000,
+          "actualMs": 2048.337,
+          "passed": false
+        },
+        "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":2000,\"actualMs\":2048.337,\"passed\":false}"
+      },
+      "reasonFor500": "100-item measurement was close to the timing boundary; two independent new 500-item libraries reproduced approximately 12-second first reads"
+    },
+    "baseline500": [
+      {
+        "localArtifact": ".local-data/library-measurement-2bcde8e8-0e2d-41e0-b9e8-91ab7fb53155/result.json",
+        "status": "failed",
+        "startedAtUtc": "2026-10-24T13:02:12.279Z",
+        "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+        "nodeVersion": "22.23.2",
+        "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+        "measurementScriptSha256": "67c2e7666d6e7fca623744b1bb78b353bfea89c8061354ce6bacec6e1ee8be90",
+        "counts": [
+          {
+            "items": 500,
+            "attachments": 1000,
+            "firstListIncludingHelperStartupMs": 11555.514,
+            "firstPage": {
+              "samples": [
+                1252.485,
+                1247.65,
+                1228.545,
+                1311.213,
+                1384.921
+              ],
+              "medianMs": 1252.485,
+              "maxMs": 1384.921
+            },
+            "tailPage": {
+              "samples": [
+                1230.151,
+                1236.934,
+                1162.286,
+                1319.158,
+                1289.473
+              ],
+              "medianMs": 1236.934,
+              "maxMs": 1319.158
+            },
+            "ping": {
+              "samples": [
+                1195.741,
+                1256.734,
+                1215.494,
+                1289.9,
+                1304.008
+              ],
+              "medianMs": 1256.734,
+              "maxMs": 1304.008
+            },
+            "helperMemoryBeforeThumbnails": {
+              "threads": 5,
+              "workingSetBytes": 69689344,
+              "privateBytes": 39825408
+            },
+            "helperMemoryAfterThumbnails": {
+              "threads": 5,
+              "workingSetBytes": 69689344,
+              "privateBytes": 39825408
+            },
+            "thumbnailConcurrencyRequested": 2,
+            "thumbnails": [],
+            "thumbnailCachedRequest": null,
+            "pingDuringThumbnails": null
+          }
+        ],
+        "firstListCheck": {
+          "budgetMs": 2000,
+          "actualMs": 11555.514,
+          "passed": false
+        },
+        "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":2000,\"actualMs\":11555.514,\"passed\":false}"
+      },
+      {
+        "localArtifact": ".local-data/library-measurement-c00fe972-89e0-4aaa-a4b2-a45503b22c43/result.json",
+        "status": "failed",
+        "startedAtUtc": "2026-10-24T13:03:33.763Z",
+        "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+        "nodeVersion": "22.23.2",
+        "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+        "measurementScriptSha256": "3e6cce33a8a74b3f02ef4df191f848a7da1c809391229d88e3c0724685584e00",
+        "counts": [
+          {
+            "items": 500,
+            "attachments": 1000,
+            "firstListIncludingHelperStartupMs": 11995.201,
+            "firstPage": {
+              "samples": [
+                376.85,
+                352.636,
+                945.764,
+                267.401,
+                203.956
+              ],
+              "medianMs": 352.636,
+              "maxMs": 945.764
+            },
+            "tailPage": {
+              "samples": [
+                418.126,
+                311.423,
+                559.932,
+                252.8,
+                300.064
+              ],
+              "medianMs": 311.423,
+              "maxMs": 559.932
+            },
+            "ping": {
+              "samples": [
+                434.416,
+                254.271,
+                240.415,
+                217.685,
+                286.242
+              ],
+              "medianMs": 254.271,
+              "maxMs": 434.416
+            },
+            "helperMemoryBeforeThumbnails": {
+              "threads": 8,
+              "workingSetBytes": 69394432,
+              "privateBytes": 39882752
+            },
+            "helperMemoryAfterThumbnails": {
+              "threads": 8,
+              "workingSetBytes": 69394432,
+              "privateBytes": 39882752
+            },
+            "thumbnailConcurrencyRequested": 2,
+            "thumbnails": [],
+            "thumbnailCachedRequest": null,
+            "pingDuringThumbnails": null
+          }
+        ],
+        "firstListCheck": {
+          "budgetMs": 2000,
+          "actualMs": 11995.201,
+          "passed": false
+        },
+        "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":2000,\"actualMs\":11995.201,\"passed\":false}"
+      }
+    ],
+    "baseline1500WithExplicit3SecondBudget": {
+      "localArtifact": ".local-data/library-measurement-5e198a41-a789-4279-ba02-1dd2e23ee6e7/result.json",
+      "status": "failed",
+      "startedAtUtc": "2026-10-24T13:13:37.364Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+      "measurementScriptSha256": "f36bee4faa6a758a1dbb05dc82aa58c7e279743a60b852d6ae2e78d981bcaf8c",
+      "firstListIncludesHelperStartup": true,
+      "counts": [
+        {
+          "items": 1500,
+          "attachments": 3000,
+          "firstListIncludingHelperStartupMs": 33693.256,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              680.243,
+              586.034,
+              574.404,
+              590.951,
+              583.473
+            ],
+            "medianMs": 586.034,
+            "maxMs": 680.243
+          },
+          "tailPage": {
+            "samples": [
+              639.38,
+              555.25,
+              592.892,
+              572.956,
+              563.221
+            ],
+            "medianMs": 572.956,
+            "maxMs": 639.38
+          },
+          "ping": {
+            "samples": [
+              668.219,
+              571.964,
+              655.105,
+              563.752,
+              604.337
+            ],
+            "medianMs": 604.337,
+            "maxMs": 668.219
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 6,
+            "workingSetBytes": 74395648,
+            "privateBytes": 44744704
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 6,
+            "workingSetBytes": 74395648,
+            "privateBytes": 44744704
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "sourceOriginalsUnchanged": true,
+      "firstListCheck": {
+        "budgetMs": 3000,
+        "actualMs": 33693.256,
+        "passed": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":3000,\"actualMs\":33693.256,\"passed\":false}"
+    },
+    "budgetsAreLocalDiagnosticNotPortableProductSlo": true
+  },
+  "hypothesesInRankOrder": [
+    {
+      "prediction": "Repeated ancestor/link checks dominate",
+      "finding": "Only 112.467 ms of a 9568.961 ms first scan; not the main cause"
+    },
+    {
+      "prediction": "Opening and reading newly created descriptions dominates",
+      "finding": "9366.874 ms in File.ReadAllText during the measured first scan; subsequent reads of the same files were much faster"
+    },
+    {
+      "prediction": "Helper startup or JSON parsing dominates",
+      "finding": "config.get startup probe 140.020 ms, subsequent first list 10095.706 ms; scan parsing 70.233 ms"
+    }
+  ],
+  "diagnosticProbe": {
+    "tag": "[DEBUG-first-list]",
+    "items": 500,
+    "totalScanMs": 9568.9607,
+    "pathChecksMs": 112.4671,
+    "fileReadMs": 9366.8737,
+    "parseMs": 70.2327,
+    "revisionAndFolderMs": 6.8183,
+    "instrumentedHelperDllSha256": "6ec6f289efc56352fc4d162767d2e736c0f513c1762ddf1116b9495e612431f5",
+    "startupSeparated": {
+      "localArtifact": ".local-data/library-measurement-23ffe821-3dd3-41c1-a508-e60e74afe0a3/result.json",
+      "status": "failed",
+      "startedAtUtc": "2026-10-24T13:05:55.419Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "705ae22318bab8d820fb2c083d7677ef09c2cd1c86a94011a6f88c340bdc9450",
+      "measurementScriptSha256": "e90911bdb83e7ab8c6ef4c3d68ab9e627096f2311ef08637979bd37a38f27f2d",
+      "counts": [
+        {
+          "items": 500,
+          "attachments": 1000,
+          "firstListIncludingHelperStartupMs": 10095.706,
+          "startupOnlyMs": 140.021,
+          "firstPage": {
+            "samples": [
+              208.759,
+              235.042,
+              240.073,
+              216.536,
+              271.21
+            ],
+            "medianMs": 235.042,
+            "maxMs": 271.21
+          },
+          "tailPage": {
+            "samples": [
+              220.297,
+              235.072,
+              240.779,
+              229.919,
+              252.161
+            ],
+            "medianMs": 235.072,
+            "maxMs": 252.161
+          },
+          "ping": {
+            "samples": [
+              240.666,
+              244.685,
+              219.46,
+              244.376,
+              229.684
+            ],
+            "medianMs": 240.666,
+            "maxMs": 244.685
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 8,
+            "workingSetBytes": 69783552,
+            "privateBytes": 39530496
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 8,
+            "workingSetBytes": 69783552,
+            "privateBytes": 39530496
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "firstListCheck": {
+        "budgetMs": 2000,
+        "actualMs": 10095.706,
+        "passed": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":2000,\"actualMs\":10095.706,\"passed\":false}"
+    },
+    "instrumentedMeasurement": {
+      "localArtifact": ".local-data/library-measurement-59521d55-461d-406a-b843-a4c50b7fb0ba/result.json",
+      "status": "failed",
+      "startedAtUtc": "2026-10-24T13:06:51.867Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "6ec6f289efc56352fc4d162767d2e736c0f513c1762ddf1116b9495e612431f5",
+      "measurementScriptSha256": "e2bb6f474b68721802bf9c3c0181d249258be3676d66188e10baece71636d4f6",
+      "counts": [
+        {
+          "items": 500,
+          "attachments": 1000,
+          "firstListIncludingHelperStartupMs": 9581.308,
+          "startupOnlyMs": 207.636,
+          "firstPage": {
+            "samples": [
+              205.231,
+              214.831,
+              196.5,
+              215.468,
+              258.105
+            ],
+            "medianMs": 214.831,
+            "maxMs": 258.105
+          },
+          "tailPage": {
+            "samples": [
+              221.49,
+              216.915,
+              220.79,
+              228.621,
+              237.238
+            ],
+            "medianMs": 221.49,
+            "maxMs": 237.238
+          },
+          "ping": {
+            "samples": [
+              209.764,
+              209.291,
+              226.017,
+              241.605,
+              218.284
+            ],
+            "medianMs": 218.284,
+            "maxMs": 241.605
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 8,
+            "workingSetBytes": 66215936,
+            "privateBytes": 35741696
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 8,
+            "workingSetBytes": 66215936,
+            "privateBytes": 35741696
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "firstListCheck": {
+        "budgetMs": 2000,
+        "actualMs": 9581.308,
+        "passed": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":2000,\"actualMs\":9581.308,\"passed\":false}"
+    },
+    "temporarySourceLogsRemoved": true,
+    "diagnosticHelperNeverRegistered": true,
+    "archivedOnlyUnderIgnoredDebugDirectory": ".local-data/first-list-probes/archived-helper",
+    "operatingSystemAntivirusOrDiskDriverInternalCauseNotEstablished": true
+  },
+  "implementation": {
+    "maximumConcurrentDescriptionReads": 16,
+    "standardLibraryOnly": true,
+    "newDependencies": 0,
+    "syncAndAsyncSharePathChecksAndParser": true,
+    "oneResultSlotPerOriginalDirectoryPosition": true,
+    "allDescriptionsReadBeforeDuplicateChecksSortAndPagination": true,
+    "noPersistentIndexOrFileWatchers": true,
+    "noProtocolOrMaterialFormatChanges": true,
+    "readHandlesClosedBeforeResultAndNoMediaRetained": true,
+    "writesStillUseFullLookup": true
+  },
+  "concurrencyTrials": {
+    "eight500": {
+      "localArtifact": ".local-data/library-measurement-ac2a5f8d-a82f-438e-8517-6f8f678f2a20/result.json",
+      "status": "measured",
+      "startedAtUtc": "2026-10-24T13:09:08.873Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "f309bdd7d5c4f7090039d9b8e6343a81f782b65545a20aaa27c9d057faa79a32",
+      "measurementScriptSha256": "e90911bdb83e7ab8c6ef4c3d68ab9e627096f2311ef08637979bd37a38f27f2d",
+      "counts": [
+        {
+          "items": 500,
+          "attachments": 1000,
+          "firstListIncludingHelperStartupMs": 1410.813,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              97.451,
+              100.435,
+              104.114,
+              108.394,
+              123.709
+            ],
+            "medianMs": 104.114,
+            "maxMs": 123.709
+          },
+          "tailPage": {
+            "samples": [
+              112.539,
+              114.348,
+              105.869,
+              98.697,
+              107.385
+            ],
+            "medianMs": 107.385,
+            "maxMs": 114.348
+          },
+          "ping": {
+            "samples": [
+              104.305,
+              117.553,
+              102.792,
+              118.011,
+              101.222
+            ],
+            "medianMs": 104.305,
+            "maxMs": 118.011
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 28,
+            "workingSetBytes": 75841536,
+            "privateBytes": 44736512
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 28,
+            "workingSetBytes": 75841536,
+            "privateBytes": 44736512
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "firstListCheck": {
+        "budgetMs": 2000,
+        "actualMs": 1410.813,
+        "passed": true
+      },
+      "completedAtUtc": "2026-10-24T13:09:18.442Z"
+    },
+    "eight1500Strict2SecondsFailed": {
+      "localArtifact": ".local-data/library-measurement-ae1605a8-bfbc-4409-a64d-a8aa0dcaa96f/result.json",
+      "status": "failed",
+      "startedAtUtc": "2026-10-24T13:09:33.540Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "f309bdd7d5c4f7090039d9b8e6343a81f782b65545a20aaa27c9d057faa79a32",
+      "measurementScriptSha256": "e90911bdb83e7ab8c6ef4c3d68ab9e627096f2311ef08637979bd37a38f27f2d",
+      "counts": [
+        {
+          "items": 1500,
+          "attachments": 3000,
+          "firstListIncludingHelperStartupMs": 3984.666,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              238.57,
+              264.256,
+              308,
+              320.228,
+              309.698
+            ],
+            "medianMs": 308,
+            "maxMs": 320.228
+          },
+          "tailPage": {
+            "samples": [
+              285.135,
+              322.742,
+              318.21,
+              331.676,
+              287.178
+            ],
+            "medianMs": 318.21,
+            "maxMs": 331.676
+          },
+          "ping": {
+            "samples": [
+              283.058,
+              306.696,
+              343.375,
+              302.539,
+              306.583
+            ],
+            "medianMs": 306.583,
+            "maxMs": 343.375
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 28,
+            "workingSetBytes": 77537280,
+            "privateBytes": 46850048
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 28,
+            "workingSetBytes": 77537280,
+            "privateBytes": 46850048
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "firstListCheck": {
+        "budgetMs": 2000,
+        "actualMs": 3984.666,
+        "passed": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":2000,\"actualMs\":3984.666,\"passed\":false}"
+    },
+    "sixteen1500Strict2SecondsFailed": {
+      "localArtifact": ".local-data/library-measurement-fd2a61f9-cbbf-449e-8390-37cd8b9f7aab/result.json",
+      "status": "failed",
+      "startedAtUtc": "2026-10-24T13:10:57.885Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d",
+      "measurementScriptSha256": "e90911bdb83e7ab8c6ef4c3d68ab9e627096f2311ef08637979bd37a38f27f2d",
+      "counts": [
+        {
+          "items": 1500,
+          "attachments": 3000,
+          "firstListIncludingHelperStartupMs": 2330.292,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              312.843,
+              290.644,
+              282.053,
+              289.601,
+              377.085
+            ],
+            "medianMs": 290.644,
+            "maxMs": 377.085
+          },
+          "tailPage": {
+            "samples": [
+              295.995,
+              290.083,
+              283.154,
+              289.252,
+              333.528
+            ],
+            "medianMs": 290.083,
+            "maxMs": 333.528
+          },
+          "ping": {
+            "samples": [
+              302.586,
+              316.703,
+              282.151,
+              306.794,
+              347.762
+            ],
+            "medianMs": 306.794,
+            "maxMs": 347.762
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 40,
+            "workingSetBytes": 83435520,
+            "privateBytes": 52183040
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 40,
+            "workingSetBytes": 83443712,
+            "privateBytes": 52183040
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "firstListCheck": {
+        "budgetMs": 2000,
+        "actualMs": 2330.292,
+        "passed": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":2000,\"actualMs\":2330.292,\"passed\":false}"
+    },
+    "thirtyTwo1500Strict2SecondsFailed": {
+      "localArtifact": ".local-data/library-measurement-bc13ec98-27a0-4213-a48b-593aac81d770/result.json",
+      "status": "failed",
+      "startedAtUtc": "2026-10-24T13:12:15.762Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "6964c06a4d341b1a16d69483ac46dc13d3fa602abad3541e526d6d4106de1ce8",
+      "measurementScriptSha256": "e90911bdb83e7ab8c6ef4c3d68ab9e627096f2311ef08637979bd37a38f27f2d",
+      "counts": [
+        {
+          "items": 1500,
+          "attachments": 3000,
+          "firstListIncludingHelperStartupMs": 2120.815,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              267.523,
+              321.215,
+              394.27,
+              357.94,
+              452.487
+            ],
+            "medianMs": 357.94,
+            "maxMs": 452.487
+          },
+          "tailPage": {
+            "samples": [
+              305.861,
+              354.746,
+              439.538,
+              438.094,
+              379.232
+            ],
+            "medianMs": 379.232,
+            "maxMs": 439.538
+          },
+          "ping": {
+            "samples": [
+              312.317,
+              390.804,
+              406.568,
+              457.758,
+              454.445
+            ],
+            "medianMs": 406.568,
+            "maxMs": 457.758
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 58,
+            "workingSetBytes": 87920640,
+            "privateBytes": 57708544
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 58,
+            "workingSetBytes": 87920640,
+            "privateBytes": 57708544
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "firstListCheck": {
+        "budgetMs": 2000,
+        "actualMs": 2120.815,
+        "passed": false
+      },
+      "error": "AssertionError [ERR_ASSERTION]: New-library first list is slow: {\"budgetMs\":2000,\"actualMs\":2120.815,\"passed\":false}"
+    },
+    "decision": "Retain 16 concurrent reads: 32 offered little extra benefit. Strict 2-second failures at 1500 items remain failures; final diagnostic explicitly uses 3 seconds at 1500 and 2 seconds at 500."
+  },
+  "finalMeasurements": {
+    "full1005001500": {
+      "localArtifact": ".local-data/library-measurement-dd0dd7fe-945c-4fc0-86ee-60bc84a046af/result.json",
+      "status": "measured",
+      "startedAtUtc": "2026-10-24T13:14:46.593Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d",
+      "measurementScriptSha256": "f36bee4faa6a758a1dbb05dc82aa58c7e279743a60b852d6ae2e78d981bcaf8c",
+      "firstListIncludesHelperStartup": true,
+      "counts": [
+        {
+          "items": 100,
+          "attachments": 200,
+          "firstListIncludingHelperStartupMs": 386.742,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              19.446,
+              19.446,
+              18.859,
+              19.064,
+              19.203
+            ],
+            "medianMs": 19.203,
+            "maxMs": 19.446
+          },
+          "tailPage": {
+            "samples": [
+              19.597,
+              28.655,
+              19.045,
+              19.018,
+              19.182
+            ],
+            "medianMs": 19.182,
+            "maxMs": 28.655
+          },
+          "ping": {
+            "samples": [
+              23.05,
+              19.793,
+              19.834,
+              24.046,
+              19.4
+            ],
+            "medianMs": 19.834,
+            "maxMs": 24.046
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 40,
+            "workingSetBytes": 61722624,
+            "privateBytes": 35614720
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 42,
+            "workingSetBytes": 71782400,
+            "privateBytes": 40656896
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 393.827,
+              "request": {
+                "samples": [
+                  11.09,
+                  1.667,
+                  1.805,
+                  6.312
+                ],
+                "medianMs": 6.312,
+                "maxMs": 11.09
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 653.493,
+              "request": {
+                "samples": [
+                  1.917,
+                  1.239,
+                  1.755,
+                  1.792,
+                  1.965,
+                  3.052
+                ],
+                "medianMs": 1.917,
+                "maxMs": 3.052
+              }
+            },
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 376.983,
+              "request": {
+                "samples": [
+                  1.665,
+                  1.485,
+                  2.209,
+                  5.294
+                ],
+                "medianMs": 2.209,
+                "maxMs": 5.294
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 379.527,
+              "request": {
+                "samples": [
+                  1.808,
+                  1.173,
+                  1.375,
+                  2.367
+                ],
+                "medianMs": 1.808,
+                "maxMs": 2.367
+              }
+            },
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 379.452,
+              "request": {
+                "samples": [
+                  1.679,
+                  1.647,
+                  1.536,
+                  2.719
+                ],
+                "medianMs": 1.679,
+                "maxMs": 2.719
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 503.376,
+              "request": {
+                "samples": [
+                  1.657,
+                  1.376,
+                  1.334,
+                  1.584,
+                  2.596
+                ],
+                "medianMs": 1.584,
+                "maxMs": 2.596
+              }
+            },
+            {
+              "kind": "image",
+              "position": "oldest",
+              "readyMs": 127.545,
+              "request": {
+                "samples": [
+                  1.308,
+                  2.21
+                ],
+                "medianMs": 2.21,
+                "maxMs": 2.21
+              }
+            }
+          ],
+          "thumbnailCachedRequest": {
+            "samples": [
+              1.74,
+              2.042,
+              2.053,
+              2.092,
+              2.012,
+              1.992,
+              2.058
+            ],
+            "medianMs": 2.042,
+            "maxMs": 2.092
+          },
+          "pingDuringThumbnails": {
+            "samples": [
+              13.681,
+              15.32,
+              21.009,
+              15.463,
+              16.66,
+              16.352,
+              15.274,
+              13.41,
+              15.466,
+              17.383,
+              16.236,
+              15.632,
+              15.266,
+              14.387,
+              12.57,
+              14.836,
+              12.955
+            ],
+            "medianMs": 15.32,
+            "maxMs": 21.009
+          }
+        },
+        {
+          "items": 500,
+          "attachments": 1000,
+          "firstListIncludingHelperStartupMs": 657.8,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              97.916,
+              97.905,
+              131.966,
+              109.199,
+              94.346
+            ],
+            "medianMs": 97.916,
+            "maxMs": 131.966
+          },
+          "tailPage": {
+            "samples": [
+              99.03,
+              112.738,
+              118.106,
+              111.445,
+              100.271
+            ],
+            "medianMs": 111.445,
+            "maxMs": 118.106
+          },
+          "ping": {
+            "samples": [
+              109.767,
+              101.048,
+              117.491,
+              106.339,
+              100.618
+            ],
+            "medianMs": 106.339,
+            "maxMs": 117.491
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 40,
+            "workingSetBytes": 72609792,
+            "privateBytes": 42074112
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 42,
+            "workingSetBytes": 77094912,
+            "privateBytes": 44089344
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 380.821,
+              "request": {
+                "samples": [
+                  9.777,
+                  1.657,
+                  3.916
+                ],
+                "medianMs": 3.916,
+                "maxMs": 9.777
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 566.94,
+              "request": {
+                "samples": [
+                  1.591,
+                  1.303,
+                  1.906,
+                  2.577
+                ],
+                "medianMs": 1.906,
+                "maxMs": 2.577
+              }
+            },
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 396.472,
+              "request": {
+                "samples": [
+                  1.744,
+                  1.81,
+                  3.323
+                ],
+                "medianMs": 1.81,
+                "maxMs": 3.323
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 580.6,
+              "request": {
+                "samples": [
+                  3.848,
+                  1.224,
+                  1.61,
+                  2.324
+                ],
+                "medianMs": 2.324,
+                "maxMs": 3.848
+              }
+            },
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 390.381,
+              "request": {
+                "samples": [
+                  1.567,
+                  1.74,
+                  2.419
+                ],
+                "medianMs": 1.74,
+                "maxMs": 2.419
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 585.523,
+              "request": {
+                "samples": [
+                  1.771,
+                  1.424,
+                  1.568,
+                  2.807
+                ],
+                "medianMs": 1.771,
+                "maxMs": 2.807
+              }
+            },
+            {
+              "kind": "image",
+              "position": "oldest",
+              "readyMs": 2.515,
+              "request": {
+                "samples": [
+                  2.445
+                ],
+                "medianMs": 2.445,
+                "maxMs": 2.445
+              }
+            }
+          ],
+          "thumbnailCachedRequest": {
+            "samples": [
+              2.389,
+              2.81,
+              2.416,
+              2.696,
+              2.589,
+              3.605,
+              2.676
+            ],
+            "medianMs": 2.676,
+            "maxMs": 3.605
+          },
+          "pingDuringThumbnails": {
+            "samples": [
+              69.226,
+              78.901,
+              80.466,
+              75.772,
+              92.671,
+              78.399,
+              77.963,
+              67.039,
+              80.85,
+              77.71,
+              83.093,
+              72.607,
+              78.212
+            ],
+            "medianMs": 78.212,
+            "maxMs": 92.671
+          }
+        },
+        {
+          "items": 1500,
+          "attachments": 3000,
+          "firstListIncludingHelperStartupMs": 1747.611,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              277.773,
+              324.537,
+              334.001,
+              318.455,
+              284.345
+            ],
+            "medianMs": 318.455,
+            "maxMs": 334.001
+          },
+          "tailPage": {
+            "samples": [
+              283.44,
+              336.978,
+              309.603,
+              312.089,
+              284.537
+            ],
+            "medianMs": 309.603,
+            "maxMs": 336.978
+          },
+          "ping": {
+            "samples": [
+              312.428,
+              326.987,
+              328.064,
+              300.102,
+              293.244
+            ],
+            "medianMs": 312.428,
+            "maxMs": 328.064
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 41,
+            "workingSetBytes": 88084480,
+            "privateBytes": 57589760
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 43,
+            "workingSetBytes": 74100736,
+            "privateBytes": 41426944
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 385.637,
+              "request": {
+                "samples": [
+                  7.604,
+                  4.346
+                ],
+                "medianMs": 7.604,
+                "maxMs": 7.604
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 794.689,
+              "request": {
+                "samples": [
+                  1.368,
+                  1.741,
+                  3.976
+                ],
+                "medianMs": 1.741,
+                "maxMs": 3.976
+              }
+            },
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 436.699,
+              "request": {
+                "samples": [
+                  2.318,
+                  2.327
+                ],
+                "medianMs": 2.327,
+                "maxMs": 2.327
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 825.344,
+              "request": {
+                "samples": [
+                  2.441,
+                  1.737,
+                  2.909
+                ],
+                "medianMs": 2.441,
+                "maxMs": 2.909
+              }
+            },
+            {
+              "kind": "video",
+              "position": "first-page",
+              "readyMs": 454.323,
+              "request": {
+                "samples": [
+                  2.087,
+                  4.041
+                ],
+                "medianMs": 4.041,
+                "maxMs": 4.041
+              }
+            },
+            {
+              "kind": "image",
+              "position": "first-page",
+              "readyMs": 872.437,
+              "request": {
+                "samples": [
+                  1.925,
+                  2.326,
+                  2.386
+                ],
+                "medianMs": 2.326,
+                "maxMs": 2.386
+              }
+            },
+            {
+              "kind": "image",
+              "position": "oldest",
+              "readyMs": 285.261,
+              "request": {
+                "samples": [
+                  285.202
+                ],
+                "medianMs": 285.202,
+                "maxMs": 285.202
+              }
+            }
+          ],
+          "thumbnailCachedRequest": {
+            "samples": [
+              2.686,
+              3.168,
+              2.742,
+              2.791,
+              2.878,
+              2.716,
+              268.685
+            ],
+            "medianMs": 2.791,
+            "maxMs": 268.685
+          },
+          "pingDuringThumbnails": {
+            "samples": [
+              263.2,
+              290.59,
+              259.8,
+              319.236,
+              264.173,
+              266.635,
+              330.353,
+              308.63,
+              236.144,
+              290.366
+            ],
+            "medianMs": 290.366,
+            "maxMs": 330.353
+          }
+        }
+      ],
+      "sourceOriginalsUnchanged": true,
+      "largeAttachment": {
+        "bytes": 4334289,
+        "itemsInLibrary": 1501,
+        "uploadMs": 981.597,
+        "readAllMs": 399.315,
+        "readCalls": {
+          "samples": [
+            300.873,
+            6.879,
+            3.933,
+            4.255,
+            3.698,
+            3.713,
+            3.452,
+            4.23,
+            3.357,
+            3.41,
+            3.849,
+            3.259,
+            3.482,
+            3.711,
+            4.009,
+            3.477,
+            3.743,
+            3.575,
+            3.129,
+            6.153,
+            3.433,
+            4.291,
+            2.865
+          ],
+          "medianMs": 3.711,
+          "maxMs": 300.873
+        },
+        "sha256": "e5acc914b5f872d82720581c51d614a86c2e20f18844937254060392662f3c35",
+        "roundTripBytesMatch": true
+      },
+      "completedAtUtc": "2026-10-24T13:15:14.557Z"
+    },
+    "first1500WithSameExplicit3SecondBudgetAsBaseline": {
+      "localArtifact": ".local-data/library-measurement-70667569-33c8-465d-9fdf-a28fc220854e/result.json",
+      "status": "measured",
+      "startedAtUtc": "2026-10-24T13:15:14.718Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d",
+      "measurementScriptSha256": "f36bee4faa6a758a1dbb05dc82aa58c7e279743a60b852d6ae2e78d981bcaf8c",
+      "firstListIncludesHelperStartup": true,
+      "counts": [
+        {
+          "items": 1500,
+          "attachments": 3000,
+          "firstListIncludingHelperStartupMs": 2424.766,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              360.978,
+              373.112,
+              369.114,
+              332.405,
+              342.525
+            ],
+            "medianMs": 360.978,
+            "maxMs": 373.112
+          },
+          "tailPage": {
+            "samples": [
+              405.995,
+              357.603,
+              320.35,
+              294.727,
+              331.637
+            ],
+            "medianMs": 331.637,
+            "maxMs": 405.995
+          },
+          "ping": {
+            "samples": [
+              373.717,
+              370.302,
+              319.994,
+              342.247,
+              353.532
+            ],
+            "medianMs": 353.532,
+            "maxMs": 373.717
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 40,
+            "workingSetBytes": 87576576,
+            "privateBytes": 56754176
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 40,
+            "workingSetBytes": 87576576,
+            "privateBytes": 56754176
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "sourceOriginalsUnchanged": true,
+      "firstListCheck": {
+        "budgetMs": 3000,
+        "actualMs": 2424.766,
+        "passed": true
+      },
+      "completedAtUtc": "2026-10-24T13:15:30.608Z"
+    },
+    "first500WithOriginal2SecondBudget": {
+      "localArtifact": ".local-data/library-measurement-98633836-ff7a-471b-beff-ca86bbfec066/result.json",
+      "status": "measured",
+      "startedAtUtc": "2026-10-24T13:15:30.748Z",
+      "scope": "real isolated native helper and self-made media; not browser rendering, recording, UI acceptance or physical cold-cache testing",
+      "nodeVersion": "22.23.2",
+      "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d",
+      "measurementScriptSha256": "f36bee4faa6a758a1dbb05dc82aa58c7e279743a60b852d6ae2e78d981bcaf8c",
+      "firstListIncludesHelperStartup": true,
+      "counts": [
+        {
+          "items": 500,
+          "attachments": 1000,
+          "firstListIncludingHelperStartupMs": 1327.878,
+          "startupOnlyMs": null,
+          "firstPage": {
+            "samples": [
+              125.921,
+              159.798,
+              118.676,
+              109.138,
+              130.196
+            ],
+            "medianMs": 125.921,
+            "maxMs": 159.798
+          },
+          "tailPage": {
+            "samples": [
+              164.827,
+              121.568,
+              125.651,
+              112.014,
+              123.81
+            ],
+            "medianMs": 123.81,
+            "maxMs": 164.827
+          },
+          "ping": {
+            "samples": [
+              147.715,
+              138.019,
+              135.155,
+              107.797,
+              132.866
+            ],
+            "medianMs": 135.155,
+            "maxMs": 147.715
+          },
+          "helperMemoryBeforeThumbnails": {
+            "threads": 39,
+            "workingSetBytes": 77389824,
+            "privateBytes": 46698496
+          },
+          "helperMemoryAfterThumbnails": {
+            "threads": 39,
+            "workingSetBytes": 77389824,
+            "privateBytes": 46698496
+          },
+          "thumbnailConcurrencyRequested": 2,
+          "thumbnails": [],
+          "thumbnailCachedRequest": null,
+          "pingDuringThumbnails": null
+        }
+      ],
+      "sourceOriginalsUnchanged": true,
+      "firstListCheck": {
+        "budgetMs": 2000,
+        "actualMs": 1327.878,
+        "passed": true
+      },
+      "completedAtUtc": "2026-10-24T13:15:38.033Z"
+    },
+    "otherProjectChecksNotRunningDuringFinalMeasurements": true
+  },
+  "verification": {
+    "nativeChecksPassed": 36,
+    "previousNativeChecks": 34,
+    "newCoverage": [
+      "Complete duplicate detection, warning isolation for broken/missing/locked descriptions, equal-timestamp stable sorting, three protocol pages without loss and source snapshot unchanged",
+      "Same-length same-timestamp external edit, addition, removal, folder rename and configured-root change observed on refresh"
+    ],
+    "regressionLoopFailedBeforeFixAndPassedAfterFix": true,
+    "frontendChecksPassed": 88,
+    "frontendTestFiles": 16,
+    "frontendMaxWorkers": 2,
+    "formatTypecheckBuildAndGeneratedExtensionSmokePassed": true,
+    "actualCandidateNativeSmokePassed": true,
+    "actualCrossVolumePromotion": true,
+    "nativeSmokeCommand": "$env:MOMENT_VAULT_TEST_HOST = (Resolve-Path \"dist/host-library-load/MomentVault.Host.exe\").Path; node tools/check-native.mjs --require-cross-volume",
+    "recordingPipeline": {
+      "status": "passed",
+      "localArtifactDirectory": ".local-data/recording-pipeline-49ee776a-fbc2-4f8e-84c9-3947fcabb7e8",
+      "actualProductionTypeScriptPublisherAndCandidateHelper": true,
+      "videoCodec": "h264",
+      "width": 640,
+      "height": 360,
+      "videoSeconds": 2,
+      "videoFrames": 60,
+      "audioCodec": "aac",
+      "audioSeconds": 2,
+      "audioFrames": 94,
+      "newRealTabRecording": false
+    }
+  },
+  "deployment": {
+    "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d",
+    "recordingRequired": false,
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "configUnchanged": true,
+    "formalExtensionReloadPending": true,
+    "registeredHost": "dist/host-library-load",
+    "registrationAndOriginCheckPassed": true
+  },
+  "formalExtensionAcceptance": {
+    "status": "pending-reconnect",
+    "newSelfMadeMaterialsAddedToUserLibrary": 0,
+    "repeatRecordingRequired": false
+  },
+  "limitations": [
+    "Measurements use freshly populated independent libraries, not identical file IDs or cleared operating-system caches; startup and scan variation remains possible",
+    "Results measure native framing and list work, not actual browser first paint",
+    "Working-set samples are not peak browser/helper/FFmpeg memory measurements",
+    "A bounded 16-read scan still reads all descriptions; oldest thumbnail lookup may still rescan the library",
+    "Full video performance matrix, installer and overall first-version delivery remain unfinished"
+  ]
+}

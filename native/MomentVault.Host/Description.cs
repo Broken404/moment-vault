@@ -8,10 +8,27 @@ public static class Description
     public const string FileName = "描述.md";
     public static Material Load(string directory)
     {
+        var path = CheckedPath(directory);
+        return Parse(directory, File.ReadAllText(path, Encoding.UTF8));
+    }
+
+    internal static async Task<Material> LoadAsync(string directory)
+    {
+        var path = CheckedPath(directory);
+        var raw = await File.ReadAllTextAsync(path, Encoding.UTF8).ConfigureAwait(false);
+        return Parse(directory, raw);
+    }
+
+    private static string CheckedPath(string directory)
+    {
         SafeFiles.RejectLinks(directory);
         var path = Path.Combine(directory, FileName);
         SafeFiles.RejectLinks(path);
-        var raw = File.ReadAllText(path, Encoding.UTF8);
+        return path;
+    }
+
+    private static Material Parse(string directory, string raw)
+    {
         var text = raw.Replace("\r\n", "\n");
         if (!text.StartsWith("---\n")) throw new VaultException("invalid-description", "说明文件缺少有效元数据，原文件未修改");
         var end = text.IndexOf("\n---\n", 4, StringComparison.Ordinal);

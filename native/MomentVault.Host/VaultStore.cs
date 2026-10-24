@@ -96,14 +96,19 @@ public sealed partial class VaultStore : IDisposable
 
     public (List<Material> Items, List<string> Warnings) List(string bucket)
     {
-        var items = new List<Material>();
-        var warnings = new List<string>();
-        foreach (var directory in Directory.EnumerateDirectories(Root(bucket)).Where(d => !Path.GetFileName(d).StartsWith('.')))
+        var directories = Directory.EnumerateDirectories(Root(bucket)).Where(d => !Path.GetFileName(d).StartsWith('.')).ToArray();
+        var loaded = new Material?[directories.Length];
+        var errors = new string?[directories.Length];
+        // Bound file reads, rather than serially waiting on every newly opened
+        // description. Each worker owns one slot; collection order stays stable.
+        Parallel.ForEachAsync(Enumerable.Range(0, directories.Length), new ParallelOptions { MaxDegreeOfParallelism = 16 }, async (index, _) =>
         {
-            try { items.Add(Description.Load(directory)); }
+            try { loaded[index] = await Description.LoadAsync(directories[index]).ConfigureAwait(false); }
             catch (Exception ex) when (ex is IOException or VaultException or JsonException or UnauthorizedAccessException)
-            { warnings.Add(Path.GetFileName(directory) + "：无法读取说明，原文件保留"); }
-        }
+            { errors[index] = Path.GetFileName(directories[index]) + "：无法读取说明，原文件保留"; }
+        }).GetAwaiter().GetResult();
+        var items = loaded.OfType<Material>().ToList();
+        var warnings = errors.OfType<string>().ToList();
         var duplicates = items.GroupBy(i => i.Id).Where(g => g.Count() > 1).ToList();
         foreach (var duplicate in duplicates)
         {

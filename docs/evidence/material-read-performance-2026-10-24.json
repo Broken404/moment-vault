@@ -1273,5 +1273,10 @@
     "Oldest cached thumbnail lookup still had a 624.914 ms maximum; this fix does not optimize list or thumbnail indexing",
     "Memory samples are helper-main-process snapshots after thumbnails, not browser or FFmpeg child-process peak measurements",
     "Formal right-pane display is user-confirmed and the image independently verified; first-list latency, full performance matrix, installer and overall v1 delivery remain incomplete"
-  ]
+  ],
+  "followupFirstScan": {
+    "evidence": "large-library-startup-2026-10-24.json",
+    "status": "native-scale-and-regressions-passed-formal-reconnect-pending",
+    "historicalMeasurementsAbovePreserved": true
+  }
 }

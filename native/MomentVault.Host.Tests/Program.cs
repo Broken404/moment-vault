@@ -484,6 +484,65 @@ var tests = new List<(string Name, Action Action)>
         Throws(() => store.Update(item.Id, item.Revision, "must not update", "", []), "missing-item");
         Equal(Description.Load(source).Name, item.Name); Equal(Description.Load(duplicate).Name, item.Name);
     }),
+    ("large lists keep complete duplicate checks, warnings, stable sorting and protocol pages", () =>
+    {
+        using var store = Store("list-pages"); var seed = Save(store);
+        var source = store.Find("draft", seed.Id); Directory.Delete(source, true);
+        var expected = new List<Material>();
+        for (var index = 0; index < 96; index++)
+        {
+            var item = MomentVault.Host.Json.Read<Material>(MomentVault.Host.Json.Write(seed));
+            item.Id = Guid.NewGuid().ToString("N"); item.Name = "列表素材 " + index;
+            // Equal timestamps also keep the original directory enumeration order.
+            item.CreatedAt = DateTimeOffset.Parse("2026-01-01T00:00:00Z").AddSeconds(index / 2);
+            item.Note = "列表备注 " + index;
+            var directory = Path.Combine(store.Config.DraftRoot, "item-" + index.ToString("000"));
+            Directory.CreateDirectory(directory); Description.Save(directory, item); expected.Add(Description.Load(directory));
+        }
+        var duplicate = Path.Combine(store.Config.DraftRoot, "duplicate"); Directory.CreateDirectory(duplicate);
+        Description.Save(duplicate, expected[3]); expected.RemoveAt(3);
+        foreach (var name in new[] { "missing-description", "broken-description" }) Directory.CreateDirectory(Path.Combine(store.Config.DraftRoot, name));
+        File.WriteAllText(Path.Combine(store.Config.DraftRoot, "broken-description", Description.FileName), "broken");
+        Directory.CreateDirectory(Path.Combine(store.Config.DraftRoot, ".ignored"));
+        var locked = Path.Combine(store.Config.DraftRoot, "locked"); Directory.CreateDirectory(locked); Description.Save(locked, seed);
+        var before = SafeFiles.Snapshot(store.Config.DraftRoot);
+        using (var held = new FileStream(Path.Combine(locked, Description.FileName), FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            var listed = store.List("draft"); Equal(listed.Items.Count, 95); Equal(listed.Warnings.Count, 4);
+            var sorted = expected.OrderByDescending(i => i.CreatedAt).ToArray();
+            True(listed.Items.Select(i => i.Id).SequenceEqual(sorted.Select(i => i.Id)));
+            True(listed.Items.Select(i => i.Revision).SequenceEqual(sorted.Select(i => i.Revision)));
+            True(listed.Items.Select(i => i.Note).SequenceEqual(sorted.Select(i => i.Note)));
+            var pages = new List<string>();
+            for (var offset = 0; offset < 95; offset += 40)
+            {
+                using var payload = JsonDocument.Parse(MomentVault.Host.Json.Write(new { bucket = "draft", offset }));
+                using var response = JsonDocument.Parse(MomentVault.Host.Json.Write(Protocol.Dispatch(store, "items.list", payload.RootElement)));
+                Equal(response.RootElement.GetProperty("total").GetInt32(), 95);
+                Equal(response.RootElement.GetProperty("warnings").GetArrayLength(), 4);
+                pages.AddRange(response.RootElement.GetProperty("items").EnumerateArray().Select(i => i.GetProperty("id").GetString()!));
+            }
+            True(pages.SequenceEqual(sorted.Select(i => i.Id)));
+        }
+        True(SafeFiles.Same(before, SafeFiles.Snapshot(store.Config.DraftRoot)));
+        Equal(store.List("draft").Items.Count, 96);
+    }),
+    ("list refresh observes same-stamp edits, additions, removal, folder rename and root changes", () =>
+    {
+        using var store = Store("list-refresh"); var item = Save(store); var source = store.Find("draft", item.Id);
+        var description = Path.Combine(source, Description.FileName); var stamp = File.GetLastWriteTimeUtc(description);
+        var raw = File.ReadAllText(description); var changed = raw.Replace("原有备注", "外部备注"); Equal(changed.Length, raw.Length);
+        File.WriteAllText(description, changed); File.SetLastWriteTimeUtc(description, stamp);
+        var refreshed = store.List("draft").Items.Single(); Equal(refreshed.Note, "外部备注"); True(refreshed.Revision != item.Revision);
+        Directory.Move(source, source + "-renamed"); Equal(store.List("draft").Items.Single().FolderName, Path.GetFileName(source) + "-renamed");
+        var added = Path.Combine(store.Config.DraftRoot, "external"); Directory.CreateDirectory(added);
+        var external = MomentVault.Host.Json.Read<Material>(MomentVault.Host.Json.Write(item)); external.Id = Guid.NewGuid().ToString("N");
+        Description.Save(added, external); Equal(store.List("draft").Items.Count, 2);
+        Directory.Delete(source + "-renamed", true); Equal(store.List("draft").Items.Single().Id, external.Id);
+        var other = Path.Combine(Path.GetDirectoryName(store.Config.DraftRoot)!, "another-draft"); Directory.CreateDirectory(other);
+        store.Configure(new(other, store.Config.LibraryRoot)); Equal(store.List("draft").Items.Count, 0);
+        Equal(store.List("library").Items.Count, 0); Equal(store.List("trash").Items.Count, 0);
+    }),
     ("framed protocol handles multiple messages and keeps stdout structured", () =>
     {
         var store = Store("protocol");

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "status": "partial-reselection-and-read-preview-accepted-first-scan-pending",
+  "status": "recovery-and-read-preview-accepted-first-list-native-optimized-reconnect-pending",
   "scope": "Approved v1 release regression; no AI, store publication or user media changes",
   "order": [
     "Formal partial-upload reselection acceptance",
@@ -105,6 +105,14 @@
     "libraryItemsDuringRead": 1501,
     "formalPreviewPending": false,
     "firstListAndFullMatrixStillPending": true,
-    "formalPreviewAcceptedOn": "2026-10-24"
+    "formalPreviewAcceptedOn": "2026-10-24",
+    "firstListOptimization": {
+      "evidence": "large-library-startup-2026-10-24.json",
+      "status": "native-scale-and-regressions-passed-formal-reconnect-pending",
+      "first1500FullScaleMs": 1747.611,
+      "first1500DiagnosticMs": 2424.766,
+      "formalReconnectPending": true,
+      "realRecordingRequired": false
+    }
   }
 }

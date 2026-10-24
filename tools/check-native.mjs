@@ -12,7 +12,11 @@ const draftRoot = path.join(os.tmpdir(), `moment-vault-smoke-${randomUUID()}`);
 const libraryRoot = path.join(root, 'library');
 await mkdir(draftRoot, { recursive: true });
 await mkdir(libraryRoot, { recursive: true });
-const selfContained = path.resolve('dist/host/MomentVault.Host.exe');
+const selfContained = path.resolve(
+  process.env.MOMENT_VAULT_TEST_HOST ?? 'dist/host/MomentVault.Host.exe',
+);
+if (process.env.MOMENT_VAULT_TEST_HOST)
+  assert.ok(existsSync(selfContained), 'Selected helper does not exist');
 const executable = existsSync(selfContained)
   ? selfContained
   : path.resolve('.tools/dotnet/dotnet.exe');

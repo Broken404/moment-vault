@@ -13,6 +13,17 @@ const executable = path.resolve(
 );
 const ffmpeg = path.join(path.dirname(executable), 'media/ffmpeg.exe');
 const checkReadScaling = process.argv.includes('--check-read-scaling');
+const checkFirstList = process.argv.includes('--check-first-list');
+const primeStartup = process.argv.includes('--prime-startup');
+const firstListCount = Number(
+  process.argv.find((arg) => arg.startsWith('--items='))?.split('=')[1] ?? 500,
+);
+const firstListBudgetMs = Number(
+  process.argv.find((arg) => arg.startsWith('--max-first-list-ms='))?.split('=')[1] ?? 2000,
+);
+assert.ok(Number.isSafeInteger(firstListCount) && firstListCount >= 40 && firstListCount <= 10000);
+assert.ok(Number.isFinite(firstListBudgetMs) && firstListBudgetMs > 0);
+assert.ok(!(checkFirstList && checkReadScaling));
 const root = path.resolve('.local-data', `library-measurement-${randomUUID()}`);
 const draftRoot = path.join(root, 'draft'),
   libraryRoot = path.join(root, 'library'),
@@ -38,6 +49,7 @@ const report = {
   helperDllSha256: hash(await readFile(executable.replace(/\.exe$/i, '.dll'))),
   measurementScriptSha256: hash(await readFile(fileURLToPath(import.meta.url))),
   root,
+  firstListIncludesHelperStartup: !primeStartup,
   counts: [],
 };
 let child, call;
@@ -208,7 +220,11 @@ try {
   const metadata = JSON.parse(raw.slice(4, end)),
     note = raw.slice(end + 5);
   let count = 1;
-  for (const target of checkReadScaling ? [100] : [100, 500, 1500]) {
+  for (const target of checkFirstList
+    ? [firstListCount]
+    : checkReadScaling
+      ? [100]
+      : [100, 500, 1500]) {
     for (; count < target; count++) {
       const item = structuredClone(metadata);
       item.id = randomUUID().replaceAll('-', '');
@@ -231,6 +247,7 @@ try {
     }
     await stop();
     connect();
+    const startup = primeStartup ? await timed('config.get') : null;
     const first = await timed('items.list', { bucket: 'draft', offset: 0 });
     assert.equal(first.result.total, target);
     assert.equal(first.result.items.length, 40);
@@ -252,10 +269,10 @@ try {
       ping.push(status.ms);
     }
     const before = helperMemory();
-    const targets = (checkReadScaling ? [] : first.result.items)
+    const targets = (checkReadScaling || checkFirstList ? [] : first.result.items)
       .slice(0, 6)
       .map((item, index) => ({ item, file: item.attachments[index % 2] }));
-    if (!checkReadScaling)
+    if (!checkReadScaling && !checkFirstList)
       targets.push({
         item: tail.result.items.at(-1),
         file: tail.result.items.at(-1).attachments[0],
@@ -315,6 +332,7 @@ try {
       items: target,
       attachments: target * 2,
       firstListIncludingHelperStartupMs: ms(first.ms),
+      startupOnlyMs: startup ? ms(startup.ms) : null,
       firstPage: stats(firstPage),
       tailPage: stats(tailPage),
       ping: stats(ping),
@@ -329,70 +347,84 @@ try {
       `Measured ${target} items: list median ${stats(firstPage).medianMs} ms${cached.length ? ', cached thumbnail median ' + stats(cached).medianMs + ' ms' : ''}\n`,
     );
   }
-  const largePath = generate('large.png', [
-    '-f',
-    'lavfi',
-    '-i',
-    'testsrc2=size=1600x900',
-    '-frames:v',
-    '1',
-    '-compression_level',
-    '0',
-  ]);
-  const largeBytes = await readFile(largePath);
-  assert.ok(largeBytes.length > 4 * 1024 * 1024 && largeBytes.length < 5 * 1024 * 1024);
-  const start = performance.now(),
-    large = await upload('large-preview-image', [
-      { bytes: largeBytes, extension: 'png', kind: 'image', mime: 'image/png' },
-    ]),
-    uploadMs = performance.now() - start;
-  const parts = [],
-    reads = [],
-    readStart = performance.now();
-  let offset = 0;
-  while (offset < largeBytes.length) {
-    const read = await timed('items.readFile', {
-      bucket: 'draft',
-      id: large.id,
-      attachmentId: large.attachments[0].id,
-      offset,
-    });
-    assert.equal(read.result.offset, offset);
-    assert.equal(read.result.total, largeBytes.length);
-    const bytes = Buffer.from(read.result.base64, 'base64');
-    assert.ok(bytes.length > 0);
-    parts.push(bytes);
-    offset += bytes.length;
-    reads.push(read.ms);
-  }
-  assert.equal(hash(Buffer.concat(parts)), hash(largeBytes));
-  report.largeAttachment = {
-    bytes: largeBytes.length,
-    itemsInLibrary: count + 1,
-    uploadMs: ms(uploadMs),
-    readAllMs: ms(performance.now() - readStart),
-    readCalls: stats(reads),
-    sha256: hash(largeBytes),
-    roundTripBytesMatch: true,
-  };
   for (const original of originals)
     assert.equal(hash(await readFile(original.path)), original.hash);
-  assert.equal(hash(await readFile(largePath)), hash(largeBytes));
   report.sourceOriginalsUnchanged = true;
-  if (checkReadScaling) {
-    // Diagnostic relative budget: reading one 4 MiB preview must not cost a
-    // whole library scan per chunk. This is not a portable UI latency target.
-    const budgetMs = report.counts[0].firstPage.medianMs * 4 + 250;
-    report.readScalingCheck = {
-      budgetMs: ms(budgetMs),
-      actualMs: report.largeAttachment.readAllMs,
-      passed: report.largeAttachment.readAllMs < budgetMs,
+  if (checkFirstList) {
+    // A local regression diagnostic for a newly populated library plus helper
+    // startup, not a portable UI SLO or a physical disk-cold measurement.
+    report.firstListCheck = {
+      budgetMs: firstListBudgetMs,
+      actualMs: report.counts[0].firstListIncludingHelperStartupMs,
+      passed: report.counts[0].firstListIncludingHelperStartupMs < firstListBudgetMs,
     };
     assert.ok(
-      report.readScalingCheck.passed,
-      'Chunked preview read scales with full-library scans: ' +
-        JSON.stringify(report.readScalingCheck),
+      report.firstListCheck.passed,
+      'New-library first list is slow: ' + JSON.stringify(report.firstListCheck),
     );
+  } else {
+    const largePath = generate('large.png', [
+      '-f',
+      'lavfi',
+      '-i',
+      'testsrc2=size=1600x900',
+      '-frames:v',
+      '1',
+      '-compression_level',
+      '0',
+    ]);
+    const largeBytes = await readFile(largePath);
+    assert.ok(largeBytes.length > 4 * 1024 * 1024 && largeBytes.length < 5 * 1024 * 1024);
+    const start = performance.now(),
+      large = await upload('large-preview-image', [
+        { bytes: largeBytes, extension: 'png', kind: 'image', mime: 'image/png' },
+      ]),
+      uploadMs = performance.now() - start;
+    const parts = [],
+      reads = [],
+      readStart = performance.now();
+    let offset = 0;
+    while (offset < largeBytes.length) {
+      const read = await timed('items.readFile', {
+        bucket: 'draft',
+        id: large.id,
+        attachmentId: large.attachments[0].id,
+        offset,
+      });
+      assert.equal(read.result.offset, offset);
+      assert.equal(read.result.total, largeBytes.length);
+      const bytes = Buffer.from(read.result.base64, 'base64');
+      assert.ok(bytes.length > 0);
+      parts.push(bytes);
+      offset += bytes.length;
+      reads.push(read.ms);
+    }
+    assert.equal(hash(Buffer.concat(parts)), hash(largeBytes));
+    report.largeAttachment = {
+      bytes: largeBytes.length,
+      itemsInLibrary: count + 1,
+      uploadMs: ms(uploadMs),
+      readAllMs: ms(performance.now() - readStart),
+      readCalls: stats(reads),
+      sha256: hash(largeBytes),
+      roundTripBytesMatch: true,
+    };
+    assert.equal(hash(await readFile(largePath)), hash(largeBytes));
+    if (checkReadScaling) {
+      // Diagnostic relative budget: reading one 4 MiB preview must not cost a
+      // whole library scan per chunk. This is not a portable UI latency target.
+      const budgetMs = report.counts[0].firstPage.medianMs * 4 + 250;
+      report.readScalingCheck = {
+        budgetMs: ms(budgetMs),
+        actualMs: report.largeAttachment.readAllMs,
+        passed: report.largeAttachment.readAllMs < budgetMs,
+      };
+      assert.ok(
+        report.readScalingCheck.passed,
+        'Chunked preview read scales with full-library scans: ' +
+          JSON.stringify(report.readScalingCheck),
+      );
+    }
   }
   report.status = 'measured';
   report.completedAtUtc = new Date().toISOString();
