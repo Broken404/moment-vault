@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-24",
+  "status": "partial-reselection-fixture-prepared-awaiting-formal-extension",
+  "scope": "Approved v1 release regression; no AI, store publication or user media changes",
+  "order": ["Formal partial-upload reselection acceptance", "Continuous-use and performance regression", "Self-use installer and upgrade validation"],
+  "baseline": {
+    "implementationCommit": "20e931d44e29e82f93717c7014d9f0ca880dbe1d",
+    "localizationAcceptanceRecordCommit": "b9c4c9f",
+    "previousFrontendChecksPassed": 88,
+    "productionCodeChangedThisTurn": false,
+    "extensionReloadRequired": false,
+    "realRecordingRequired": false
+  },
+  "freshChecks": {
+    "actualHelperRegistrationAndOriginFramedPingPassed": true,
+    "helperDllSha256": "41e94ded927b4c8218f70c3926a3f3894d387db27264a6e1cd9080ad41ecb9fb",
+    "existingDirectorySettingsUnchanged": true,
+    "preparationUsesOnlySelfMadeOriginalsAndOneOwnedPendingId": true
+  },
+  "partialReselection": {
+    "status": "prepared-not-accepted",
+    "uploadId": "d5c876f77a444621863cf3c5b6865088",
+    "name": "恢复验收-补选原文件",
+    "attachmentCount": 2,
+    "completeFiles": 1,
+    "completeVideoBytes": 35697,
+    "partialImageReceivedBytes": 196608,
+    "originalImageBytes": 1083855,
+    "helperRestartDiscoveryPassed": true,
+    "retainedPrefixHashAndTimestampUnchangedAfterRestart": true,
+    "notCommittedAsDraft": true,
+    "freshReadOnlyProgressCheck": "pending with one complete file out of two",
+    "formalExtensionReselection": "awaiting user action",
+    "savedMediaAndUniquenessVerification": "not yet applicable",
+    "localPreparationManifest": ".local-data/upload-recovery-partial-acceptance/manifest.json",
+    "localReadOnlyVerifier": ".local-data/upload-recovery-partial-acceptance/verify.py"
+  },
+  "limitations": ["Preparing a native pending task is not a real browser crash or physical power-loss test", "No claim of formal partial-reselection acceptance before the browser action and saved-file checks", "Previous all-received and language acceptance remains separate and does not need repetition", "Performance matrix, installer and overall v1 delivery are not complete"]
+}
