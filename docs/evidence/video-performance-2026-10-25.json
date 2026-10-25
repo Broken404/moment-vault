@@ -1,0 +1,748 @@
+{
+  "date": "2026-10-25",
+  "status": "ordinary-owned-cases-and-three-formal-samples-passed",
+  "scopeChange": {
+    "directUserInstruction": "过于长的视频这个先不用考虑，其他的可以补齐",
+    "oneHourCaseDeferred": true,
+    "productDurationLimitAdded": false,
+    "ordinaryOwnedMediaSeconds": 40,
+    "networkAndPortraitMatrixUsesOwnedMediaNotRealSites": true,
+    "formalSiteCoverage": "one ordinary video per site using the reloaded normal extension"
+  },
+  "summary": {
+    "status": "ordinary-owned-cases-and-three-formal-samples-passed",
+    "scope": "40-second owned media plus three ordinary formal-extension samples; controlled network delays apply to owned media only; no peak-memory or universal latency guarantee",
+    "longVideoExcludedByUser": true,
+    "portraitPixels": [
+      203,
+      360
+    ],
+    "lowResolutionPortraitPixels": [
+      180,
+      320
+    ],
+    "pointerTarget": 19.401,
+    "pointerActual": 19.4,
+    "pointerFinalReadyMs": 680.3999999985099,
+    "pointerNextRafMaximumMs": 6,
+    "uncachedSlowSeekMs": 1880.7999999970198,
+    "playbackBufferingEvents": 9,
+    "oldCachedWaitMs": 6984.30000000447,
+    "fixedCachedReadyMs": 3,
+    "cacheMaximumEntries": 8,
+    "cacheMaximumBytes": 7372800,
+    "closedCacheAndQueueVerified": true,
+    "formalOrdinarySamples": [
+      {
+        "site": "bilibili",
+        "url": "https://www.bilibili.com/video/BV1Sqpy6NEJC/",
+        "a": 65,
+        "b": 71,
+        "actual": 71
+      },
+      {
+        "site": "youtube",
+        "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "a": 2,
+        "b": 8,
+        "actual": 8
+      },
+      {
+        "site": "x",
+        "url": "https://x.com/SpaceX/status/2110886603371536546",
+        "a": 2,
+        "b": 8,
+        "actual": 7.975
+      }
+    ],
+    "formalSitesIndependentlyThrottled": false,
+    "syntheticHighRateKeyboardTimingNotAcceptedAsPhysicalPointerLatency": true
+  },
+  "bug": {
+    "trigger": "Uncached B is waiting for Range data; select exact cached A before B completes",
+    "rootCause": "The serial preview producer kept the cached request behind the obsolete in-flight seek until its timeout",
+    "fix": "Cancel only obsolete preview work when the new request matches an exact valid frame cache entry; retain coalescing for uncached requests and force-seek for capture",
+    "browserBaseline": {
+      "requests": [
+        {
+          "target": 35,
+          "atMs": 12085.59999999404,
+          "buffered": [
+            [
+              0,
+              1.366667
+            ]
+          ],
+          "seekable": [
+            [
+              0,
+              40
+            ]
+          ]
+        },
+        {
+          "target": 0,
+          "atMs": 13109.09999999404,
+          "buffered": [
+            [
+              0,
+              1.366667
+            ]
+          ],
+          "seekable": [
+            [
+              0,
+              40
+            ]
+          ]
+        }
+      ],
+      "ready": {
+        "target": 0,
+        "actual": 0,
+        "ms": 6984.30000000447,
+        "cached": true,
+        "error": ""
+      }
+    },
+    "browserFixed": {
+      "pending": {
+        "structure": "youtube",
+        "connection": "connected",
+        "a": 0,
+        "b": 35,
+        "requested": 35,
+        "actual": 0,
+        "loading": true,
+        "playing": false,
+        "cached": false,
+        "cacheBytes": 921600,
+        "cacheEntries": 1,
+        "message": ""
+      },
+      "requests": [
+        {
+          "target": 35,
+          "atMs": 53963.89999999851,
+          "buffered": [
+            [
+              0,
+              1.366667
+            ]
+          ],
+          "seekable": [
+            [
+              0,
+              40
+            ]
+          ]
+        },
+        {
+          "target": 0,
+          "atMs": 54967.20000000298,
+          "buffered": [
+            [
+              0,
+              1.366667
+            ]
+          ],
+          "seekable": [
+            [
+              0,
+              40
+            ]
+          ]
+        }
+      ],
+      "ready": {
+        "target": 0,
+        "actual": 0,
+        "ms": 3,
+        "cached": true,
+        "error": ""
+      }
+    },
+    "laterSettledReady": {
+      "target": 0,
+      "actual": 0,
+      "ms": 3,
+      "cached": true,
+      "error": ""
+    },
+    "unitCommand": "npx.cmd vitest run tests/video-session.test.ts --maxWorkers=2",
+    "before": "5 of 6 passed; exact cached boundary test failed because loading remained true",
+    "after": "6 of 6 passed",
+    "nearbyFramesDoNotMasqueradeAsExactBoundaries": true,
+    "browserUnderlyingNetworkCancellationNotClaimed": true
+  },
+  "cases": {
+    "portrait": {
+      "sourcePixels": [
+        360,
+        640
+      ],
+      "canvasPixels": [
+        203,
+        360
+      ],
+      "visualInspection": "contain with side padding; no stretch or crop",
+      "screenshot": ".local-data/video-performance-20261025/portrait-preview.png"
+    },
+    "qualityChange": {
+      "diagnostics": "{\n  \"structure\": \"youtube\",\n  \"connection\": \"connected\",\n  \"a\": 2,\n  \"b\": 5,\n  \"requested\": 2,\n  \"actual\": 2,\n  \"loading\": false,\n  \"playing\": false,\n  \"cached\": false,\n  \"cacheBytes\": 230400,\n  \"cacheEntries\": 1,\n  \"message\": \"\"\n}",
+      "preview": [
+        {
+          "height": 320,
+          "width": 180
+        }
+      ],
+      "video": [
+        {
+          "height": 320,
+          "src": "/portrait-low.mp4?source=1&network=normal&run=quality-20261025&epoch=0",
+          "time": 2,
+          "width": 180
+        }
+      ]
+    },
+    "physicalPointer": {
+      "target": 19.401,
+      "actual": 19.4,
+      "finalReadyMs": 680.3999999985099,
+      "nextRafObservations": [
+        {
+          "type": "pointermove",
+          "ms": 1.8999999985098839,
+          "focused": true,
+          "visibility": "visible",
+          "a": "2",
+          "b": "35"
+        },
+        {
+          "type": "pointermove",
+          "ms": 1.2999999970197678,
+          "focused": true,
+          "visibility": "visible",
+          "a": "4.102",
+          "b": "35"
+        },
+        {
+          "type": "pointermove",
+          "ms": 0.8999999985098839,
+          "focused": true,
+          "visibility": "visible",
+          "a": "4.102",
+          "b": "35"
+        },
+        {
+          "type": "pointermove",
+          "ms": 2.2000000029802322,
+          "focused": true,
+          "visibility": "visible",
+          "a": "8.473",
+          "b": "35"
+        },
+        {
+          "type": "pointermove",
+          "ms": 1.1999999955296516,
+          "focused": true,
+          "visibility": "visible",
+          "a": "8.473",
+          "b": "35"
+        },
+        {
+          "type": "pointermove",
+          "ms": 3.899999998509884,
+          "focused": true,
+          "visibility": "visible",
+          "a": "12.844",
+          "b": "35"
+        },
+        {
+          "type": "pointermove",
+          "ms": 6,
+          "focused": true,
+          "visibility": "visible",
+          "a": "15.03",
+          "b": "35"
+        },
+        {
+          "type": "pointermove",
+          "ms": 2.899999998509884,
+          "focused": true,
+          "visibility": "visible",
+          "a": "17.216",
+          "b": "35"
+        }
+      ]
+    },
+    "slowSeek": {
+      "requests": [
+        {
+          "target": 0,
+          "atMs": 8.900000005960464,
+          "buffered": [
+            [
+              0,
+              9.123
+            ]
+          ],
+          "seekable": [
+            [
+              0,
+              40
+            ]
+          ]
+        },
+        {
+          "target": 35,
+          "atMs": 6100.80000000447,
+          "buffered": [
+            [
+              0,
+              15.205
+            ]
+          ],
+          "seekable": [
+            [
+              0,
+              40
+            ]
+          ]
+        }
+      ],
+      "ready": [
+        {
+          "target": 0,
+          "actual": 0,
+          "ms": 5.5,
+          "cached": false,
+          "error": ""
+        },
+        {
+          "target": 35,
+          "actual": 35,
+          "ms": 1880.7999999970198,
+          "cached": false,
+          "error": ""
+        }
+      ]
+    },
+    "timeout": {
+      "failedReady": {
+        "target": 35,
+        "actual": 0,
+        "ms": 8087.80000000447,
+        "cached": false,
+        "error": "还没等到目标画面，请检查网络后重试。"
+      },
+      "retriedReady": {
+        "target": 35,
+        "actual": 35,
+        "ms": 4.799999997019768,
+        "cached": false,
+        "error": ""
+      },
+      "screenshot": ".local-data/video-performance-20261025/timeout-feedback.png"
+    },
+    "stalledPlayback": {
+      "bufferingEvents": [
+        {
+          "type": "playing",
+          "atMs": 5875.4000000059605,
+          "currentTime": 0.0654,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 7813,
+          "currentTime": 2.0025,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 8051.70000000298,
+          "currentTime": 2.0034,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 8410,
+          "currentTime": 2.3612,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 8886.5,
+          "currentTime": 2.3621,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 9248.30000000447,
+          "currentTime": 2.7235,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 9888.60000000149,
+          "currentTime": 2.7242,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 10254.80000000447,
+          "currentTime": 3.0897,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 10896.70000000298,
+          "currentTime": 3.0902,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 11230.40000000596,
+          "currentTime": 3.4233,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 11902.40000000596,
+          "currentTime": 3.4237,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 12205.60000000149,
+          "currentTime": 3.7266,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 12906.90000000596,
+          "currentTime": 3.7276,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 13169.40000000596,
+          "currentTime": 3.9895,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 13922.10000000149,
+          "currentTime": 3.9904,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 14255.10000000149,
+          "currentTime": 4.3229,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 14935.20000000298,
+          "currentTime": 4.3233,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 15314.90000000596,
+          "currentTime": 4.696,
+          "readyState": 2
+        },
+        {
+          "type": "playing",
+          "atMs": 15938.70000000298,
+          "currentTime": 4.6966,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 16274.30000000447,
+          "currentTime": 5,
+          "readyState": 1
+        }
+      ],
+      "finalReady": {
+        "target": 5,
+        "actual": 5,
+        "ms": 42,
+        "cached": false,
+        "error": ""
+      }
+    },
+    "closeDuringWaiting": {
+      "lastEvents": [
+        {
+          "type": "canplay",
+          "atMs": 5267.70000000298,
+          "currentTime": 0,
+          "readyState": 3
+        },
+        {
+          "type": "playing",
+          "atMs": 6404.10000000149,
+          "currentTime": 0.0685,
+          "readyState": 3
+        },
+        {
+          "type": "waiting",
+          "atMs": 8713.39999999851,
+          "currentTime": 2.3731,
+          "readyState": 2
+        }
+      ],
+      "afterClose": {
+        "cacheBytes": 0,
+        "cacheEntries": 0,
+        "queueClosed": true,
+        "queuePending": false,
+        "queueRunning": false,
+        "hostConnected": false,
+        "videoTime": 0,
+        "paused": true,
+        "heapAfter": 178810620
+      }
+    },
+    "cacheCapacity": {
+      "maximumBytes": 7372800,
+      "maximumEntries": 8,
+      "acceptedFrames": 13,
+      "afterClose": {
+        "cacheBytes": 0,
+        "cacheEntries": 0,
+        "queueClosed": true,
+        "queuePending": false,
+        "queueRunning": false,
+        "hostConnected": false,
+        "videoTime": 0,
+        "paused": true,
+        "heapAfter": 135850044
+      }
+    },
+    "closedResources": {
+      "portrait-all-structures-closed.json": [
+        {
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "queueClosed": true,
+          "queuePending": false,
+          "queueRunning": false,
+          "hostConnected": false,
+          "videoTime": 0,
+          "paused": true,
+          "heapAfter": 139247316
+        },
+        {
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "queueClosed": true,
+          "queuePending": false,
+          "queueRunning": false,
+          "hostConnected": false,
+          "videoTime": 0,
+          "paused": true,
+          "heapAfter": 137462160
+        },
+        {
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "queueClosed": true,
+          "queuePending": false,
+          "queueRunning": false,
+          "hostConnected": false,
+          "videoTime": 0,
+          "paused": true,
+          "heapAfter": 137644651
+        }
+      ],
+      "slow-closed.json": [
+        {
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "queueClosed": true,
+          "queuePending": false,
+          "queueRunning": false,
+          "hostConnected": false,
+          "videoTime": 0,
+          "paused": true,
+          "heapAfter": 138080219
+        }
+      ],
+      "timeout-closed.json": [
+        {
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "queueClosed": true,
+          "queuePending": false,
+          "queueRunning": false,
+          "hostConnected": false,
+          "videoTime": 0,
+          "paused": true,
+          "heapAfter": 138430957
+        }
+      ],
+      "quality-closed.json": [
+        {
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "queueClosed": true,
+          "queuePending": false,
+          "queueRunning": false,
+          "hostConnected": false,
+          "videoTime": 0,
+          "paused": true,
+          "heapAfter": 138319616
+        }
+      ],
+      "cached-priority-closed.json": [
+        {
+          "cacheBytes": 0,
+          "cacheEntries": 0,
+          "queueClosed": true,
+          "queuePending": false,
+          "queueRunning": false,
+          "hostConnected": false,
+          "videoTime": 0,
+          "paused": true,
+          "heapAfter": 137048715
+        }
+      ]
+    }
+  },
+  "formalSamples": {
+    "bilibili": {
+      "media": [
+        {
+          "duration": 167.8999375,
+          "height": 1080,
+          "time": 71,
+          "width": 1920
+        }
+      ],
+      "selection": [
+        {
+          "a": "65",
+          "b": "71",
+          "canvas": [
+            [
+              640,
+              360
+            ]
+          ],
+          "caption": "画面 01:11.000",
+          "rail": true
+        }
+      ],
+      "site": "bilibili",
+      "title": "AI · 高质量 Blender 场景创建_哔哩哔哩_bilibili",
+      "url": "https://www.bilibili.com/video/BV1Sqpy6NEJC/"
+    },
+    "youtube": {
+      "media": [
+        {
+          "duration": 19.021,
+          "height": 240,
+          "time": 8,
+          "width": 320
+        }
+      ],
+      "selection": [
+        {
+          "a": "2",
+          "b": "8",
+          "caption": "画面 00:08.000",
+          "rail": true
+        }
+      ],
+      "site": "youtube",
+      "title": "(1) Me at the zoo - YouTube",
+      "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+    },
+    "x": {
+      "media": [
+        {
+          "duration": 20.053666,
+          "height": 720,
+          "time": 8,
+          "width": 1280
+        },
+        {
+          "duration": 20.036,
+          "height": 360,
+          "time": 0,
+          "width": 640
+        }
+      ],
+      "selection": [
+        {
+          "a": "2",
+          "b": "8",
+          "caption": "画面 00:07.975",
+          "owner": "/SpaceX/status/2110886603371536546",
+          "rail": true
+        }
+      ],
+      "site": "x",
+      "title": "(1) SpaceX on X: \"Falcon 9’s first stage lands on the Of Course I Still Love You droneship https://t.co/uBK14MgJZ0\" / X",
+      "url": "https://x.com/SpaceX/status/2110886603371536546"
+    }
+  },
+  "formalExitNodes": [
+    {
+      "site": "bilibili",
+      "diagnosticPresent": false,
+      "selectionNodes": 0
+    },
+    {
+      "site": "youtube",
+      "diagnosticPresent": false,
+      "selectionNodes": 0
+    },
+    {
+      "site": "x",
+      "diagnosticPresent": false,
+      "selectionNodes": 0
+    }
+  ],
+  "verification": {
+    "frontendPassed": 90,
+    "frontendFiles": 16,
+    "maxWorkers": 2,
+    "typeFormatAndProductionBuildPassed": true,
+    "normalBundleProbeOmissionCheckPassed": true,
+    "ownedResultValidator": "node tools/check-video-performance-results.mjs",
+    "nativeCodeChanged": false,
+    "newRealRecordingRequired": false
+  },
+  "deployment": {
+    "helperDllSha256": "be91984f648525de7694fb89d1c123aa214327bd7b79c36d3133aec8ff22ad7d",
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "contentSha256": "3844956212cd444ad32b79c2ce80a61010d6f3770b59680f35139b873ef28186",
+    "actualRegistrationAndOriginPingPassed": true,
+    "formalReloadUserConfirmation": "好了",
+    "formalReloadConfirmedOn": "2026-10-25",
+    "diagnosticNodeAbsentOnAllThreeFormalPages": true,
+    "realRecordingPerformed": false,
+    "userMaterialWrites": false
+  },
+  "cleanup": {
+    "ownedServerStopped": true,
+    "createdTestTabsClosed": true,
+    "normalBuildRestored": true
+  },
+  "limitations": [
+    "Observed rAF callbacks and frame-ready timings are not independent screen-presentation measurements or universal latency SLOs",
+    "The 100-event programmatic keyboard stress still showed approximately 1-second rAF variation; its cause is unresolved and it is not reclassified as a physical-pointer latency result",
+    "Controlled weak-network, timeout and portrait runs used owned media and site-structure fixtures; the actual three sites were not independently throttled",
+    "Normal real-site samples verify selection, endpoint frames, playback to B and removal of selection nodes; exact watch-state restoration was measured in owned cases, not separately timed on all three sites",
+    "Reported JS heap includes the page and other installed extensions; only owned canvas-cache and controller cleanup were asserted, not full-browser peak memory or physical GC",
+    "Additional page variants and all future site changes are not covered; one-hour scenarios are explicitly deferred",
+    "Installer and overall v1 delivery remain unfinished"
+  ]
+}

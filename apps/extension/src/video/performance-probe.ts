@@ -19,10 +19,19 @@ export function videoPerformanceProbe(target: VideoTarget, host: HTMLElement) {
     duration: target.video.duration,
     width: target.video.videoWidth,
     height: target.video.videoHeight,
+    focusBefore: document.hasFocus(),
+    visibilityBefore: document.visibilityState,
     heapBefore: heap(),
     maxCacheBytes: 0,
     maxCacheEntries: 0,
-    inputToNextRaf: [] as { type: string; ms: number; a: string | null; b: string | null }[],
+    inputToNextRaf: [] as {
+      type: string;
+      ms: number;
+      a: string | null;
+      b: string | null;
+      focused: boolean;
+      visibility: string;
+    }[],
     ready: [] as {
       target: number;
       actual: number | null;
@@ -75,6 +84,8 @@ export function videoPerformanceProbe(target: VideoTarget, host: HTMLElement) {
       report.inputToNextRaf.push({
         type: event.type,
         ms: performance.now() - at,
+        focused: document.hasFocus(),
+        visibility: document.visibilityState,
         a: root?.querySelector('.endpoint.a')?.getAttribute('aria-valuenow') ?? null,
         b: root?.querySelector('.endpoint.b')?.getAttribute('aria-valuenow') ?? null,
       });

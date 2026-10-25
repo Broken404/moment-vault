@@ -134,6 +134,13 @@
         "repeatRecordingRequired": false
       }
     },
-    "fullPerformanceMatrixStillPending": true
+    "fullPerformanceMatrixStillPending": true,
+    "ordinaryVideoPerformance": {
+      "date": "2026-10-25",
+      "evidence": "video-performance-2026-10-25.json",
+      "status": "ordinary-owned-cases-and-three-formal-samples-passed",
+      "longVideoDeferredByUser": true,
+      "actualSitesIndependentlyThrottled": false
+    }
   }
 }

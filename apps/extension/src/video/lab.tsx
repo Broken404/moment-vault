@@ -14,6 +14,8 @@ import { checkSavedPreview } from './lab-recovery';
 function Lab() {
   const query = new URLSearchParams(location.search);
   const media = query.get('media') ?? 'fixture';
+  const [mediaName, setMediaName] = useState(media);
+  const [mediaEpoch, setMediaEpoch] = useState(0);
   const [site, setSite] = useState<Site>('youtube'),
     [theme, setTheme] = useState('light');
   const [target, setTarget] = useState<VideoTarget | null>(null);
@@ -29,6 +31,8 @@ function Lab() {
   const [recording, setRecording] = useState<CaptureStatus | null>(null);
   const [layoutResult, setLayoutResult] = useState('');
   const [recoveryResult, setRecoveryResult] = useState('');
+  const [rapidState, setRapidState] = useState('idle');
+  const [closeOnWaiting, setCloseOnWaiting] = useState(false);
   const observed = useRef<SelectionState | null>(null);
   const video = useRef<HTMLVideoElement>(null);
   const url =
@@ -126,6 +130,22 @@ function Lab() {
         使用正式选段与预览代码；下方播放器和三种进度条均为自制夹具，不代表三站验收通过。
       </p>
       <div className="fixture-toolbar">
+        <button className="button" disabled={!target} onClick={() => setCloseOnWaiting(true)}>
+          下一次缓冲时关闭（测试）
+        </button>
+        <button className="button" onClick={() => setMediaEpoch((value) => value + 1)}>
+          重新载入测试媒体
+        </button>
+        {media.startsWith('portrait') && (
+          <button
+            className="button"
+            onClick={() =>
+              setMediaName((value) => (value === 'portrait' ? 'portrait-low' : 'portrait'))
+            }
+          >
+            切换竖屏清晰度
+          </button>
+        )}
         <button
           className="button"
           onClick={() => {
@@ -134,17 +154,20 @@ function Lab() {
               ?.shadowRoot?.querySelector<HTMLElement>('.endpoint.a');
             if (!endpoint) return;
             endpoint.focus();
+            setRapidState('running');
             void (async () => {
               for (let index = 0; index < 100; index++) {
                 endpoint.dispatchEvent(
                   new KeyboardEvent('keydown', {
-                    key: index < 53 ? 'ArrowRight' : 'ArrowLeft',
+                    key: index % 20 < 10 ? 'ArrowRight' : 'ArrowLeft',
+                    ctrlKey: true,
                     bubbles: true,
                     composed: true,
                   }),
                 );
                 await new Promise((resolve) => setTimeout(resolve, 8));
               }
+              setRapidState('done:100');
             })();
           }}
         >
@@ -267,11 +290,17 @@ function Lab() {
           >
             <video
               ref={video}
-              src={`/${media}.mp4?source=${source}&network=${query.get('network') ?? 'normal'}&run=${query.get('run') ?? 'default'}`}
+              src={`/${mediaName}.mp4?source=${source}&network=${query.get('network') ?? 'normal'}&run=${query.get('run') ?? 'default'}&epoch=${mediaEpoch}`}
               preload="auto"
               playsInline
               onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
               onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
+              onWaiting={() => {
+                if (closeOnWaiting) {
+                  setCloseOnWaiting(false);
+                  close();
+                }
+              }}
             />
             {controls && rail}
           </div>
@@ -314,6 +343,7 @@ function Lab() {
           {error && <p role="alert">{error}</p>}
           <p data-testid="recording-layout-result">{layoutResult}</p>
           <p data-testid="preview-recovery-result">{recoveryResult}</p>
+          <p data-testid="rapid-lab-state">{rapidState}</p>
         </div>
         <aside className="fixture-proof">
           <h2>联调读数</h2>

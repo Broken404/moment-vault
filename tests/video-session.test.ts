@@ -158,6 +158,43 @@ describe('preview restoration after capture', () => {
     expect(seeks).toHaveLength(before);
   });
 
+  it('serves an exact cached boundary without waiting for an obsolete stalled seek', async () => {
+    owned = fixture();
+    const { session, seeks, callbacks, present } = owned;
+    await flush();
+    expect(session.state.actual).toBe(2);
+    owned.stopAtEnd();
+    session.move('b', 24);
+    await flush();
+    expect(session.state.loading).toBe(true);
+    const before = seeks.length;
+    void session.request(2);
+    await flush();
+    expect(session.state.loading).toBe(false);
+    expect(session.state.actual).toBe(2);
+    expect(session.state.cached).toBe(true);
+    expect(seeks).toHaveLength(before);
+    expect(callbacks.size).toBe(0);
+    present(24);
+    await vi.advanceTimersByTimeAsync(8001);
+    expect(session.state.actual).toBe(2);
+    expect(session.state.message).toBe('');
+  });
+
+  it('keeps a nearby uncached boundary pending rather than relabeling a cached frame', async () => {
+    owned = fixture();
+    const { session } = owned;
+    await flush();
+    owned.stopAtEnd();
+    session.move('b', 24);
+    await flush();
+    void session.request(2.001);
+    await flush();
+    expect(session.state.requested).toBe(2.001);
+    expect(session.state.loading).toBe(true);
+    expect(session.state.cached).toBe(false);
+  });
+
   it('handles repeated terminal notifications without starting another boundary decode', async () => {
     const { session, seeks } = await prepared();
     owned!.stopAtEnd();

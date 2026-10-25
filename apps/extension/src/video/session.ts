@@ -399,6 +399,9 @@ export class VideoSession {
     // Capture/preview must seek A again, but the already confirmed B frame is still valid.
     // Keeping other frames lets capture release restore the preview without another paused seek.
     if (force) this.cache.delete(frameKey(time));
+    // An exact cached boundary must not wait for an obsolete network seek.
+    // Uncached requests still share the single producer and coalesce normally.
+    else if (this.cache.get(frameKey(time))) this.queue.cancel();
     this.state.requested = time;
     this.state.loading = true;
     this.state.message = '';

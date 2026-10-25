@@ -16,10 +16,12 @@ if (!binary) throw Error('Select the installed FFmpeg using MOMENT_VAULT_TEST_FF
 const font =
   "drawtext=fontfile='C\\:/Windows/Fonts/consola.ttf':text='OWNED %{pts\\:hms}':fontsize=24:fontcolor=white:box=1:boxcolor=black@0.8:x=12:y=12";
 const media = [
-  { name: 'hour', size: '640x360', rate: 15, duration: 3600 },
+  { name: 'landscape', size: '640x360', rate: 30, duration: 40 },
   { name: 'portrait', size: '360x640', rate: 30, duration: 40 },
   { name: 'portrait-low', size: '180x320', rate: 30, duration: 40 },
 ];
+if (process.argv.includes('--include-long'))
+  media.push({ name: 'hour', size: '640x360', rate: 15, duration: 3600 });
 for (const item of media) {
   const file = resolve(output, item.name + '.mp4');
   if (existsSync(file)) continue;
@@ -107,6 +109,7 @@ if (process.argv.includes('--build-only')) process.exit(0);
 const files = new Map([
   ['/', ['index.html', 'text/html; charset=utf-8']],
   ['/lab.js', ['lab.js', 'text/javascript; charset=utf-8']],
+  ['/fixture.mp4', ['landscape.mp4', 'video/mp4']],
   ...media.map((item) => ['/' + item.name + '.mp4', [item.name + '.mp4', 'video/mp4']]),
 ]);
 const requests = [];
@@ -159,14 +162,21 @@ const server = createServer(async (request, response) => {
               ? 9500
               : network === 'timeout'
                 ? 0
-                : 350,
+                : network === 'stall'
+                  ? 1000
+                  : 350,
           ),
         );
       if (response.destroyed) break;
       if (!response.write(chunk))
         await new Promise((done) => {
-          response.once('drain', done);
-          response.once('close', done);
+          const finish = () => {
+            response.off('drain', finish);
+            response.off('close', finish);
+            done();
+          };
+          response.once('drain', finish);
+          response.once('close', finish);
         });
       offset += chunk.length;
     }
@@ -177,6 +187,6 @@ const server = createServer(async (request, response) => {
 });
 server.listen(43826, '127.0.0.1', () =>
   console.log(
-    'Owned video performance lab: http://127.0.0.1:43826/?media=hour (not platform acceptance)',
+    'Owned video performance lab: http://127.0.0.1:43826/?media=landscape (long media excluded unless --include-long)',
   ),
 );
