@@ -142,5 +142,16 @@
       "longVideoDeferredByUser": true,
       "actualSitesIndependentlyThrottled": false
     }
+  },
+  "installationAndUpgrade": {
+    "date": "2026-10-26",
+    "evidence": "installation-upgrade-2026-10-26.json",
+    "status": "private-installer-lifecycle-and-default-native-deployment-passed-browser-pending",
+    "isolatedLifecycleGroupsPassed": 6,
+    "defaultUserInstallPassed": true,
+    "existingConfigUnchanged": true,
+    "liveEdgeReconnectPending": true,
+    "windowsRebootPending": true,
+    "publicDistribution": false
   }
 }

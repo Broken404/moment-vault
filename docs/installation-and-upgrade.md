@@ -2,6 +2,8 @@
 
 实施日期：2026-10-26。沿用已批准方案中的 Inno Setup、.NET 自包含、当前 Windows 用户安装。安装包包含普通扩展、助手与配套媒体工具，用户不需要安装 SDK、Node.js 或 .NET。
 
+本轮 6 组隔离生命周期及默认位置实际安装已通过，安装后原生连接、既有素材只读和 MP4 文件管线亦通过。真实 Edge 重连与 Windows 重启仍待分别确认，具体构建指纹与边界见 [安装验收证据](evidence/installation-upgrade-2026-10-26.json)。
+
 ## 安装与日常使用
 
 运行 `dist/installer/MomentVault-0.1.0-win-x64.exe`。默认安装到 `%LOCALAPPDATA%\Programs\MomentVault`，不请求管理员权限，不建立服务或监听端口。助手仍由 Edge Native Messaging 按需启动。

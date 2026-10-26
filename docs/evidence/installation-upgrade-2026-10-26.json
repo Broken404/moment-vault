@@ -1,0 +1,170 @@
+{
+  "date": "2026-10-26",
+  "status": "private-installer-lifecycle-and-default-native-deployment-passed-browser-pending",
+  "environment": {
+    "os": "Windows 11 25H2",
+    "build": "26200",
+    "architecture": "x64",
+    "browser": "Microsoft Edge"
+  },
+  "scope": "Approved current-user Inno Setup and self-contained helper, private self-use only.",
+  "installerCode": {
+    "path": "packaging/windows/moment-vault.iss",
+    "sha256": "2dad953e2181db9d798f99325d9bf4c1d167bd5e036986f5ae0190566cea0ff3",
+    "requiredPrivileges": "lowest",
+    "servicesAdded": false,
+    "listeningPortsAdded": false,
+    "forceProcessTermination": false,
+    "recursiveUninstallDelete": false,
+    "conditionalRemovalOfOwnedRegistrations": true
+  },
+  "isolatedLifecycle": {
+    "initial": {
+      "status": "isolated-installer-lifecycle-passed",
+      "checks": [
+        "fresh current-user install, Unicode path, both registrations, real origin-framed ping and bundled media",
+        "busy upgrade refused (7); busy uninstall left active helper running (1)",
+        "synthetic older-to-current upgrade reused path; metadata, media bytes, configuration and pending save preserved after process restart",
+        "copied complete backup reconfigured to new roots; draft, library, original media and pending save readable",
+        "same-version repair install preserves all data",
+        "uninstall removes managed files and owned registration; keeps newer registration, unowned file, configuration, materials and pending save"
+      ],
+      "versions": [
+        "0.0.9 synthetic",
+        "0.1.0 current payload"
+      ],
+      "boundaries": [
+        "Separate QA AppId/host registration, full payload and same installer code.",
+        "Real helper process restart; not a Windows reboot or live Edge connection.",
+        "Existing production registration and configuration unchanged."
+      ],
+      "installerHashes": [
+        {
+          "file": "MomentVault-0.0.9-win-x64-installcheck.exe",
+          "sha256": "99a78289610c4d0714f253ef84ba4670f09b590fd9943d46590989c756e49912"
+        },
+        {
+          "file": "MomentVault-0.1.0-win-x64-installcheck.exe",
+          "sha256": "66ddfcb9a490299aa273381f02e79de02bebe017be400488b9dd24e008a3218f"
+        }
+      ]
+    },
+    "repeatedWithExistingFixtures": {
+      "status": "isolated-installer-lifecycle-passed",
+      "checks": [
+        "fresh current-user install, Unicode path, both registrations, real origin-framed ping and bundled media",
+        "busy upgrade refused (7); busy uninstall left active helper running (1)",
+        "synthetic older-to-current upgrade reused path; metadata, media bytes, configuration and pending save preserved after process restart",
+        "copied complete backup reconfigured to new roots; draft, library, original media and pending save readable",
+        "same-version repair install preserves all data",
+        "uninstall removes managed files and owned registration; keeps newer registration, unowned file, configuration, materials and pending save"
+      ],
+      "versions": [
+        "0.0.9 synthetic",
+        "0.1.0 current payload"
+      ],
+      "boundaries": [
+        "Separate QA AppId/host registration, full payload and same installer code.",
+        "Real helper process restart; not a Windows reboot or live Edge connection.",
+        "Existing production registration and configuration unchanged."
+      ],
+      "installerHashes": [
+        {
+          "file": "MomentVault-0.0.9-win-x64-installcheck.exe",
+          "sha256": "99a78289610c4d0714f253ef84ba4670f09b590fd9943d46590989c756e49912"
+        },
+        {
+          "file": "MomentVault-0.1.0-win-x64-installcheck.exe",
+          "sha256": "66ddfcb9a490299aa273381f02e79de02bebe017be400488b9dd24e008a3218f"
+        }
+      ]
+    },
+    "initialPayloadHelperSha256": "fdae5ddad7b1a0b33d82510d292258d22229e2fba8274a562be2cd012749ece5",
+    "initialPayloadSourceCommit": "20a49de22d7396ab46ba706db59f1675d4539079",
+    "initialPayloadSourceDirty": true,
+    "note": "Full payload and same installer script under QA AppId/host names. Synthetic 0.0.9 is not a historical release. Final package was rebuilt after commit; tested default deployment is reported separately.",
+    "inputMedia": "Self-made PNG; original bytes and notes in draft/library, incomplete upload prefix, complete copied backup and unowned file.",
+    "upgradeBusyExitCode": 7,
+    "uninstallBusyExitCode": 1,
+    "productionRegistrationAndConfigUnchangedDuringIsolatedChecks": true
+  },
+  "defaultDeployment": {
+    "status": "default-current-user-install-and-native-read-passed-browser-pending",
+    "sourceCommit": "c9e15655f98988de0de40cd2b07911c8b6e25b6a",
+    "sourceDirty": false,
+    "payloadFilesVerified": 297,
+    "configUnchanged": true,
+    "defaultConfigReadByInstalledHelper": true,
+    "existingMaterialsReadable": {
+      "draft": 23,
+      "library": 1
+    },
+    "installer": {
+      "file": "MomentVault-0.1.0-win-x64.exe",
+      "bytes": 190348735,
+      "sha256": "c83fb1ad0f1bd63901be553d20ee5373874d4db5e606b173924ca0e55df9c36d"
+    },
+    "helperSha256": "ad8639f340c5b1927d22e336befd834d7d4988f3bad971779dcf69e617223e95",
+    "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
+    "contentSha256": "3844956212cd444ad32b79c2ce80a61010d6f3770b59680f35139b873ef28186",
+    "boundaries": [
+      "Not a live Edge or Windows reboot test.",
+      "Only config.get and items.list against existing user data."
+    ],
+    "installExitCode": 0,
+    "installerRequestedReboot": false,
+    "location": "%LOCALAPPDATA%/Programs/MomentVault",
+    "hostName": "com.momentvault.host",
+    "twoRegistryEntriesAndDynamicManifestVerified": true,
+    "actualOriginFramedIsolatedPing": "passed",
+    "existingExtension": "Kept original dist/extension loading path and ID, not removed/re-added.",
+    "extensionId": "hpchplafhkkndbocdiopnbmkkhbjokii",
+    "payloadSourceCommit": "c9e15655f98988de0de40cd2b07911c8b6e25b6a"
+  },
+  "validation": {
+    "nativeFileProtocolChecks": {
+      "passed": 36,
+      "total": 36
+    },
+    "candidateNativeCrossVolumeSmoke": "passed",
+    "productionExtensionBuildWithTypecheckAndGeneratedScriptChecks": "passed",
+    "formattingAndDiffChecks": "passed",
+    "frontendUnitSuiteRerunForPackagingOnly": false,
+    "candidateAndInstalledMp4Pipeline": {
+      "status": "passed",
+      "source": "Locally generated WebM, production TypeScript upload to actual helper and bundled FFmpeg.",
+      "installedEvidenceRoot": ".local-data/recording-pipeline-26fff089-fdee-4b34-a115-34f1996172f0",
+      "streams": [
+        {
+          "codec": "h264",
+          "width": 640,
+          "height": 360,
+          "duration": 2,
+          "decodedFrames": 60
+        },
+        {
+          "codec": "aac",
+          "duration": 2,
+          "decodedFrames": 94
+        }
+      ],
+      "realBrowserRecording": false
+    }
+  },
+  "provenance": {
+    "compiler": "Inno Setup 6.7.3",
+    "compilerInstallerSha256": "9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732",
+    "compilerInstallerAuthenticode": "Valid, Pyrsys B.V.",
+    "compilerSha256": "0a8757031b33777e4c9cbffee40f11a5062b36d25cbe144c1db73b6102b80ad7",
+    "dotnetRuntime": "10.0.13",
+    "mediaTools": "Existing tested Gyan 8.1.1 full build, separate processes, original GPL v3 license, README, source reference, configuration and hashes retained.",
+    "signedMomentVaultInstaller": false,
+    "publicDistribution": false,
+    "releaseTagCreated": false
+  },
+  "remaining": [
+    "Live Edge reconnect after extension reload.",
+    "Windows reboot and continued use.",
+    "Other operating systems, browser/quality combinations and public distribution are not accepted by this record."
+  ]
+}
