@@ -8,12 +8,18 @@ import { promisify } from 'node:util';
 assert.equal(process.platform, 'win32', 'Run the registration check on Windows');
 const identity = JSON.parse(await readFile('config/extension-identity.json', 'utf8'));
 const directoryIndex = process.argv.indexOf('--host-directory');
+const installed = process.argv.includes('--installed');
+assert.ok(!installed || directoryIndex < 0, 'Choose --installed or --host-directory');
 const hostDirectory = path.resolve(
-  directoryIndex >= 0 ? process.argv[directoryIndex + 1] : 'dist/host',
+  installed
+    ? path.join(process.env.LOCALAPPDATA, 'Programs/MomentVault/host')
+    : directoryIndex >= 0
+      ? process.argv[directoryIndex + 1]
+      : 'dist/host',
 );
 assert.ok(
-  hostDirectory.startsWith(path.resolve('.') + path.sep),
-  'Development helper must remain inside this repository',
+  installed || hostDirectory.startsWith(path.resolve('.') + path.sep),
+  'Development helper must remain inside this repository; use --installed for the packaged helper',
 );
 const expectedManifest = path.join(hostDirectory, 'com.momentvault.host.json');
 const registryProbe = String.raw`

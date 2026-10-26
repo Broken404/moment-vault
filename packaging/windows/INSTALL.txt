@@ -1,0 +1,40 @@
+Moment Vault · 瞬间资产库 — 自用安装说明 / Private self-use installation
+
+本轮实测环境：Windows 11 25H2 x64、Microsoft Edge；Windows 10 尚未实测。
+本安装包为未签名的自用候选，不是商店或公开发行版本。
+
+1. 运行安装包，安装到当前用户，无需管理员权限或预装 .NET。
+2. 首次安装扩展：在 Edge 打开 edge://extensions/，开启开发人员模式，
+   点击“加载解压缩的扩展”，选择本安装目录内的 extension 文件夹。
+   默认位置：%LOCALAPPDATA%\Programs\MomentVault\extension
+3. 在 edge://extensions/shortcuts 检查“开始/停止录制”为 Ctrl+Shift+9。
+4. 从普通网页桌宠的“设置”分别选择草稿箱和资产库目录。
+   素材留在所选目录，助手由 Edge 按需启动，无需单独运行程序。
+
+已有开发版：本安装包与开发版使用相同扩展 ID 和目录配置。
+本轮现有开发扩展可继续使用原加载目录，不必删除扩展、重选目录或搬动素材。
+如日后改为安装目录的扩展，应先备份并记录浏览器偏好；移除扩展可能清除其偏好。
+
+升级：等待所有保存完成，关闭 Edge，再运行新安装包，随后重新打开 Edge。
+不要卸载扩展再升级。安装器保持原安装位置，配置、草稿箱与资产库保留。
+如果助手仍占用安装文件，升级会停止并提示关闭 Edge，不强制结束保存。
+已从安装目录加载扩展的用户，在扩展管理页点击“重新加载”并刷新原网页。
+
+卸载：从 Windows“已安装的应用”卸载 Moment Vault。
+只删除本安装器安装的程序文件和仍指向本副本的助手注册；保留配置和素材。
+浏览器扩展需自行停用或移除。再次安装可继续使用保留的目录配置。
+
+备份：复制完整草稿箱、资产库（含隐藏的 .moment-vault）及
+%LOCALAPPDATA%\MomentVault\config.json。还原到新位置后在设置里重新选择目录。
+
+开源许可：原创代码为 MIT，见 LICENSE。
+React 等前端依赖许可见 extension\THIRD-PARTY-NOTICES.txt。
+.NET 运行环境许可见 notices 文件夹。
+FFmpeg / ffprobe 作为独立进程使用，原构建 GPL v3 许可、来源及配置见
+host\media\LICENSE-FFmpeg.txt、README-FFmpeg.txt、tool-provenance.json。
+本轮沿用本机已验证的工具，仅用于本人私有安装；公开分发前另行准备完整对应源码和第三方发行材料。
+
+English: Run Setup for the current Windows user, then load the extension folder
+as an unpacked extension in Edge. Finish saves and close Edge before upgrading.
+Uninstall keeps your configuration and material folders. This unsigned package
+is a private self-use candidate; it is not a public redistribution release.

@@ -16,7 +16,9 @@
     "dev": "vite --host 127.0.0.1",
     "check": "npm run format:check && npm run typecheck && npm test && npm run build",
     "check:registration": "node tools/check-helper-registration.mjs",
-    "build:host": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/build-host.ps1"
+    "build:host": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/build-host.ps1",
+    "build:installer": "node tools/build-installer.mjs",
+    "check:installer": "node tools/check-installer.mjs"
   },
   "dependencies": {
     "lucide-react": "1.60.0",

@@ -49,7 +49,7 @@ npm run check:registration
 
 在 Edge 扩展管理页打开开发人员模式，加载 dist/extension。正式开发扩展 ID 固定为 config/extension-identity.json 中的 ID，与试验版不同；仓库只保存公钥，不保存私钥。扩展首次打开设置，检测助手并使用系统目录选择器配置草稿箱和资产库。已有网页刷新后显示 P3-C。
 
-注册脚本是开发安装工具，尚不等于已交付 Inno Setup 安装包。移除开发注册可执行同一脚本的 -Unregister，同时移除本助手的两处注册；保留所有素材。
+注册脚本是开发安装工具。独立的 Inno Setup 自用安装包、构建及验收边界见 [安装与升级](installation-and-upgrade.md)。移除开发注册可执行同一脚本的 -Unregister，同时移除本助手的两处注册；保留所有素材。已改用安装版时不运行此开发卸载命令，而使用 Windows 的应用卸载入口。
 
 ### 目录选择窗口
 
