@@ -1,6 +1,6 @@
 {
   "date": "2026-10-26",
-  "status": "private-installer-lifecycle-and-default-native-deployment-passed-browser-pending",
+  "status": "private-installer-lifecycle-default-deployment-and-edge-reconnect-passed-reboot-pending",
   "environment": {
     "os": "Windows 11 25H2",
     "build": "26200",
@@ -89,7 +89,7 @@
     "productionRegistrationAndConfigUnchangedDuringIsolatedChecks": true
   },
   "defaultDeployment": {
-    "status": "default-current-user-install-and-native-read-passed-browser-pending",
+    "status": "default-current-user-install-native-read-and-user-edge-reconnect-passed",
     "sourceCommit": "c9e15655f98988de0de40cd2b07911c8b6e25b6a",
     "sourceDirty": false,
     "payloadFilesVerified": 297,
@@ -108,8 +108,9 @@
     "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
     "contentSha256": "3844956212cd444ad32b79c2ce80a61010d6f3770b59680f35139b873ef28186",
     "boundaries": [
-      "Not a live Edge or Windows reboot test.",
-      "Only config.get and items.list against existing user data."
+      "The native read and media pipeline observations above are CLI checks.",
+      "The later live Edge connection confirmation is recorded separately under browserReconnect.",
+      "Windows reboot remains unverified."
     ],
     "installExitCode": 0,
     "installerRequestedReboot": false,
@@ -119,7 +120,8 @@
     "actualOriginFramedIsolatedPing": "passed",
     "existingExtension": "Kept original dist/extension loading path and ID, not removed/re-added.",
     "extensionId": "hpchplafhkkndbocdiopnbmkkhbjokii",
-    "payloadSourceCommit": "c9e15655f98988de0de40cd2b07911c8b6e25b6a"
+    "payloadSourceCommit": "c9e15655f98988de0de40cd2b07911c8b6e25b6a",
+    "initialNativeVerificationStatus": "default-current-user-install-and-native-read-passed-browser-pending"
   },
   "validation": {
     "nativeFileProtocolChecks": {
@@ -163,8 +165,36 @@
     "releaseTagCreated": false
   },
   "remaining": [
-    "Live Edge reconnect after extension reload.",
     "Windows reboot and continued use.",
     "Other operating systems, browser/quality combinations and public distribution are not accepted by this record."
-  ]
+  ],
+  "browserReconnect": {
+    "date": "2026-10-26",
+    "status": "passed",
+    "evidenceSource": "User confirmation after formal extension reload and settings refresh.",
+    "question": "本地助手是否显示已连接？",
+    "userReply": "显示已连接",
+    "independentReadOnlyChecks": {
+      "twoRegistrationsAndOriginFramedPing": "passed",
+      "installedHelperFingerprintMatches": true,
+      "directoryConfigurationHashUnchanged": true,
+      "installedHelperProcessObserved": true,
+      "observedAncestorProcessNames": [
+        "cmd.exe",
+        "msedge.exe",
+        "explorer.exe"
+      ]
+    },
+    "additionalBuildOrReloadRequired": false,
+    "repeatRecordingRequired": false,
+    "newBrowserScreenshotOrUserMediaInspection": false,
+    "boundary": "Confirms the installed helper connection in the current Edge session; not a Windows reboot or new capture/quality acceptance."
+  },
+  "rebootPreparation": {
+    "checkpointSaved": true,
+    "checkpoint": ".local-data/installer-live-20261026/reboot-checkpoint.json",
+    "baseline": "Last Windows boot time plus installed helper, receipt and directory-config fingerprints retained locally.",
+    "windowsRebootVerified": false,
+    "automaticRestartRequestedOrScheduled": false
+  }
 }

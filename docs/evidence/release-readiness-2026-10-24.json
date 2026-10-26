@@ -146,12 +146,17 @@
   "installationAndUpgrade": {
     "date": "2026-10-26",
     "evidence": "installation-upgrade-2026-10-26.json",
-    "status": "private-installer-lifecycle-and-default-native-deployment-passed-browser-pending",
+    "status": "private-installer-lifecycle-default-deployment-and-edge-reconnect-passed-reboot-pending",
     "isolatedLifecycleGroupsPassed": 6,
     "defaultUserInstallPassed": true,
     "existingConfigUnchanged": true,
-    "liveEdgeReconnectPending": true,
+    "liveEdgeReconnectPending": false,
     "windowsRebootPending": true,
-    "publicDistribution": false
+    "publicDistribution": false,
+    "liveEdgeReconnect": {
+      "date": "2026-10-26",
+      "status": "passed",
+      "evidenceSource": "User confirmed 显示已连接 after formal extension reload."
+    }
   }
 }
