@@ -32,7 +32,7 @@ node tools/check-native.mjs --require-cross-volume
 
 ## 自用开发安装
 
-2026-10-26 日常助手已改为 Inno Setup 安装到 `%LOCALAPPDATA%\Programs\MomentVault\host`，与源码目录分离；实际安装、注册与 origin 通信、保留原目录配置、只读现有素材及安装后 MP4 文件管线通过。核对当前安装版使用 `npm run check:registration -- --installed`。现有开发扩展仍加载 `dist/extension`，不移除扩展、不搬动素材；用户已确认重新加载后设置显示已连接，独立核对也见安装位置的助手由 cmd → Edge 父链启动，指纹和配置保持。无需再次加载或录制，Windows 重启仍待验证。完整步骤和边界见 [安装与升级](installation-and-upgrade.md)。下面保留此前开发副本的部署记录，已不代表当前注册位置。
+2026-10-26 日常助手已改为 Inno Setup 安装到 `%LOCALAPPDATA%\Programs\MomentVault\host`，与源码目录分离；实际安装、注册与 origin 通信、保留原目录配置、只读现有素材及安装后 MP4 文件管线通过。核对当前安装版使用 `npm run check:registration -- --installed`。现有开发扩展仍加载 `dist/extension`，不移除扩展、不搬动素材；用户已确认重新加载后设置显示已连接，独立核对也见安装位置的助手由 cmd → Edge 父链启动，指纹和配置保持。此后实际 Windows 重启也通过系统启动记录、指纹、原目录素材读取及用户 Edge 连接/数据保留确认，无需再次加载或录制。完整步骤和边界见 [安装与升级](installation-and-upgrade.md)。下面保留此前开发副本的部署记录，已不代表当前注册位置。
 
 2026-10-24 历史开发部署：大量素材首次加载修正版曾注册在 `dist/host-library-load`，当时用匹配的 `--host-directory dist/host-library-load` 核对。该轮通过 36 项原生、88 项前端、实际规模、跨盘入库及 MP4 文件管线检查，用户已确认正式扩展重新加载后列表和预览正常，当时的注册、origin 通信和助手指纹亦核对通过，目录配置和录制脚本指纹不变，见 [首次加载优化](large-library-startup.md)。`dist/host-library-load`、`dist/host-material-read` 和 `dist/host-upload-recovery` 现保留为历史开发副本，不将其指纹视为安装版当前运行指纹，也不因保留副本而重新注册。
 

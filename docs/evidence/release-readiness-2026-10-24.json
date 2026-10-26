@@ -146,17 +146,26 @@
   "installationAndUpgrade": {
     "date": "2026-10-26",
     "evidence": "installation-upgrade-2026-10-26.json",
-    "status": "private-installer-lifecycle-default-deployment-and-edge-reconnect-passed-reboot-pending",
+    "status": "private-installer-lifecycle-default-deployment-edge-reconnect-and-windows-reboot-passed",
     "isolatedLifecycleGroupsPassed": 6,
     "defaultUserInstallPassed": true,
     "existingConfigUnchanged": true,
     "liveEdgeReconnectPending": false,
-    "windowsRebootPending": true,
+    "windowsRebootPending": false,
     "publicDistribution": false,
     "liveEdgeReconnect": {
       "date": "2026-10-26",
       "status": "passed",
       "evidenceSource": "User confirmed 显示已连接 after formal extension reload."
+    },
+    "windowsReboot": {
+      "date": "2026-10-26",
+      "status": "passed",
+      "actualNewBootVerified": true,
+      "existingConfigUnchanged": true,
+      "nativeReadPassed": true,
+      "userConfirmation": "已连接，目录和素材都正常",
+      "additionalReloadOrRecordingRequired": false
     }
   }
 }

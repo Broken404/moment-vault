@@ -1,6 +1,6 @@
 {
   "date": "2026-10-26",
-  "status": "private-installer-lifecycle-default-deployment-and-edge-reconnect-passed-reboot-pending",
+  "status": "private-installer-lifecycle-default-deployment-edge-reconnect-and-windows-reboot-passed",
   "environment": {
     "os": "Windows 11 25H2",
     "build": "26200",
@@ -89,7 +89,7 @@
     "productionRegistrationAndConfigUnchangedDuringIsolatedChecks": true
   },
   "defaultDeployment": {
-    "status": "default-current-user-install-native-read-and-user-edge-reconnect-passed",
+    "status": "default-current-user-install-native-read-edge-reconnect-and-windows-reboot-passed",
     "sourceCommit": "c9e15655f98988de0de40cd2b07911c8b6e25b6a",
     "sourceDirty": false,
     "payloadFilesVerified": 297,
@@ -108,9 +108,8 @@
     "offscreenSha256": "56ba2a1aedf4173e3216aaafa813b4b332d18f338c9d46159cc7339895d965eb",
     "contentSha256": "3844956212cd444ad32b79c2ce80a61010d6f3770b59680f35139b873ef28186",
     "boundaries": [
-      "The native read and media pipeline observations above are CLI checks.",
-      "The later live Edge connection confirmation is recorded separately under browserReconnect.",
-      "Windows reboot remains unverified."
+      "Native read/media pipeline, initial Edge reconnect and actual Windows reboot have separate evidence below.",
+      "Current Windows user and existing dist/extension loading path; no fresh OS or extension-path migration acceptance."
     ],
     "installExitCode": 0,
     "installerRequestedReboot": false,
@@ -165,7 +164,6 @@
     "releaseTagCreated": false
   },
   "remaining": [
-    "Windows reboot and continued use.",
     "Other operating systems, browser/quality combinations and public distribution are not accepted by this record."
   ],
   "browserReconnect": {
@@ -194,7 +192,60 @@
     "checkpointSaved": true,
     "checkpoint": ".local-data/installer-live-20261026/reboot-checkpoint.json",
     "baseline": "Last Windows boot time plus installed helper, receipt and directory-config fingerprints retained locally.",
-    "windowsRebootVerified": false,
-    "automaticRestartRequestedOrScheduled": false
+    "automaticRestartRequestedOrScheduled": false,
+    "windowsRebootVerifiedAtPreparation": false,
+    "verificationCompleted": true
+  },
+  "windowsReboot": {
+    "date": "2026-10-26",
+    "status": "passed",
+    "userReportedReboot": "已重启",
+    "actualNewBootVerifiedFromSystem": true,
+    "newBootAfterRecordedCheckpoint": true,
+    "twoRegistrationsAndOriginFramedPing": "passed",
+    "configHelperAndPackageReceiptFingerprintsUnchanged": true,
+    "defaultConfigurationRead": true,
+    "buckets": [
+      {
+        "bucket": "draft",
+        "total": 23,
+        "warningCount": 0,
+        "equalsInstallationCount": true,
+        "readSample": {
+          "kind": "image",
+          "bytes": 4334289,
+          "matchesDescriptionHash": true
+        }
+      },
+      {
+        "bucket": "library",
+        "total": 1,
+        "warningCount": 0,
+        "equalsInstallationCount": true,
+        "readSample": {
+          "kind": "image",
+          "bytes": 13524,
+          "matchesDescriptionHash": true
+        }
+      }
+    ],
+    "browserUserConfirmation": {
+      "status": "passed",
+      "reply": "已连接，目录和素材都正常",
+      "evidenceSource": "User opened Edge settings and material management after reboot, without extension reload or recording."
+    },
+    "nativeOperations": [
+      "config.get",
+      "items.list",
+      "items.readFile"
+    ],
+    "userMaterialWriteOperations": false,
+    "localEvidence": [
+      ".local-data/installer-live-20261026/reboot-checkpoint.json",
+      ".local-data/installer-live-20261026/post-reboot-system.json",
+      ".local-data/installer-live-20261026/post-reboot-native.json"
+    ],
+    "boundary": "Confirms the current installation after an actual Windows reboot. Two media samples match current descriptions; not a full-library historical-byte audit or a new recording/quality test.",
+    "additionalReloadOrRecordingRequired": false
   }
 }
