@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-28",
+  "status": "user-scope-clarified-no-new-runtime-acceptance",
+  "directUserInstruction": "其他平台不需要补齐了，视频规格就是横屏和竖屏，极长的视频有可能出现但截取的素材的时长不会过长",
+  "platforms": ["bilibili", "youtube", "x"],
+  "additionalWebsitePlatformsRequired": false,
+  "videoOrientations": ["landscape", "portrait"],
+  "exhaustiveResolutionBitrateFramerateMatrixRequired": false,
+  "existingQualityChangeAndCacheInvalidationRequirementsRetained": true,
+  "sourceAndClipDuration": {
+    "longSourceWithShortClipIsNormalUse": true,
+    "wholeLongSourceRecordingIsDeliveryGoal": false,
+    "numericSourceDurationLimitAdded": false,
+    "numericClipDurationLimitAdded": false,
+    "note": "The user gave a usage pattern, not a numerical product limit."
+  },
+  "remainingSelfUseWork": [
+    "One representative long-source short-selection workflow: locating, fine A/B adjustment, boundary preview and short-clip save.",
+    "Final acceptance reconciliation, daily-use instructions, explicit support scope and known limitations."
+  ],
+  "evidenceBoundaries": {
+    "existingOrdinaryPortraitDragBufferAndInstallResultsRetained": true,
+    "historicalOneHourSeekIsNotCompleteShortClipFlowAcceptance": true,
+    "longSourceShortClipCompleteFlow": "representative-check-pending",
+    "syntheticHighRateKeyboardTimingStillUnresolved": true,
+    "historicalFailuresRewrittenAsPassed": false
+  },
+  "existingEvidence": [
+    "video-performance-2026-10-24.json",
+    "video-performance-2026-10-25.json",
+    "installation-upgrade-2026-10-26.json"
+  ],
+  "changesThisTurn": {
+    "productCodeChanged": false,
+    "extensionRebuiltOrReloadRequired": false,
+    "userMaterialWritesOrRecording": false,
+    "scopeAndDeliveryDocumentationUpdated": true
+  }
+}

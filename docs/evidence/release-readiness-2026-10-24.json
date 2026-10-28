@@ -167,5 +167,26 @@
       "userConfirmation": "已连接，目录和素材都正常",
       "additionalReloadOrRecordingRequired": false
     }
+  },
+  "currentSelfUseScope": {
+    "date": "2026-10-28",
+    "evidence": "v1-scope-2026-10-28.json",
+    "status": "remaining-work-narrowed-to-long-source-short-clip-and-delivery-wrap-up",
+    "platforms": [
+      "bilibili",
+      "youtube",
+      "x"
+    ],
+    "videoOrientations": [
+      "landscape",
+      "portrait"
+    ],
+    "additionalWebsitePlatformsRequired": false,
+    "exhaustiveVideoSpecificationMatrixRequired": false,
+    "longSourceWithShortClipIsNormalUse": true,
+    "numericalDurationCapAdded": false,
+    "longSourceShortClipCompleteFlow": "representative-check-pending",
+    "existingAcceptanceResultsRetained": true,
+    "note": "Historical full-matrix pending fields retain their original dated context; current remaining work follows this finite scope. No new runtime pass was added."
   }
 }
